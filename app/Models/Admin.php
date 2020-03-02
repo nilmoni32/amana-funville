@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 
 class Admin extends Authenticatable
 {
+    // We are using notifiable trait which will be used for password reset notification
     use Notifiable;
 
     /**

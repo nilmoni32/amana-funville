@@ -9,6 +9,6 @@ $factory->define(Admin::class, function (Faker $faker) {
     return [        
         'name' => $faker->name,
         'email' => $faker->unique()->email,       
-        'password' => bcrypt('password')
+        'password' => bcrypt('password'),
     ];
 });

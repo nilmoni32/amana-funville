@@ -35,15 +35,29 @@ return [
     |
     */
 
+    // my comment..
+    // Guards define how users are authenticated for each request
+    // the "guard" that is used to authenticate and register users.
+    // in this application, we use two different types of model for authentication purpose e.g admin and user
+
     'guards' => [
         'web' => [
-            'driver' => 'session',
+            'driver' => 'session',  // session is used for browser http request ( for store cookies)
             'provider' => 'users',
         ],
 
         'api' => [
             'driver' => 'token',
             'provider' => 'users',
+            'hash' => false,
+        ],
+        'admin' => [
+            'driver' => 'session',  // session is used for browser http request ( for store cookies)
+            'provider' => 'admins',
+        ],
+        'admin-api' => [
+            'driver' => 'token',
+            'provider' => 'admins',
             'hash' => false,
         ],
     ],
@@ -69,6 +83,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
         ],
 
         // 'users' => [
@@ -98,6 +116,13 @@ return [
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,
+        ],
+      //We are using the same password_reset table for the admins password reset functionality.
+        'admins' => [
+            'provider' => 'users',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60, //throttling count the number of failed login attempts that a user tries.
         ],
     ],
 

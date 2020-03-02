@@ -4,6 +4,8 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+//we need to import, AuthenticationException class here
+use Illuminate\Auth\AuthenticationException;
 
 class Handler extends ExceptionHandler
 {
@@ -51,5 +53,32 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         return parent::render($request, $exception);
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param AuthenticationException $exception
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    // if the admin is not authenticated then don’t let them load the admin dashboard view instead redirect them to the admin-login page
+    // if the user is not authenticated then don’t let them load the user dashboard view instead redirect them to the user-login page
+    // we need to import, AuthenticationException class  in the top i.e  use Illuminate\Auth\AuthenticationException;
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $exception->getMessage()], 401);
+        }
+        // this array_get looks for config/auth.php gaurds and get the value.
+        $guard = array_get($exception->guards(), 0);
+
+        switch($guard){
+            case 'admin':
+                $login = 'admin.login';
+                break;
+            default:
+                $login = 'login';
+                break;
+        }
+        return redirect()->guest(route($login));
     }
 }

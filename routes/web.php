@@ -1,5 +1,6 @@
 <?php
 
+require 'admin.php'; // adding admin php with web.php
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,6 +16,7 @@
 //     return view('welcome');
 // });
 
-Route::get('/', function(){
-    return view('admin.dashboard.index');
-});
+//Route::get('/', function(){
+//    return view('admin.dashboard.index');
+//});
+

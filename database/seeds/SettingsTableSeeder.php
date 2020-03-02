@@ -1,0 +1,109 @@
+<?php
+
+use App\Models\Setting;
+use Illuminate\Database\Seeder;
+
+class SettingsTableSeeder extends Seeder
+{
+
+    /**
+     * @var Array
+     */
+    protected $settings =[
+        [
+            'key'   => 'site_name',
+            'value' => 'FunVille Restaurant',
+        ],
+        [
+            'key'   => 'site_title',
+            'value' => 'FunVille E-commerce',
+        ],
+        [
+            'key'   => 'default_email_address',
+            'value' => 'mustafi.amana@gmail.com',
+        ],
+        [
+            'key'   => 'currency_code',
+            'value' => 'BDT',
+        ],
+        [
+            'key'   => 'currency_symbol',
+            'value' => 'Tk',
+        ],
+        [
+            'key'   => 'site_logo',
+            'value' => '',
+        ],
+        [
+            'key'   => 'site_favicon',
+            'value' => '',
+        ],
+        [
+            'key'   => 'footer_copyright_text',
+            'value' => '',
+        ],
+        [
+            'key'   => 'seo_meta_title',
+            'value' => '',
+        ],
+        [
+            'key'   => 'seo_meta_description',
+            'value' => '',
+        ],
+        [
+            'key'   => 'social_facbook',
+            'value' => '',
+        ],
+        [
+            'key'   => 'social_twitter',
+            'value' => '',
+        ],
+        [
+            'key'   => 'social_instagram',
+            'value' => '',
+        ],
+        [
+            'key'   => 'bcash_payment_method',
+            'value' => '',
+        ],
+        [
+            'key'   => 'bcash_client_id',
+            'value' => '',
+        ],
+        [
+            'key'   => 'bcash_secret_id',
+            'value' => '',
+        ],
+        [
+            'key'   => 'paypal_payment_method',
+            'value' => '',
+        ],
+        [
+            'key'   => 'paypal_client_id',
+            'value' => '',
+        ],
+        [
+            'key'   => 'paypal_secret_id',
+            'value' => '',
+        ],        
+
+    ];
+
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        foreach($this->settings as $index => $setting){
+            // creating database seeds using Setting model and create() takes an $setting array argument.
+            $result = Setting::create($setting);
+            if(!$result){
+                $this->command->info("Insert failed at record $index"); // used for console output.
+            }
+        }
+
+        $this->command->info("Total ".count($this->settings)." records has been inserted"); // $this->settings (array).
+    }
+}
