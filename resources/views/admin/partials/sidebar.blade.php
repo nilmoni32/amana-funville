@@ -9,10 +9,17 @@
   </div>
   <ul class="app-menu">
     <li>
-      <a class="app-menu__item active" href="index-2.html">
+      {{-- if current route name is dashboard we will set active class  --}}
+      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.dashboard' ? 'active' : ''}}" href="{{route('admin.dashboard')}}">
         <i class="app-menu__icon fa fa-dashboard"></i>
         <span class="app-menu__label">Dashboard</span>
       </a>      
+    </li>
+    <li>
+      {{-- if current route name is admin settings we will set active class here --}}
+    <a class="app-menu__item {{ Route::currentRouteName() == 'admin.settings' ? 'active' : '' }}" href="{{ route('admin.settings')}}">
+        <i class="app-menu__icon fa fa-cogs"></i>
+        <span class="app-menu__label">Settings</span></a>      
     </li>
     <li class="treeview">
       <a class="app-menu__item" href="#" data-toggle="treeview">
@@ -32,17 +39,6 @@
           <a class="treeview-item" href="#">
             <i class="icon fa fa-circle-o"></i>Permissions</a>
         </li>        
-      </ul>
-    </li>
-    <li>
-      <a class="app-menu__item" href="#"
-        ><i class="app-menu__icon fa fa-cogs"></i
-        ><span class="app-menu__label">Settings</span></a
-      >
-    </li>
-    
-    
-    
       </ul>
     </li>
   </ul>

@@ -25,12 +25,16 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
     // To block unauthoized incoming HTTP requests we use middleware.
     // also we have to put this route at the last. 
     // Protecting the dashboard route, so only authenticated admin can load the dashboard view.
+    // here auth:admin is admin guard.
     Route::group(['middleware' => ['auth:admin']], function () {
 
         Route::get('/', function () {
             return view('admin.dashboard.index');
         })->name('dashboard');
-    
+    //  for all settings we will use one controller : SettingController
+        Route::get('/settings', 'SettingController@index')->name('settings');
+        Route::post('/settings', 'SettingController@update')->name('settings.update');
+        
     });
 
 });

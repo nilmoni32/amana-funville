@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Auth; // we need to this trait for authentication
+use Auth; // we need to add this trait for authentication
 
 
 class LoginController extends Controller
