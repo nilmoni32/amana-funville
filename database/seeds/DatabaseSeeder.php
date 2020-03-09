@@ -11,7 +11,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        //$this->call(AdminsTableSeeder::class);
+        //Model::unguard(); // Disable mass assignment
+        $this->call(AdminsTableSeeder::class);
         $this->call(SettingsTableSeeder::class);
+        $this->call(CategoriesTableSeeder::class);
+       // Model::reguard(); // Enable mass assignment
     }
 }

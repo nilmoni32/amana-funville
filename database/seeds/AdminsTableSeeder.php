@@ -13,13 +13,13 @@ class AdminsTableSeeder extends Seeder
      */
     public function run()
     {
-        $faker = Faker::create();
-        // creating database seeds for admin table.
+       // $faker = Faker::create();
+        // creating database seeds for admins table.
         Admin::create([
 
-        'name' => $faker->name,
-        'email' => 'mustafi@gmail.com',       
-        'password' => bcrypt('password'),        
+        'name' => 'Nilmoni Mustafi',
+        'email' => 'mustafi.amana@gmail.com',       
+        'password' => bcrypt('12345678'),        
 
         ]);
     }

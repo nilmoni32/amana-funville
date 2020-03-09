@@ -63,17 +63,17 @@ class SettingsTableSeeder extends Seeder
             'value' => '',
         ],
         [
-            'key'   => 'bcash_payment_method',
+            'key'   => 'social_linkedin',
             'value' => '',
         ],
         [
-            'key'   => 'bcash_client_id',
+            'key'   => 'facebook_pixels',
             'value' => '',
         ],
         [
-            'key'   => 'bcash_secret_id',
+            'key'   => 'google_analytics',
             'value' => '',
-        ],
+        ],         
         [
             'key'   => 'paypal_payment_method',
             'value' => '',
@@ -85,7 +85,16 @@ class SettingsTableSeeder extends Seeder
         [
             'key'   => 'paypal_secret_id',
             'value' => '',
-        ],        
+        ],
+        [
+            'key'   => 'store_passwd',
+            'value' => '',
+        ], 
+        [
+            'key'   => 'store_id',
+            'value' => '',
+        ], 
+
 
     ];
 

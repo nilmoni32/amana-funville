@@ -18,8 +18,10 @@ class CreateCategoriesTable extends Migration
             $table->string('category_name');
             $table->string('slug')->unique(); //url
             $table->text('description')->nullable();
-            $table->unsignedInteger('parent_id')->default(1)->nullable(); // we will store the parent category id to make a nested tree of categories 
-            $table->boolean('menu')->default(1); // provide us some control to show or hide a category in the main navigation.
+            // we will store the parent category id to make a nested tree of categories 
+            $table->unsignedInteger('parent_id')->default(1)->nullable();
+            // provide us some control to show or hide a category in the main navigation. 
+            $table->boolean('menu')->default(1); 
             $table->string('image')->nullable();
             $table->timestamps();
         });
