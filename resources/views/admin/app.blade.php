@@ -24,5 +24,6 @@
     <script src="{{ asset('backend') }}/js/main.js"></script>
     <!-- The javascript plugin to display page loading on top-->
     <script src="{{ asset('backend') }}/js/plugins/pace.min.js"></script>
+    @stack('scripts')
   </body>
 </html>

@@ -34,7 +34,27 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
     //  for all settings we will use one controller : SettingController
         Route::get('/settings', 'SettingController@index')->name('settings');
         Route::post('/settings', 'SettingController@update')->name('settings.update');
+
+
+        // List categories route /admin/categories
+        // Create category route /admin/categories/create : for creating category form
+        // Store category route /admin/categories/store : storing the data into the database
+        // Edit category route /admin/categories/{id}/edit : displaying the edit form by searching category id 
+        // Update category route /admin/categories/update: update that category id row data 
+        // Delete category route /admin/categories/{id}/delete : delete a particular category 
+
+        Route::group(['prefix' => 'categories'], function(){
+
+            Route::get('/', 'CategoryController@index')->name('categories.index');
+            Route::get('/create', 'CategoryController@create')->name('categories.create');
+            Route::post('/store', 'CategoryController@store')->name('categories.store');
+            Route::get('/{id}/edit', 'CategoryController@edit')->name('categories.edit');
+            Route::post('/update', 'CategoryController@update')->name('categories.update');
+            Route::get('/{id}/delete', 'CategoryController@delete')->name('categories.delete');
+        });
+        
         
     });
 
 });
+

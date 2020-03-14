@@ -29,8 +29,8 @@ class SettingController extends BaseController
             if (config('settings.site_logo') != null) {
                 $this->deleteOne(config('settings.site_logo')); // here, config('settings.site_logo') is similar to Config('app.name')
             }
-            $logo = $this->uploadOne($request->file('site_logo'), 'img');
-            // Saving to database using Setting Facade (Setting model) set method and setting the current key/value for setting to the Laravel Configuration             
+            $logo = $this->uploadOne($request->file('site_logo'), 'img');  //$request->file('site_logo') is an image file & 'img' is the folder name.
+            // Saving to database using Setting model set method and setting the current key/value for setting to the Laravel Configuration             
             Setting::set('site_logo', $logo); 
     
         } elseif ($request->has('site_favicon') && ($request->file('site_favicon') instanceof UploadedFile)) {

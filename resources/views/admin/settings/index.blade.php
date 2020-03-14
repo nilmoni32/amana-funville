@@ -8,7 +8,7 @@
 @section('content')
 <div class="app-title">
     <div>
-    <h1><i class="fa fa-dashboard"></i>&nbsp;{{ $pageTitle }}</h1>      
+    <h1><i class="fa fa-cogs"></i>&nbsp;{{ $pageTitle }}</h1>      
     </div>    
 </div>
 @include('admin.partials.flash')
