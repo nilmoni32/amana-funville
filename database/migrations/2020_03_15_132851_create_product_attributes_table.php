@@ -14,15 +14,14 @@ class CreateProductAttributesTable extends Migration
     public function up()
     {
         Schema::create('product_attributes', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->unsignedBigInteger('product_id');
-            $table->Integer('quantity');
-            $table->decimal('price', 8, 2)->nullable();
+            $table->bigIncrements('id');            
+            $table->unsignedBigInteger('product_id')->index(); // for faster search
+            $table->string('size')->nullable();                       
+            $table->decimal('price', 8, 2)->nullable();         
+            $table->decimal('special_price', 8, 2)->nullable();                         
             $table->timestamps();
-
-            $table->foreign('product_id')
-                   ->references('id')
-                   ->on('products');
+            
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
         });
     }
 

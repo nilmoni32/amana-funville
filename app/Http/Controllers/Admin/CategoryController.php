@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Contracts\CategoryContract;
 
 
+
 /**
  * We are using BaseController instead of Controller class, so that we can use our own redirect methods & flash emthods.
  * In this application we are using repository pattern to create a bridge between models and controllers. 

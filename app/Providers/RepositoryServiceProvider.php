@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Contracts\CategoryContract;
 use App\Repositories\CategoryRepository;
+use App\Contracts\ProductContract;
+use App\Repositories\ProductRepository;
 
 
 /**
@@ -14,11 +16,12 @@ use App\Repositories\CategoryRepository;
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
+     * Adding all repositories to the array.
      * @var array $repositories holds the interfaces and the implementations
-     * 
      */
     protected $repositories = [
         CategoryContract::class => CategoryRepository::class,
+        ProductContract::class  => ProductRepository::class,
     ];
     /**
      * Register services.

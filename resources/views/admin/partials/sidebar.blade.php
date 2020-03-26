@@ -14,11 +14,18 @@
         <i class="app-menu__icon fa fa-dashboard"></i>
         <span class="app-menu__label">Dashboard</span>
       </a>      
-    </li>    
+    </li> 
+    <li>   
       {{-- if current route name is admin.categories.index we will set active class here --}}
     <a class="app-menu__item {{ Route::currentRouteName() == 'admin.categories.index' ? 'active' : '' }}" href="{{ route('admin.categories.index')}}">
         <i class="app-menu__icon fa fa-tags"></i>
         <span class="app-menu__label">Categories</span></a>      
+    </li>
+    <li>   
+      {{-- if current route name is admin.products.index we will set active class here --}}
+    <a class="app-menu__item {{ Route::currentRouteName() == 'admin.products.index' ? 'active' : '' }}" href="{{ route('admin.products.index') }}">
+        <i class="app-menu__icon fa fa-cutlery"></i>
+        <span class="app-menu__label">Food Menu</span></a>      
     </li>
     <li>
       {{-- if current route name is admin.settings we will set active class here --}}

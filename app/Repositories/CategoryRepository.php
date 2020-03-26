@@ -119,7 +119,12 @@ class CategoryRepository extends BaseRepository implements CategoryContract{
 
         //$featured = $collection->has('featured') ? 1 : 0;
         $menu = $collection->has('menu') ? 1 : 0;
-        $merge = $collection->merge(compact('menu', 'image'));
+
+        if($collection->has('image')){
+            $merge = $collection->merge(compact('menu', 'image'));
+        }else{
+            $merge = $collection->merge(compact('menu'));
+        }
         //$merge = $collection->merge(compact('menu', 'image', 'featured'));
         // $merge->all() collection returns an array
         $category->update($merge->all()); // passing an array argument 

@@ -48,11 +48,35 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             Route::get('/', 'CategoryController@index')->name('categories.index');
             Route::get('/create', 'CategoryController@create')->name('categories.create');
             Route::post('/store', 'CategoryController@store')->name('categories.store');
-            Route::get('/{id}/edit', 'CategoryController@edit')->name('categories.edit');
+            Route::get('/edit/{id}', 'CategoryController@edit')->name('categories.edit');
             Route::post('/update', 'CategoryController@update')->name('categories.update');
-            Route::get('/{id}/delete', 'CategoryController@delete')->name('categories.delete');
+            Route::get('/delete/{id}', 'CategoryController@delete')->name('categories.delete');
+        });
+
+        Route::group(['prefix' => 'products'], function(){
+            Route::get('/', 'ProductController@index')->name('products.index');
+            Route::get('/create', 'ProductController@create')->name('products.create');
+            Route::post('/store', 'ProductController@store')->name('products.store');
+            Route::get('/{id}/edit', 'ProductController@edit')->name('products.edit');
+            Route::post('/update', 'ProductController@update')->name('products.update');
+            Route::get('/{id}/delete', 'ProductController@delete')->name('products.delete');
+        });
+        // creating the required routes for image uploading and delete using dropzone.
+        Route::group(['prefix' => 'images'], function(){
+            Route::post('/upload', 'ProductImageController@upload')->name('products.images.upload');
+            Route::get('/{id}/delete', 'ProductImageController@delete')->name('products.images.delete');
         });
         
+        Route::group(['prefix' => 'attributes'], function(){   
+            // list all the attributes of the current product     
+            Route::get('/{id}', 'ProductAttributeController@index')->name('products.attribute.index');
+            // create attribute form for the current product
+            Route::get('/{id}/create', 'ProductAttributeController@create')->name('products.attribute.create');
+            // Add product attribute to the current product
+            Route::post('/store', 'ProductAttributeController@store')->name('products.attribute.store');
+            // Delete product attribute from the current product
+            Route::get('/{id}/delete', 'ProductAttributeController@delete')->name('products.attribute.delete');
+        });
         
     });
 
