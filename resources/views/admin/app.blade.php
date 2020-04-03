@@ -11,6 +11,7 @@
   <!-- Font-icon css-->
   <link rel="stylesheet" type="text/css"
     href="{{ asset('backend') }}/css/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <link rel="shortcut icon" type="image/x-icon" href="{{ asset('frontend/images/favicon.ico') }}">
   @yield('styles')
 </head>
 

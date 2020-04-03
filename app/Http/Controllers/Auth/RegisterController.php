@@ -8,6 +8,9 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use App\Mail\VerificationEmail;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -58,16 +61,26 @@ class RegisterController extends Controller
 
     /**
      * Create a new user instance after a valid registration.
-     *
+     * we are using register method instead of create method so that user is not logged in automatically.
+     * they can login after the email verification.
      * @param  array  $data
      * @return \App\User
      */
-    protected function create(array $data)
+    protected function register(Request $request)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'address' => $request->address,
+            'email_verification_token' => Str::random(32),
         ]);
+        // sending mail to mailable class VerificationEmail for the user with it's email id
+        \Mail::to($user->email)->send(new VerificationEmail($user));
+
+        return redirect()->back()->with('success','A confirmation mail has been sent to you. Please check your email to activate your account');
+
     }
+
+    
 }

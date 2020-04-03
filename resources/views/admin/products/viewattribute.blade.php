@@ -65,6 +65,8 @@
                             <td class="text-center">{{ $attribute->special_price }}</td>
                             <td class="text-center">
                                 <div class="btn-group" role="group" aria-label="Second group">
+                                    <a href="{{ route('admin.products.attribute.edit', $attribute->id) }}"
+                                        class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
                                     <a href="{{ route('admin.products.attribute.delete', $attribute->id) }}"
                                         class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
                                 </div>

@@ -74,6 +74,10 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             Route::get('/{id}/create', 'ProductAttributeController@create')->name('products.attribute.create');
             // Add product attribute to the current product
             Route::post('/store', 'ProductAttributeController@store')->name('products.attribute.store');
+            // edit product attribute to the current product
+            Route::get('/{id}/edit', 'ProductAttributeController@edit')->name('products.attribute.edit');
+            // update product attribute to the current product
+            Route::post('/update', 'ProductAttributeController@update')->name('products.attribute.update');
             // Delete product attribute from the current product
             Route::get('/{id}/delete', 'ProductAttributeController@delete')->name('products.attribute.delete');
         });

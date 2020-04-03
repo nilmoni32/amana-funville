@@ -5,6 +5,11 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use App\Models\User;
+use Auth;
+use App\Mail\VerificationEmail;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -37,4 +42,54 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+    /**
+     * we are overwriting the login function here which is defined in Illuminate\Foundation\Auth\AuthenticatesUsers;
+     */
+    public function login(Request $request)
+    {
+        $validated = request()->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+            ]);
+
+        // find user by this email.
+        $user = User::where('email', $validated['email'])->first();
+
+        if(!is_null($user)){ // if user is exists.
+
+            // if user email_verification status true, only then user is allowed to access his account.
+            if($user->email_verification == 1){               
+                // checking the default laravel gaurd for user ( web  in config/auth )
+                // if user email & password is okay then we redirect to the intended homepage.
+                if(Auth::guard('web')->attempt(['email' => $validated['email'], 'password' => $validated['password'] ], $request->get('remember') )) {               
+                        // here intended method is used to redirect the homepage is requested by user after successful login.                 
+                        return redirect()->intended(route('index'));
+                }
+                else{                   
+                    return redirect()->back()->with('error','Invalid password. Please try again!');             
+                } 
+
+            }
+            else{  
+                
+                // if user exists but email verification status is not 1
+                // generating a token number for that user and send it for verify.
+                $user->update([ 
+                    'email_verification_token' => Str::random(32),            
+                   ]);
+                // we send him token again via mailable class
+                \Mail::to($user->email)->send(new VerificationEmail($user));               
+                return redirect()->back()->with('success','A new confirmation email has sent to you.. Please check and confirm your email to activate your account.');
+                }   
+        
+        }  
+        else{
+             // if the user has no account then             
+             return redirect()->back()->with('error','Sorry!! Please Register and starts less than a minute.');             
+        }      
+        
+
+    }
+
 }

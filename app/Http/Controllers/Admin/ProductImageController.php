@@ -32,6 +32,7 @@ class ProductImageController extends Controller
         }
 
         return response()->json(['status' => 'Success']);
+       
     }
 
     public function delete($id){
@@ -45,7 +46,7 @@ class ProductImageController extends Controller
         //deleting the current image record 
         $image->delete();
         //and redirecting the user back to the product edit view
-        return redirect()->back();
+        return redirect()->back()->withInput(['tab' => 'images']);
     }
 
 

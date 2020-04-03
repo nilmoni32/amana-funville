@@ -93,7 +93,19 @@ class SettingsTableSeeder extends Seeder
         [
             'key'   => 'store_id',
             'value' => '',
+        ],
+        [
+            'key'   => 'phone_no',
+            'value' => '+88017111111',
         ], 
+        [
+            'key'   => 'contact_address',
+            'value' => 'Funville, Rajshahi',
+        ],
+        [
+            'key'   => 'social_youtube',
+            'value' => '',
+        ],
 
 
     ];

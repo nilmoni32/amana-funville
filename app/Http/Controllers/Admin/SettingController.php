@@ -22,7 +22,7 @@ class SettingController extends BaseController
     public function update(Request $request){
         // When you get an uploaded file from a request you get an UploadedFile instance
         // if there is a logo update, then check if the logo is set using the config('settings.site_logo) helper function
-        // if there is a logo delete it and upload the new one and set it.
+        // if there is a logo delete it and upload the new one and set it.        
       
         if ($request->has('site_logo') && ($request->file('site_logo') instanceof UploadedFile)) {           
 
@@ -53,5 +53,7 @@ class SettingController extends BaseController
             }
         }
         return $this->responseRedirectBack(' Settings updated successfully.', 'success');
+       
+       
     }
 }

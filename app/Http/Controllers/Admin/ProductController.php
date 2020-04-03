@@ -67,9 +67,8 @@ class ProductController extends BaseController
         // loading all categories name
         $categories = $this->categoryRepository->listCategories('category_name', 'asc');
 
-        $this->setPageTitle('Food Menu', ' Edit Food item: '.$product->name);                
+        $this->setPageTitle('Food Menu', ' Edit Food item: '.$product->name);       
         return view('admin.products.edit', compact('product', 'categories'));
-
     }
 
     public function update(Request $request){

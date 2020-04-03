@@ -12,11 +12,12 @@ require 'admin.php'; // adding admin php with web.php
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+//Route::view('/', 'site.pages.homepage');
+Route::get('/', 'Site\PagesController@index')->name('index');
+Route::get('/about', 'Site\PagesController@about')->name('about');
 
-//Route::get('/', function(){
-//    return view('admin.dashboard.index');
-//});
+
+Auth::routes(['verify' => true]);
+Route::get('/verify/{token}', 'Site\VerificationController@VerifyEmail')->name('verify');
+
 

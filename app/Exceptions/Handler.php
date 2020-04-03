@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 //we need to import, AuthenticationException class here
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Support\Arr;
 
 class Handler extends ExceptionHandler
 {
@@ -68,8 +69,8 @@ class Handler extends ExceptionHandler
         if ($request->expectsJson()) {
             return response()->json(['message' => $exception->getMessage()], 401);
         }
-        // this array_get looks for config/auth.php gaurds and get the value.
-        $guard = array_get($exception->guards(), 0);
+        // this Arr::get() looks for config/auth.php gaurds and get the value.
+        $guard = Arr::get($exception->guards(), 0);
 
         switch($guard){
             case 'admin':

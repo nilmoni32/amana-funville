@@ -14,11 +14,11 @@
 <div class="row user">
     <div class="col-md-3">
         <div class="tile p-0">
-            <ul class="nav flex-column nav-tabs user-tabs">
+            <ul class="nav flex-column nav-tabs user-tabs" id="tabMenu">
                 <li class="nav-item"><a class="nav-link active" href="#general" data-toggle="tab">General</a></li>
                 <li class="nav-item"><a class="nav-link" href="#images" data-toggle="tab">Images</a></li>
                 <li class="treeview">
-                    <a class="app-menu__item bg-white text-dark" href="#" data-toggle="treeview">
+                    <a class="app-menu__item bg-white text-primary" href="#" data-toggle="treeview">
                         <span class="app-menu__label">Attributes</span>
                         <i class="treeview-indicator fa fa-angle-right"></i>
                     </a>
@@ -198,7 +198,21 @@
     Dropzone.autoDiscover = false;
 
     $( document ).ready(function() {
-        $('#categories').select2();  
+        $('#categories').select2();         
+        
+
+         // redirect to specific tab
+         $('#tabMenu a[href="#{{ old('tab') }}"]').tab('show').removeClass('active');
+
+        // store the currently selected tab in the hash value
+        $("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
+            var id = $(e.target).attr("href").substr(1);
+            window.location.hash = id;
+        }); 
+        // on load of the page: switch to the currently selected tab        
+        var hash = window.location.hash;
+        $('#tabMenu a[href="' + hash + '"]').tab('show');
+
         // Added a new Dropzone instance and binding it with #dropzone
         let myDropzone = new Dropzone("#dropzone", {
             paramName: "image", // The name that will be used to transfer the file
@@ -240,6 +254,8 @@
         }
 
     });
+
+
 
     
 </script>
