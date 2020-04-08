@@ -58,8 +58,8 @@
                                 <div class="form-group">
                                     <i class="icofont icofont-ui-message"></i>
                                     <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                        name="email" value="{{ old('email')}}" placeholder="E-Mail Address"
-                                        id="email" />
+                                        name="email" value="{{ old('email')}}" placeholder="E-Mail Address" id="email"
+                                        required autocomplete="email" />
                                     @error('email')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -70,7 +70,7 @@
                                     <i class="icofont icofont-lock"></i>
                                     <input type="password" class="form-control @error('password') is-invalid @enderror"
                                         name="password" value="{{ old('password') }}" placeholder="PASSWORD"
-                                        id="password" />
+                                        id="password" required autocomplete="current-password" />
                                     @error('password')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -81,7 +81,12 @@
                                     <div class="links">
                                         <label><input type="checkbox" class="radio-inline" name="remember" id="remember"
                                                 {{ old('remember') ? 'checked' : '' }} />{{ __('Remember Me') }}</label>
-                                        <a class="float-right sign" href="forgot-password.html">Forgot Password?</a>
+
+                                        @if (Route::has('password.request'))
+                                        <a class="float-right sign" href="{{ route('password.request') }}">
+                                            {{ __('Forgot Password?') }}
+                                        </a>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="form-group">

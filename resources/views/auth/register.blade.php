@@ -59,47 +59,63 @@
                                 <div class="form-group">
                                     <i class="icofont icofont-ui-user"></i>
                                     <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                        name="name" id="name" value="{{ old('name') }}" placeholder="Your Name">
+                                        name="name" id="name" value="{{ old('name') }}" placeholder="Your Name" required
+                                        autocomplete="name">
                                     @error('name')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                     @enderror
                                 </div>
+
                                 <div class="form-group">
+                                    <i class="icofont icofont-stock-mobile"></i>
+                                    <input type="text" class="form-control @error('mobile') is-invalid @enderror"
+                                        name="mobile" value="{{ old('mobile') }}" placeholder="Mobile No" id="mobile"
+                                        required autocomplete="mobile" />
+                                    @error('mobile')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
+                                </div>
+                                 <div class="form-group">
                                     <i class="icofont icofont-ui-message"></i>
                                     <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                        name="email" value="{{ old('email') }}" placeholder="E-Mail Address"
-                                        id="email" />
+                                        name="email" value="{{ old('email') }}" placeholder="E-Mail Address" id="email"
+                                        required autocomplete="email" />
                                     @error('email')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                     @enderror
                                 </div>
+
                                 <div class="form-group">
                                     <i class="icofont icofont-lock"></i>
                                     <input type="password" class="form-control @error('password') is-invalid @enderror"
                                         name="password" value="{{ old('password') }}" placeholder="Password"
-                                        id="password" />
+                                        id="password" required autocomplete="new-password" />
                                     @error('password')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                     @enderror
                                 </div>
+
                                 <div class="form-group">
                                     <i class="icofont icofont-lock"></i>
                                     <input type="password"
                                         class="form-control @error('password_confirmation') is-invalid @enderror"
                                         name="password_confirmation" placeholder="Confirm Password"
-                                        id="password_confirmation" />
+                                        id="password_confirmation" required autocomplete="new-password" />
                                     @error('password_confirmation')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                     @enderror
                                 </div>
+
                                 <div class="form-group">
                                     <i class="icofont icofont-address-book"></i>
                                     <input type="text" class="form-control" name="address" value="{{ old('address') }}"

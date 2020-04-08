@@ -117,9 +117,9 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
-      //We are using the same password_reset table for the admins password reset functionality.
+      
         'admins' => [
-            'provider' => 'users',
+            'provider' => 'admins',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60, //throttling count the number of failed login attempts that a user tries.

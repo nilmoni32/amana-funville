@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class ResetPasswordController extends Controller
 {
@@ -27,4 +30,24 @@ class ResetPasswordController extends Controller
      * @var string
      */
     protected $redirectTo = RouteServiceProvider::HOME;
+
+    //Updating the user password.
+    public function update(Request $request, $token){
+
+        $validated = request()->validate([
+            'password' => 'required|min:8|confirmed',          
+         ]);
+
+        //finding the user with email verification code.
+        $user = User::where('email_token', $token)->first();      
+        //updating user password.
+        $user->update([
+            'password' => Hash::make($request->password),
+            'email_token' => "",
+        ]);
+        
+        return redirect('login')->with('success', 'The password is updated successfully.');
+    }
+
+
 }

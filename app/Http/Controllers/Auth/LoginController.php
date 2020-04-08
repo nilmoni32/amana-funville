@@ -59,7 +59,7 @@ class LoginController extends Controller
         if(!is_null($user)){ // if user is exists.
 
             // if user email_verification status true, only then user is allowed to access his account.
-            if($user->email_verification == 1){               
+            if($user->is_email_verified == 1 || $user->is_mobile_verified ){               
                 // checking the default laravel gaurd for user ( web  in config/auth )
                 // if user email & password is okay then we redirect to the intended homepage.
                 if(Auth::guard('web')->attempt(['email' => $validated['email'], 'password' => $validated['password'] ], $request->get('remember') )) {               
@@ -71,16 +71,19 @@ class LoginController extends Controller
                 } 
 
             }
-            else{  
+            else{
                 
                 // if user exists but email verification status is not 1
                 // generating a token number for that user and send it for verify.
-                $user->update([ 
-                    'email_verification_token' => Str::random(32),            
-                   ]);
+                if(is_null($user->is_email_verified)){
+                    $user->update([ 
+                        'email_token' =>  mt_rand(10000,99999),            
+                    ]);
+                }
                 // we send him token again via mailable class
-                \Mail::to($user->email)->send(new VerificationEmail($user));               
-                return redirect()->back()->with('success','A new confirmation email has sent to you.. Please check and confirm your email to activate your account.');
+                \Mail::to($user->email)->send(new VerificationEmail($user)); 
+                session()->flash('success', 'A new verification code has sent to you.. Please check mail to activate your account.');
+                return view('auth.verification');
                 }   
         
         }  

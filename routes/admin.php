@@ -17,9 +17,18 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
     // we are adding a routes group to as with named route so that name route would be ('admin.login.post');
     // we are adding a routes group to namespace with controller so that controller name would be Admin\LoginController@showLoginForm.
     
+    // admin login request
     Route::get('login', 'LoginController@showLoginForm')->name('login'); 
     Route::post('login', 'LoginController@login')->name('login.post');  
-    Route::get('logout', 'LoginController@logout')->name('logout');   
+    Route::get('logout', 'LoginController@logout')->name('logout');  
+    
+    // admin password reset form display and email send
+    Route::get('password/reset', 'ForgotPasswordController@showLinkRequestForm')->name('password.request');
+    Route::post('password/email', 'ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+    // admin password reset
+    Route::get('password/reset/{token}', 'ResetPasswordController@showResetForm')->name('password.reset');
+    Route::post('password/reset', 'ResetPasswordController@reset')->name('password.update');
+     
     
 
     // To block unauthoized incoming HTTP requests we use middleware.

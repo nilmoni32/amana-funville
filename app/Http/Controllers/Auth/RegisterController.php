@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Mail\VerificationEmail;
 use Illuminate\Http\Request;
+use App\Rules\Lowercase;
 
 class RegisterController extends Controller
 {
@@ -54,7 +55,7 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:191', 'unique:users,email', new Lowercase],           
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }
@@ -68,17 +69,25 @@ class RegisterController extends Controller
      */
     protected function register(Request $request)
     {
+        // we need to call validator method, if we want to use register method here.
+        $this->validator($request->all())->validate();
+        $this->validate($request,[                       
+            'mobile'               =>  'required|string|max:15|unique:users,mobile',                        
+        ]);
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'address' => $request->address,
-            'email_verification_token' => Str::random(32),
+            'mobile' => $request->mobile,
+            'email_token' => mt_rand(10000,99999),            
         ]);
         // sending mail to mailable class VerificationEmail for the user with it's email id
         \Mail::to($user->email)->send(new VerificationEmail($user));
 
-        return redirect()->back()->with('success','A confirmation mail has been sent to you. Please check your email to activate your account');
+        session()->flash('success', 'Please check your email to get the verification code to activate your account');
+        return view('auth.verification');
 
     }
 

@@ -61,7 +61,9 @@ class LoginController extends Controller
             return redirect()->intended(route('admin.dashboard'));
         } 
         // if unsuccessful, then redirect back to the login with the form data.
-        return redirect()->back()->withInput($request->only('email','remmember'));
+        else {            
+            return redirect()->back()->withInput($request->only('email','remmember'));
+        }
     }
 
      /**

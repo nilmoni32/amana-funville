@@ -4,7 +4,8 @@
 <body>
 
     <p>Dear {{ $user->name }},</p>
-    <p>Your account has been created, please activate your account with this email verification code.</p>
+    <p>You are receiving this email because we received a password reset request for your account. Please use this
+        OTP for verify.</p>
     <h2 class="text-center">
         {{ $user->email_token }}
     </h2>
