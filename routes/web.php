@@ -14,12 +14,11 @@ require 'admin.php'; // adding admin php with web.php
 
 //Route::view('/', 'site.pages.homepage');
 Route::get('/', 'Site\PagesController@index')->name('index');
-Route::get('/about', 'Site\PagesController@about')->name('about');
 
-
+//Authentication
 Auth::routes(['verify' => true]);
 // verify token for account activation
-Route::post('/verify', 'Site\VerificationController@verify')->name('verify');
+Route::post('/verify', 'Auth\VerificationTokenController@verify')->name('verify');
 //forgot password
 Route::post('/postforgot', 'Auth\ForgotPasswordController@postforgot')->name('postforgot');
 //verify token for user password reset
@@ -27,5 +26,10 @@ Route::get('/verifytoken','Auth\VerificationTokenController@verifytoken')->name(
 Route::post('/postverifytoken','Auth\VerificationTokenController@postverifytoken')->name('postverifytoken');
 //Reset Password
 Route::resource('/resetpassword', 'Auth\ResetPasswordController');
+
+//Product Routes 
+Route::get('/foods/all', 'Site\ProductController@index')->name('products.index');
+Route::get('/category/{slug}', 'Site\ProductController@categoryproductshow')->name('categoryproduct.show');
+
 
 

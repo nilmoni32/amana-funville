@@ -149,4 +149,14 @@ class CategoryRepository extends BaseRepository implements CategoryContract{
         return $category;
       }
 
+    /**
+     * used to find category by slug in fornt section.
+     * @param $slug
+     * @return mixed
+     */
+    public function findBySlug($slug){
+        // getting the category list that are attached with products        
+        return  Category::with('products')->where('slug', $slug)->where('menu', 1)->first();
+    }
+
 }

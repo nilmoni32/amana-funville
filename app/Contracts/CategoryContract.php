@@ -42,4 +42,12 @@ namespace App\Contracts;
     public function deleteCategory($id);
 
 
+     /**
+     * used to find category by slug in fornt section.
+     * @param $slug
+     * @return mixed
+     */
+    public function findBySlug($slug);
+
+
  }

@@ -63,7 +63,7 @@
     <div class="sticky">
         <div class="container">
             <div class="row">
-                <div class="col-md-2 col-sm-6 col-xs-12">
+                <div class="col-md-3 col-sm-6 col-xs-12">
                     <!-- Logo Start  -->
                     <div id="logo">
                         <a href="{{ url('/')}}">
@@ -74,22 +74,11 @@
                     <!-- Logo End  -->
                 </div>
 
-                <div class="col-md-7 col-sm-6 col-xs-12 paddleft">
+                <div class="col-md-9 col-sm-6 col-xs-12 paddleft">
                     @include('site.partials.nav')
                 </div>
 
-                <div class="col-md-3 col-sm-12 col-xs-12 paddleft mt-3">
-                    <form action="#" class="form-horizontal search-icon" method='post'>
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search for foods" name="s">
-                            <div class="input-group-append">
-                                <button class="btn btn-theme" type="submit">
-                                    <i class="icofont icofont-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+
             </div>
         </div>
     </div>

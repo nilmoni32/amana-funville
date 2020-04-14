@@ -11,7 +11,7 @@
             <ul class="nav navbar-nav ml-auto">
                 <li class="nav-item"><a href="index-2.html">Home</a></li>
                 <li class="nav-item"><a href="about.html">About us</a></li>
-                <li class="nav-item"><a href="menu.html">Food Menu</a></li>
+                <li class="nav-item"><a href="{{ route('products.index')}}">Food Menu</a></li>
                 <li class="nav-item"><a href="reservation.html">Reservation</a></li>
                 <li class="nav-item"><a href="contact-us-2.html">contact us</a></li>
             </ul>

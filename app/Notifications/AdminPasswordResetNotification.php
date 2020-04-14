@@ -10,16 +10,18 @@ use Illuminate\Notifications\Notification;
 class AdminPasswordResetNotification extends Notification
 {
     use Queueable;
-    public $token;    
+    public $token;   
+    public $email; 
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($token)
+    public function __construct($token,$email)
     {
-        $this->token = $token;      
+        $this->token = $token; 
+        $this->email = $email;        
     }
 
     /**
@@ -49,7 +51,7 @@ class AdminPasswordResetNotification extends Notification
         return (new MailMessage)
                     ->subject('Funville Admin Password Reset')
                     ->line('Admin, You are receiving this email because we received a password reset request for your account')
-                    ->action('Admin Password Notification', route('admin.password.reset', ['token' => $this->token]))
+                    ->action('Admin Password Notification', route('admin.password.reset', ['token' => $this->token, 'email' => $this->email]))
                     ->line('Thank you for using our application!');
     }
 

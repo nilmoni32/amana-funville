@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
 
 class ResetPasswordController extends Controller
 {
@@ -36,7 +37,9 @@ class ResetPasswordController extends Controller
 
         $validated = request()->validate([
             'password' => 'required|min:8|confirmed',          
-         ]);
+         ]);        
+         // token is decrypted.
+         $token = Crypt::decryptString($token);
 
         //finding the user with email verification code.
         $user = User::where('email_token', $token)->first();      

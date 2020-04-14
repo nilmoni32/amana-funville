@@ -29,7 +29,7 @@
 
                 <!-- Footer Widget End -->
             </div>
-            <div class="col-sm-6 col-md-6 col-lg-4">
+            <div class="col-sm-6 col-md-6 col-lg-4 hidden-sm hidden-xs">
                 <!-- Footer Widget Start -->
                 <h5 class="mid-menu">Site Map</h5>
                 <ul class="list-unstyled">

@@ -40,14 +40,14 @@ class ProductController extends BaseController
 
         if($request->discount_price){
             $this->validate($request,[                       
-                'name'               =>  'required|max:191',
+                'name'               =>  'required|unique:products,name|max:191',
                 'price'              =>  'required|regex:/^\d+(\.\d{1,2})?$/',
                 'discount_price'     =>  'regex:/^\d+(\.\d{1,2})?$/',  
             ]);   
         }  
         else{
             $this->validate($request,[                       
-                'name'               =>  'required|max:191',
+                'name'               =>  'required|unique:products,name|max:191',
                 'price'              =>  'required|regex:/^\d+(\.\d{1,2})?$/',                  
             ]);
         }             

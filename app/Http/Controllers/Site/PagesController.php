@@ -15,7 +15,5 @@ class PagesController extends Controller
         return view('site.pages.homepage');
     }
 
-    public function about(){
-        return "about page will be developed soon";
-    }
+
 }

@@ -64,7 +64,7 @@ class CategoryController extends BaseController
     public function store(Request $request){
 
         $this->validate($request,[
-            'category_name' => 'required|max:191',
+            'category_name' => 'required|unique:categories,category_name|max:191',            
             'parent_id'     => 'required|not_in:0',
             'image'         => 'mimes:png,jpeg,jpg|max:1000',
         ]);
