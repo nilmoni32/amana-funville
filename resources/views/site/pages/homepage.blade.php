@@ -40,159 +40,112 @@
         <div class="row">
             <!-- Title Content Start -->
             <div class="col-sm-12 commontop text-center">
-                <h4>Our Popular Dishes</h4>
+                @php $category = App\Models\Category::where('slug', 'popular-dishes')->first(); @endphp
+                <h4>Our {{  $category->category_name }}</h4>
                 <div class="divider style-1 center">
                     <span class="hr-simple left"></span>
                     <i class="icofont icofont-ui-press hr-icon"></i>
                     <span class="hr-simple right"></span>
                 </div>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam efficitur placerat nulla, in
-                    suscipit erat sodales id. Nullam ultricies eu turpis at accumsan. Mauris a sodales mi, eget
-                    lobortis nulla.</p>
+                <p>{{ __('We are providing good food in rich taste with cheap rate. Please have a look of our cuisine food menu. Now you can have an idea about our food menu and have ready to taste certain foods of your heart desires. We are waiting for you with our all special dishes.') }}
+                </p>
             </div>
             <!-- Title Content End -->
             <div class="col-sm-12">
+                @php
+                // getting the products using many to many relatioship
+                $products = $category->products;
+                // only showing 5 products in the home page
+                $top_5 = 1;
+                @endphp
                 <div class="dish owl-carousel">
+                    @foreach($products as $product)
+                    @if( $top_5 == 5)
+                    @break;
+                    @endif
+                    {{-- checking the foriegn key value exists in products attributes table --}}
+                    @php $attributeCheck = in_array($product->id, $product->attributes->pluck('product_id')->toArray())
+                    @endphp
+                    @if(!($attributeCheck) && $product->status)
                     <div class="item">
-                        <!-- Box Start -->
                         <div class="box">
-                            <a href="#"><img src="{{ asset('frontend') }}/images/dishes/01.jpg" alt="image"
-                                    title="image" class="img-fluid" /></a>
+                            @foreach($product->images as $image)
+                            <img src="{!! asset('storage/'.$image->full) !!}" alt="image" title="{{ $product->name }}"
+                                class="img-responsive" />
+                            @endforeach
+
                             <div class="caption">
-                                <h4>Dish Name Here</h4>
-                                <span>Lorem ipsum is simply dummy text of the printing and type setting
-                                    industry.</span>
-                                <p>$100</p>
+                                <h4>{{ $product->name }}</h4>
+                                {{-- if product discount price is available then we set it --}}
+                                @if($product->discount_price)
+                                <p>{{ config('settings.currency_symbol') }}-{{ round($product->discount_price,0)}}
+                                </p>
+                                <span
+                                    style="text-decoration: line-through">{{ config('settings.currency_symbol') }}-{{ round($product->price,0) }}</span>
+                                {{-- calculating the discount percentage --}}
+                                <span>
+                                    -{{ round(($product->price - $product->discount_price)*100/$product->price, 0) }}%</span>
+                                @else
+                                <p>{{ config('settings.currency_symbol') }}-{{ round($product->price,0) }}</p>
+                                @endif
+                                <span class="text-left pt-1 d-block">{{ $product->description}}</span>
+
+                            </div>
+                            <div class="cart-overlay" onclick="addToCart({{ $product->id }}, 0)">
+                                <h5>Add to Cart</h5>
                             </div>
                         </div>
-                        <!-- Box End -->
+
                     </div>
+                    @elseif($attributeCheck && $product->status)
+                    {{-- if product has attribute value then we display them all--}}
+                    @foreach($product->attributes as $attribute)
                     <div class="item">
-                        <!-- Box Start -->
                         <div class="box">
-                            <a href="#"><img src="{{ asset('frontend') }}/images/dishes/02.jpg" alt="image"
-                                    title="image" class="img-fluid" /></a>
+                            @foreach($product->images as $image)
+                            <img src="{!! asset('storage/'.$image->full) !!}" alt="image" title="{{ $product->name }}"
+                                class="img-responsive" />
+                            @endforeach
+
                             <div class="caption">
-                                <h4>Dish Name Here</h4>
-                                <span>Lorem ipsum is simply dummy text of the printing and type setting
-                                    industry.</span>
-                                <p>$100</p>
+                                <h4>{{ $product->name }}-({{ $attribute->size }})</h4>
+                                {{-- if product discount price is available then we set it --}}
+                                @if($attribute->special_price)
+                                <p>{{ config('settings.currency_symbol') }}-{{ round($attribute->special_price,0)}}
+                                </p>
+                                <span
+                                    style="text-decoration: line-through">{{ config('settings.currency_symbol') }}-{{ round($attribute->price,0) }}</span>
+                                {{-- calculating the discount percenate --}}
+                                <span>
+                                    -{{ round(($attribute->price - $attribute->special_price)*100/$attribute->price, 0) }}%</span>
+                                @else
+                                <p>{{ config('settings.currency_symbol') }}-{{ round($attribute->price,0) }}</p>
+                                @endif
+                                <span class="text-left pt-1 d-block">{{ $product->description}}</span>
+
+                            </div>
+                            <div class="cart-overlay" onclick="addToCart({{ $product->id }}, {{ $attribute->id }})">
+                                <h5>Add to Cart</h5>
                             </div>
                         </div>
-                        <!-- Box End -->
                     </div>
-                    <div class="item">
-                        <!-- Box Start -->
-                        <div class="box">
-                            <a href="#"><img src="{{ asset('frontend') }}/images/dishes/03.jpg" alt="image"
-                                    title="image" class="img-fluid" /></a>
-                            <div class="caption">
-                                <h4>Dish Name Here</h4>
-                                <span>Lorem ipsum is simply dummy text of the printing and type setting
-                                    industry.</span>
-                                <p>$100</p>
-                            </div>
-                        </div>
-                        <!-- Box End -->
-                    </div>
-                    <div class="item">
-                        <!-- Box Start -->
-                        <div class="box">
-                            <a href="#"><img src="{{ asset('frontend') }}/images/dishes/04.jpg" alt="image"
-                                    title="image" class="img-fluid" /></a>
-                            <div class="caption">
-                                <h4>Dish Name Here</h4>
-                                <span>Lorem ipsum is simply dummy text of the printing and type setting
-                                    industry.</span>
-                                <p>$100</p>
-                            </div>
-                        </div>
-                        <!-- Box End -->
-                    </div>
-                    <div class="item">
-                        <!-- Box Start -->
-                        <div class="box">
-                            <a href="#"><img src="{{ asset('frontend') }}/images/dishes/05.jpg" alt="image"
-                                    title="image" class="img-fluid" /></a>
-                            <div class="caption">
-                                <h4>Dish Name Here</h4>
-                                <span>Lorem ipsum is simply dummy text of the printing and type setting
-                                    industry.</span>
-                                <p>$100</p>
-                            </div>
-                        </div>
-                        <!-- Box End -->
-                    </div>
-                    <div class="item">
-                        <!-- Box Start -->
-                        <div class="box">
-                            <a href="#"><img src="{{ asset('frontend') }}/images/dishes/01.jpg" alt="image"
-                                    title="image" class="img-fluid" /></a>
-                            <div class="caption">
-                                <h4>Dish Name Here</h4>
-                                <span>Lorem ipsum is simply dummy text of the printing and type setting
-                                    industry.</span>
-                                <p>$100</p>
-                            </div>
-                        </div>
-                        <!-- Box End -->
-                    </div>
-                    <div class="item">
-                        <!-- Box Start -->
-                        <div class="box">
-                            <a href="#"><img src="{{ asset('frontend') }}/images/dishes/02.jpg" alt="image"
-                                    title="image" class="img-fluid" /></a>
-                            <div class="caption">
-                                <h4>Dish Name Here</h4>
-                                <span>Lorem ipsum is simply dummy text of the printing and type setting
-                                    industry.</span>
-                                <p>$100</p>
-                            </div>
-                        </div>
-                        <!-- Box End -->
-                    </div>
-                    <div class="item">
-                        <!-- Box Start -->
-                        <div class="box">
-                            <a href="#"><img src="{{ asset('frontend') }}/images/dishes/03.jpg" alt="image"
-                                    title="image" class="img-fluid" /></a>
-                            <div class="caption">
-                                <h4>Dish Name Here</h4>
-                                <span>Lorem ipsum is simply dummy text of the printing and type setting
-                                    industry.</span>
-                                <p>$100</p>
-                            </div>
-                        </div>
-                        <!-- Box End -->
-                    </div>
-                    <div class="item">
-                        <!-- Box Start -->
-                        <div class="box">
-                            <a href="#"><img src="{{ asset('frontend') }}/images/dishes/04.jpg" alt="image"
-                                    title="image" class="img-fluid" /></a>
-                            <div class="caption">
-                                <h4>Dish Name Here</h4>
-                                <span>Lorem ipsum is simply dummy text of the printing and type setting
-                                    industry.</span>
-                                <p>$100</p>
-                            </div>
-                        </div>
-                        <!-- Box End -->
-                    </div>
-                    <div class="item">
-                        <!-- Box Start -->
-                        <div class="box">
-                            <a href="#"><img src="{{ asset('frontend') }}/images/dishes/05.jpg" alt="image"
-                                    title="image" class="img-fluid" /></a>
-                            <div class="caption">
-                                <h4>Dish Name Here</h4>
-                                <span>Lorem ipsum is simply dummy text of the printing and type setting
-                                    industry.</span>
-                                <p>$100</p>
-                            </div>
-                        </div>
-                        <!-- Box End -->
-                    </div>
+                    @endforeach
+                    @endif
+
+                    @php
+                    //incrementing the counter to show only five product
+                    $top_5 += 1;
+                    @endphp
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        <!--  view more button  -->
+        <div class="row pt-5">
+            <div class="col-sm-12 col-xs-12">
+                <div class="text-center pb-2">
+                    <a class="btn btn-theme-alt btn-wide" href='{{ route('products.index') }}'>view more <i
+                            class="icofont icofont-curved-double-right"></i></a>
                 </div>
             </div>
         </div>
@@ -1104,7 +1057,7 @@
                     </div>
                     <!--  Menu Tabs Content End  -->
                     <div class="text-center padbot30">
-                        <a class="btn btn-theme-alt btn-wide" href='menu.html'>view more <i
+                        <a class="btn btn-theme-alt btn-wide" href=' menu.html'>view more <i
                                 class="icofont icofont-curved-double-right"></i></a>
                     </div>
                 </div>

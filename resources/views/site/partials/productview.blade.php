@@ -4,7 +4,7 @@
     {{-- checking the foriegn key value exists in products attributes table --}}
     @php $attributeCheck = in_array($product->id, $product->attributes->pluck('product_id')->toArray())
     @endphp
-    @if(!$attributeCheck)
+    @if(!($attributeCheck) && $product->status)
     <div class="col-md-4 col-sm-6 col-xs-12 mb-3">
         <div class="dish-menu">
             <div class="item">
@@ -29,16 +29,16 @@
                         <p>{{ config('settings.currency_symbol') }}-{{ round($product->price,0) }}</p>
                         @endif
                         <span class="text-left pt-1 d-block">{{ $product->description}}</span>
-                        <div class="buttons">
-                            <a href="shopping-cart.html" class="btn btn-theme-alt btn-md">Add to
-                                cart</a>
-                        </div>
+
+                    </div>
+                    <div class="cart-overlay" onclick="addToCart({{ $product->id }}, 0)">
+                        <h5>Add to Cart</h5>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    @else
+    @elseif($attributeCheck && $product->status)
     {{-- if product has attribute value then we display them all--}}
     @foreach($product->attributes as $attribute)
     <div class="col-md-4 col-sm-6 col-xs-12 mb-3">
@@ -65,10 +65,9 @@
                         <p>{{ config('settings.currency_symbol') }}-{{ round($attribute->price,0) }}</p>
                         @endif
                         <span class="text-left pt-1 d-block">{{ $product->description}}</span>
-                        <div class="buttons">
-                            <a href="shopping-cart.html" class="btn btn-theme-alt btn-md">Add to
-                                cart</a>
-                        </div>
+                    </div>
+                    <div class="cart-overlay" onclick="addToCart({{ $product->id }}, {{ $attribute->id }})">
+                        <h5>Add to Cart</h5>
                     </div>
                 </div>
             </div>

@@ -24,9 +24,10 @@
                 <div class="left-side">
                     <h4>{{ __('Funville Cuisine')}}</h4>
                     <div class="search mt-3 px-3 pb-0">
-                        <form action="#" class="form-horizontal search-icon" method='post'>
+                        <form action="{{ route('search') }}" class="form-horizontal search-icon" method='get'>
                             <div class="form-group">
-                                <input name="s" value="" class="form-control" placeholder="Search Food" type="text">
+                                <input name="search" value="" class="form-control" placeholder="Search Food"
+                                    type="text">
                                 <button type="submit" value="submit" class="btn"><i
                                         class="icofont icofont-search"></i></button>
                             </div>

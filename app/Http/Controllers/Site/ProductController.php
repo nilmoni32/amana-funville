@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Category;
 
 
+
 class ProductController extends Controller
 {
     public function index(){        
@@ -21,10 +22,20 @@ class ProductController extends Controller
             $products = Product::orderBy('id', 'asc')->paginate(9); 
             return view('site.pages.product.allproducts', compact('products'));
         }else{
-            //getting the category name by slug.
+            // getting the category name by slug.
              $category = Category::where('slug',$slug)->first(); 
              return view('site.pages.product.categoryproduct', compact('category'));            
         }
 
+    }
+
+    public function search(Request $request){
+        $search = $request->search; // getting the search key
+        $products = Product::orWhere('name', 'like', '%'.$search.'%')
+        ->orWhere('description', 'like', '%'.$search.'%')
+        ->orWhere('price', 'like', '%'.$search.'%')
+        ->orWhere('slug', 'like', '%'.$search.'%')->paginate(9); 
+
+        return view('site.pages.product.search', compact('products', 'search'));
     }
 }

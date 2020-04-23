@@ -15,5 +15,21 @@ class PagesController extends Controller
         return view('site.pages.homepage');
     }
 
+    public function about(){
+
+        return view('site.pages.about');
+    }
+
+    public function reservation(){
+
+        return view('site.pages.reservation');
+    }
+
+    public function contact(){
+
+        return view('site.pages.contact');
+    }
+    
+
 
 }

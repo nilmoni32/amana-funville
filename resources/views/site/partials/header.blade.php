@@ -10,8 +10,6 @@
                                 {{ config('settings.phone_no') }}</a></li>
                     </ul>
                     <ul class="list-inline float-right icon">
-                        <li class="list-inline-item"><a href="shopping-cart.html"><i
-                                    class="icofont icofont-cart-alt"></i> Cart</a></li>
                         <li class="list-inline-item dropdown">
                             @guest<a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
@@ -63,7 +61,7 @@
     <div class="sticky">
         <div class="container">
             <div class="row">
-                <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="col-md-2 col-sm-12 col-xs-12">
                     <!-- Logo Start  -->
                     <div id="logo">
                         <a href="{{ url('/')}}">
@@ -74,11 +72,39 @@
                     <!-- Logo End  -->
                 </div>
 
-                <div class="col-md-9 col-sm-6 col-xs-12 paddleft">
+                <div class="col-md-6 col-sm-12 col-xs-12 float-right">
                     @include('site.partials.nav')
                 </div>
+                <div class="col-md-3 col-sm-12 col-xs-12 float-right mt-3 menu-search">
+                    <form action="{{ route('search') }}" class="form-horizontal search-icon" method='get'>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search Food" name="search">
+                            <div class="input-group-append">
+                                <button class="btn btn-theme" type="submit">
+                                    <i class="icofont icofont-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
 
-
+                </div>
+                @if(App\Models\Cart::totalItems())
+                <div class="col-md-1 col-sm-4 col-xs-4 paddleft mt-4 shop-cart">
+                    <ul class="list-inline float-right icon mt-1">
+                        <li class="list-inline-item"><a href="{{ route('cart.index') }}" class="btn-sm"><i
+                                    class="icofont icofont-cart-alt h4"></i>(<span
+                                    id="totalItems_desktop">{{ App\Models\Cart::totalItems() }}</span>)</a></li>
+                    </ul>
+                </div>
+                @else
+                <div class="col-md-1 col-sm-4 col-xs-4 paddleft mt-4 shop-cart disabledbutton">
+                    <ul class="list-inline float-right icon mt-1">
+                        <li class="list-inline-item"><a href="{{ route('cart.index') }}" class="btn-sm"><i
+                                    class="icofont icofont-cart-alt h4"></i>(<span
+                                    id="totalItems_desktop">{{ App\Models\Cart::totalItems() }}</span>)</a></li>
+                    </ul>
+                </div>
+                @endif
             </div>
         </div>
     </div>
