@@ -35,13 +35,16 @@
 <!-- Slider End  -->
 
 <!-- Popular Dishes Start -->
+@if(App\Models\Category::where('slug', 'popular-dishes')->first())
 <div class="dishes">
     <div class="container">
         <div class="row">
             <!-- Title Content Start -->
             <div class="col-sm-12 commontop text-center">
-                @php $category = App\Models\Category::where('slug', 'popular-dishes')->first(); @endphp
-                <h4>Our {{  $category->category_name }}</h4>
+                @php $category = App\Models\Category::where('slug', 'popular-dishes')->first();@endphp
+                <h4>Our {{  $category->category_name }}
+
+                </h4>
                 <div class="divider style-1 center">
                     <span class="hr-simple left"></span>
                     <i class="icofont icofont-ui-press hr-icon"></i>
@@ -152,6 +155,7 @@
     </div>
 </div>
 <!-- Popular Dishes End -->
+@endif
 
 <!-- Food Menu Start -->
 <div class="menu">

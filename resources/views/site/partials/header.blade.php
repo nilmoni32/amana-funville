@@ -21,18 +21,21 @@
                             @else
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                <i class="icofont icofont-ui-user"></i>
                                 {{ Auth::user()->name }} <span class="caret"></span>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
+                            <ul class="dropdown-menu dropdown-menu-right drophover" aria-labelledby="dropdownMenuLink">
+                                <li class="dropdown-item"><a
+                                        href="{{ route('user.profile') }}">{{ __('Your Profile') }}</a></li>
+                                <li class="dropdown-item"><a href="{{ route('logout') }}" onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                    {{ __('Logout') }}
-                                </a>
+                                        {{ __('Logout') }}
+                                    </a></li>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST"
                                     style="display: none;">
                                     @csrf
                                 </form>
-                            </div>
+                            </ul>
                             @endguest
 
                         </li>
@@ -93,7 +96,8 @@
                     <ul class="list-inline float-right icon mt-1">
                         <li class="list-inline-item"><a href="{{ route('cart.index') }}" class="btn-sm"><i
                                     class="icofont icofont-cart-alt h4"></i>(<span
-                                    id="totalItems_desktop">{{ App\Models\Cart::totalItems() }}</span>)</a></li>
+                                    id="totalItems_desktop">{{ App\Models\Cart::totalCarts()->count() }}</span>)</a>
+                        </li>
                     </ul>
                 </div>
                 @else
@@ -101,7 +105,8 @@
                     <ul class="list-inline float-right icon mt-1">
                         <li class="list-inline-item"><a href="{{ route('cart.index') }}" class="btn-sm"><i
                                     class="icofont icofont-cart-alt h4"></i>(<span
-                                    id="totalItems_desktop">{{ App\Models\Cart::totalItems() }}</span>)</a></li>
+                                    id="totalItems_desktop">{{ App\Models\Cart::totalCarts()->count() }}</span>)</a>
+                        </li>
                     </ul>
                 </div>
                 @endif

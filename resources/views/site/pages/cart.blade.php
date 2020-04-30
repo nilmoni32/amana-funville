@@ -19,7 +19,7 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
-                <p>You have total <span id="cart-total"
+                <p id="total-cart-paragraph">You have total <span id="cart-total"
                         style="color:#e9457a;">{{ App\Models\Cart::totalCarts()->count() }}</span> items in
                     your order.</p>
                 <div class="table-responsive-md">
@@ -67,15 +67,15 @@
                                     {{-- we face data from product attribute table --}}
                                     {{-- if this condition is true then $cart product_id is product_attribute id --}}
                                     @if( App\Models\ProductAttribute::find($cart->product_id)->special_price)
-                                    {{ App\Models\ProductAttribute::find($cart->product_id)->special_price }}
+                                    {{ round(App\Models\ProductAttribute::find($cart->product_id)->special_price,0) }}
                                     @else
-                                    {{ App\Models\ProductAttribute::find($cart->product_id)->price }}
+                                    {{ round(App\Models\ProductAttribute::find($cart->product_id)->price,0) }}
                                     @endif
                                     @else
                                     @if($cart->product->discount_price)
-                                    {{ $cart->product->discount_price }}
+                                    {{ round($cart->product->discount_price,0) }}
                                     @else
-                                    {{ $cart->product->price }}
+                                    {{ round($cart->product->price,0) }}
                                     @endif
                                     @endif
                                 </td>

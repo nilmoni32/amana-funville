@@ -6,7 +6,7 @@
                         src="{{ asset('frontend/images/funville.png')}}" alt="Funville" style="max-height:25px;"></a>
                 <a href="{{ route('cart.index') }}" class="btn-sm float-right text-white" style="margin:0 auto"><i
                         class="icofont icofont-cart-alt h5"></i>(<span
-                        id="totalItems_mob">{{ App\Models\Cart::totalItems() }}</span>)</a>
+                        id="totalItems_mob">{{ App\Models\Cart::totalCarts()->count() }}</span>)</a>
             </span>
 
             <button data-target=".navbar-ex1-collapse" data-toggle="collapse" class="btn btn-navbar navbar-toggler"

@@ -40,9 +40,19 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
         Route::get('/', function () {
             return view('admin.dashboard.index');
         })->name('dashboard');
-    //  for all settings we will use one controller : SettingController
+        //  for all settings we will use one controller : SettingController
         Route::get('/settings', 'SettingController@index')->name('settings');
         Route::post('/settings', 'SettingController@update')->name('settings.update');
+        // for manage Districts 
+        Route::get('/districts', 'DistrictController@index')->name('districts.index');
+        Route::post('/districts', 'DistrictController@districtUpdate');
+        
+        // for manage Zones 
+        Route::get('/districts/zones', 'ZoneController@index')->name('zones.index');
+        Route::get('/districts/zones/{id}', 'ZoneController@getZones');
+        Route::post('/districts/zones', 'ZoneController@zoneUpdate');
+
+
 
 
         // List categories route /admin/categories

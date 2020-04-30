@@ -37,10 +37,10 @@
             data = JSON.parse(data);            
             if(data.status == 'success'){
                 //toast
-                $('#totalItems_desktop').html(data.total_items);
-                $('#totalItems_mob').html(data.total_items);
+                $('#totalItems_desktop').html(data.total_carts);
+                $('#totalItems_mob').html(data.total_carts);
             }   
-            if(data.total_items){
+            if(data.total_carts){
                 $(".shop-cart").removeClass("disabledbutton"); 
             }      
 
@@ -72,8 +72,8 @@
                 data = JSON.parse(data);                             
                 if(data.status == 'success'){                    
                     //toast
-                     $('#totalItems_desktop').html(data.total_items);
-                     $('#totalItems_mob').html(data.total_items);
+                     $('#totalItems_desktop').html(data.total_carts);
+                     $('#totalItems_mob').html(data.total_carts);
                      
                     // finding the rowno from the id such add1, add2, minus1 etc.            
                      var row = id.substring(id.length - 1); //Displaying the last character                     
@@ -88,7 +88,7 @@
 
 
     function cartClose(cartId, delBtnId ){
-        var parent = $('#'+ delBtnId).parent(); //getting the td of the del button
+        var parent = $('#'+ delBtnId).parent(); //getting the td of the del button        
         
         $.post( "/cart/delete", { 
             cart_id: cartId            
@@ -97,19 +97,37 @@
                 data = JSON.parse(data);                             
                 if(data.status == 'success'){
                     //toast
-                     $('#totalItems_desktop').html(data.total_items);                     
-                     $('#totalItems_mob').html(data.total_items);                    
-                     $('#cart-total').html(data.total_carts); 
-                     $('#sub-total-tk').html(data.sub_total);
-                    
-                     // not to reload the page, just removing the row from DOM
-                        parent.slideUp(300, function () {
-                            parent.closest("tr").remove();
-                        });                
+                     $('#totalItems_desktop').html(data.total_carts);                     
+                     $('#totalItems_mob').html(data.total_carts);                    
+                     $('#cart-total').html(data.total_carts);
+                     $('#sub-total-tk').html(data.sub_total);                   
+                      
+                      if(!data.total_carts){
+                        parent.closest("tr").parent().parent().delay(300).remove();
+                        $('#total-cart-paragraph').css({"font-size":"25px", "text-align": "center", "padding":"50px 0"} );
+                       
+                      }
+                        // not to reload the page, just removing the row from DOM                      
+                        parent.slideUp(300, function (){ 
+                                parent.closest("tr").remove();                                
+                        }); 
+                        
+                        
+                               
                 }
               }); 
 
-    }   
-   
+    }
+    // Keep Selected Tab On Page Refresh 
+    $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+        localStorage.setItem('currentTab', $(e.target).attr('href'));
+    });
+    var currentTab = localStorage.getItem('currentTab');
+    //console.log(currentTab);
+    if (currentTab) {
+    $('a[href="' + currentTab + '"]').tab('show');
+    } 
+    // Keep Selected Tab On Page Refresh 
+    
 
 </script>

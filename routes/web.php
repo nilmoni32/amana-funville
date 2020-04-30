@@ -20,7 +20,7 @@ Route::get('/about', 'Site\PagesController@about')->name('about');
 Route::get('/reservation', 'Site\PagesController@reservation')->name('reservation');
 Route::get('/contact', 'Site\PagesController@contact')->name('contact');
 
-//Authentication
+//User Authentication
 Auth::routes(['verify' => true]);
 // verify token for account activation
 Route::post('/verify', 'Auth\VerificationTokenController@verify')->name('verify');
@@ -32,13 +32,21 @@ Route::post('/postverifytoken','Auth\VerificationTokenController@postverifytoken
 //Reset Password
 Route::resource('/resetpassword', 'Auth\ResetPasswordController');
 
+//user profile : route is protected via middleware
+Route::group(['middleware' => ['auth:web']], function () {     
+Route::get('user/profile', 'Site\UserController@profile')->name('user.profile');
+Route::post('user/profile/update', 'Site\UserController@updateProfile')->name('user.updateProfile');
+Route::post('user/profile/change-password', 'Site\UserController@changePassword')->name('user.changePassword');
+});
+
+
+
 //Product Routes 
 Route::get('/category/all', 'Site\ProductController@index')->name('products.index');
 Route::get('/category/{slug}', 'Site\ProductController@categoryproductshow')->name('categoryproduct.show');
 Route::get('/search', 'Site\ProductController@search')->name('search');
 
 //Cart Routes
-
 Route::get('/cart', 'Site\CartController@index')->name('cart.index');  
 // this is for home cart store
 Route::post('/cart/store', 'Site\CartController@store')->name('cart.store');

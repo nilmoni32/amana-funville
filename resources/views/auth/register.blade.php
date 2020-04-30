@@ -79,7 +79,7 @@
                                     </span>
                                     @enderror
                                 </div>
-                                 <div class="form-group">
+                                <div class="form-group">
                                     <i class="icofont icofont-ui-message"></i>
                                     <input type="email" class="form-control @error('email') is-invalid @enderror"
                                         name="email" value="{{ old('email') }}" placeholder="E-Mail Address" id="email"
@@ -114,12 +114,6 @@
                                         <strong>{{ $message }}</strong>
                                     </span>
                                     @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <i class="icofont icofont-address-book"></i>
-                                    <input type="text" class="form-control" name="address" value="{{ old('address') }}"
-                                        placeholder="Address" id="password" />
                                 </div>
                                 <div class="form-group">
                                     <input type="submit" value="SIGN UP"

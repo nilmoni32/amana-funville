@@ -87,7 +87,7 @@ class CartController extends Controller
             $cart->save(); 
         }
               
-        return json_encode([ 'status' => 'success', 'message' => 'Item is added to cart', 'total_items' => Cart::totalItems()]);
+        return json_encode([ 'status' => 'success', 'message' => 'Item is added to cart', 'total_carts' => Cart::totalCarts()->count()]);
     }
 
 
@@ -118,8 +118,8 @@ class CartController extends Controller
             }else{
                     $total_unit_price = $cart->product->price * $cart->product_quantity;
             }
-        }         
-         
+        }                  
+        
          
          return json_encode([ 'status' => 'success', 'message' => 'Item is updated to cart', 'total_items' => Cart::totalItems(), 'total_unit_price' => $total_unit_price, 'sub_total' => $this->calculateSubtotal()]);      
     }

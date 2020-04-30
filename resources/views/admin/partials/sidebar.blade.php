@@ -31,6 +31,22 @@
         <span class="app-menu__label">Food Menu</span></a>
     </li>
     <li>
+      {{-- if current route name is dashboard we will set active class  --}}
+      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.districts.index' ? 'active' : ''}}"
+        href="{{route('admin.districts.index')}}">
+        <i class="app-menu__icon fa fa-sitemap"></i>
+        <span class="app-menu__label">Manage District</span>
+      </a>
+    </li>
+    <li>
+      {{-- if current route name is dashboard we will set active class  --}}
+      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.zones.index' ? 'active' : ''}}"
+        href="{{route('admin.zones.index')}}">
+        <i class="app-menu__icon fa fa-chrome"></i>
+        <span class="app-menu__label">Manage Area</span>
+      </a>
+    </li>
+    <li>
       {{-- if current route name is admin.settings we will set active class here --}}
       <a class="app-menu__item {{ Route::currentRouteName() == 'admin.settings' ? 'active' : '' }}"
         href="{{ route('admin.settings')}}">
