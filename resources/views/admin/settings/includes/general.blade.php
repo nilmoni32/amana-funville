@@ -40,6 +40,11 @@
                 <input class="form-control" type="text" placeholder="Enter Contact Address" name="contact_address"
                     id="contact_address" value="{{ config('settings.contact_address') }}">
             </div>
+            <div class="form-group">
+                <label class="control-label" for="delivery_charge">Shipping Cost</label>
+                <input class="form-control" type="text" placeholder="Enter Shipping Cost" name="delivery_charge"
+                    id="delivery_charge" value="{{ config('settings.delivery_charge') }}">
+            </div>
 
 
         </div>

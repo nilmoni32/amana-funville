@@ -28,7 +28,8 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary" name="find" id="find"><i class="fa fa-search"></i>
+                        <button type="submit" class="btn btn-primary" name="find" id="find"><i
+                                class="fa fa-search align-baseline"></i>
                             Find Areas</button>
                     </div>
                 </div>

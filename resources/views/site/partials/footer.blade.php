@@ -50,6 +50,8 @@
                     <li><a href="#"><i
                                 class="icofont icofont-ui-message"></i>{{ config('settings.default_email_address') }}</a>
                     </li>
+                    <li><i class="icofont icofont-ui-clock"></i>{{ __("Open Hours: 10am to 10pm ") }}
+                    </li>
                 </ul>
                 <!-- Footer Widget End -->
             </div>

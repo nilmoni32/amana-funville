@@ -106,6 +106,10 @@ class SettingsTableSeeder extends Seeder
             'key'   => 'social_youtube',
             'value' => '',
         ],
+        [
+            'key'   => 'delivery_charge',
+            'value' => '',
+        ],
 
 
     ];

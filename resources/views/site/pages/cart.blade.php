@@ -124,7 +124,8 @@
                                             Shopping</a>
                                     </div>
                                     <div class="buttons float-right">
-                                        <a href="#" class="btn btn-theme btn-md btn-wide">Checkout</a>
+                                        <a href="{{ route('checkout.index') }}"
+                                            class="btn btn-theme btn-md btn-wide">Checkout</a>
                                     </div>
                                 </td>
                             </tr>

@@ -40,7 +40,6 @@ Route::post('user/profile/change-password', 'Site\UserController@changePassword'
 });
 
 
-
 //Product Routes 
 Route::get('/category/all', 'Site\ProductController@index')->name('products.index');
 Route::get('/category/{slug}', 'Site\ProductController@categoryproductshow')->name('categoryproduct.show');
@@ -48,13 +47,30 @@ Route::get('/search', 'Site\ProductController@search')->name('search');
 
 //Cart Routes
 Route::get('/cart', 'Site\CartController@index')->name('cart.index');  
-// this is for home cart store
+// this is for homepage cart store
 Route::post('/cart/store', 'Site\CartController@store')->name('cart.store');
-// this is for category cart store
+// this is for categorypage cart store
 Route::post('/category/cart/store', 'Site\CartController@store')->name('cart.store');
 Route::post('/cart/update', 'Site\CartController@update')->name('cart.update');
 Route::post('/cart/delete', 'Site\CartController@destroy')->name('cart.delete');
 
+//checkout Routes ['auth:web'] or ['auth'] is same
+Route::group(['middleware' => ['auth']], function(){
+    Route::get('/checkout', 'Site\CheckoutController@getCheckout')->name('checkout.index');
+    Route::post('/checkout/order', 'Site\CheckoutController@placeOrder')->name('checkout.place.order');
+    Route::get('/checkout/order/{id}', 'Site\CheckoutController@checkoutPayment')->name('checkout.payment');
+    Route::get('/checkout/order/{id}/cancel', 'Site\CheckoutController@cancelOrder')->name('checkout.cancel');
+    Route::get('/checkout/order/{id}/cash', 'Site\CheckoutController@cashOrder')->name('checkout.cash');
+    // ajax route for user area and address
+    Route::get('/checkout/zones/{id}', 'Site\CheckoutController@getZones');
+    Route::get('/checkout/user/address/', 'Site\CheckoutController@getUserAddress');
+    //SSLCommerz routes
+    Route::get('/checkout/order/payment/{id}', 'Site\CheckoutController@orderPayment')->name('order.payment');
+    Route::post('/checkout/order/success', 'Site\CheckoutController@order_success');
+    Route::post('/checkout/order/fail', 'Site\CheckoutController@order_fail');
+    Route::post('/checkout/order/cancel', 'Site\CheckoutController@order_cancel');  
+    
+});
 
 
 

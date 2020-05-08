@@ -15,19 +15,33 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('user_id');           
-            $table->enum('status', ['pending', 'processing', 'delivered','decline'])->default('pending');
-            $table->string('billing_name');   
-            $table->string('billing_email');      
-            $table->string('billing_phone_no');
-            $table->text('billing_address'); 
-            $table->text('message')->nullable(); 
+            $table->unsignedBigInteger('user_id');            
+            $table->string('order_number')->unique();           
+            $table->enum('status', ['pending', 'processing', 'completed','decline'])->default('pending'); 
+            // for sslcommerz          
+            $table->boolean('payment_status')->default(0);
+            $table->string('payment_method')->default('cash');
+            
+            // for bkash
+            $table->unsignedInteger('payment_number')->nullable();
+            $table->string('payment_type_bkash')->nullable();
+            $table->string('transaction_id')->nullable(); 
+            // for bKash
+            $table->decimal('grand_total', 20, 6);
+            $table->unsignedInteger('item_count');            
+            $table->string('name');   
+            $table->string('email');      
+            $table->string('phone_no');
+            $table->string('address');            
+            $table->string('district');
+            $table->string('zone');
+            $table->string('order_date');
+            $table->dateTime('delivery_date');
+          
             $table->timestamps();
 
-            $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');            
+           
         });
     }
 

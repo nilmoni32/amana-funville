@@ -16,6 +16,7 @@
 <!-- Breadcrumb End -->
 <div class="container py-5">
     <h3>About page</h3>
+    dd({{url('/')}});
 </div>
 
 @endsection

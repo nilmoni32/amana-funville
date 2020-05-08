@@ -36,7 +36,8 @@ class CartController extends Controller
                 // when logged user adds products to cart. 
                 $cart = Cart::where('user_id', Auth::id())
                             ->where('product_id', $request->attribute_id) // when attribute table, cart product id should be attribute_id.
-                            ->where('has_attribute', 1)                           
+                            ->where('has_attribute', 1) 
+                            ->where('order_id', NULL)                           
                             ->first();
             }else{
                 // when a guest adds product to cart.           
@@ -52,7 +53,8 @@ class CartController extends Controller
                 // when logged user adds products to cart. 
                 $cart = Cart::where('user_id', Auth::id())
                             ->where('product_id', $request->product_id)
-                            ->where('has_attribute', 0)  
+                            ->where('order_id', NULL) 
+                            ->where('has_attribute', 0)                            
                             ->first();
             }else{
                 // when a guest adds product to cart.           
@@ -121,7 +123,7 @@ class CartController extends Controller
         }                  
         
          
-         return json_encode([ 'status' => 'success', 'message' => 'Item is updated to cart', 'total_items' => Cart::totalItems(), 'total_unit_price' => $total_unit_price, 'sub_total' => $this->calculateSubtotal()]);      
+         return json_encode([ 'status' => 'success', 'message' => 'Item is updated to cart', 'total_items' => Cart::totalItems(), 'total_unit_price' => $total_unit_price, 'sub_total' => Cart::calculateSubtotal()]);      
     }
 
     /**
@@ -135,34 +137,10 @@ class CartController extends Controller
         $cart = Cart::find($request->cart_id);
         if(!is_null($cart)){            
             $cart->delete();
-            return json_encode([ 'status' => 'success', 'message' => 'Item is deleted', 'total_items' => Cart::totalItems(), 'total_carts' => Cart::totalCarts()->count(), 'sub_total' => $this->calculateSubtotal()]); 
+            return json_encode([ 'status' => 'success', 'message' => 'Item is deleted', 'total_items' => Cart::totalItems(), 'total_carts' => Cart::totalCarts()->count(), 'sub_total' => Cart::calculateSubtotal()]); 
         }
         return json_encode(['status' => 'error', 'message' => 'An error is occurred while deleting the cart' ]);
-    }
-
-    public function calculateSubtotal(){
-        // calculating subtotal
-        $total_taka=0.0;
-        foreach(Cart::totalCarts() as $cart){
-            //if has_attribute = 1 then we face data from product attribute
-            if($cart->has_attribute){ 
-                if(ProductAttribute::find($cart->product_id)->special_price){
-                        $total_taka += ProductAttribute::find($cart->product_id)->special_price * $cart->product_quantity;
-                }else{
-                        $total_taka += ProductAttribute::find($cart->product_id)->price * $cart->product_quantity;
-                }
-            }else{  //if has_attribute = 0 then we face data from product table
-                if($cart->product->discount_price){
-                        $total_taka += $cart->product->discount_price * $cart->product_quantity;
-                }else{
-                        $total_taka += $cart->product->price * $cart->product_quantity;
-                }
-            } 
-        }
-
-        return $total_taka;
-
-    }
+    }   
 
 
     

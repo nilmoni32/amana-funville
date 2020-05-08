@@ -43,6 +43,7 @@
         @include('site.partials.footer')
     </div>
     @include('site.partials.scripts')
+    @stack('scripts')
 </body>
 
 </html>
