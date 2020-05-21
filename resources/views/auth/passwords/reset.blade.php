@@ -17,7 +17,8 @@
 <!-- adding session messages -->
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-sm-12 mt-5 text-center">
+        <div class="offset-md-1"></div>
+        <div class="col-md-10 col-12 my-5 text-center">
             @if (session('error'))
             <div class="alert alert-error alert-block bg-danger text-white">
                 <button type="button" class="close" data-dismiss="alert">×</button>
@@ -32,6 +33,7 @@
             @endif
 
         </div>
+        <div class="offset-md-1"></div>
     </div>
 </div>
 <div class="container mb-5 mt-5">

@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Crypt;
+use App\Models\Cart;
 
 
 class VerificationTokenController extends Controller
@@ -28,10 +29,10 @@ class VerificationTokenController extends Controller
     {      
         
         $validated = request()->validate([
-            'email_token' => 'required',           
+            'verify_token' => 'required',           
             ]);
         //finding the user with email verification code.
-        $user = User::where('email_token', $validated['email_token'])->first();
+        $user = User::where('verify_token', $validated['verify_token'])->first();
 
        if($user == null){        
             session()->flash('success', '');   
@@ -40,11 +41,14 @@ class VerificationTokenController extends Controller
        }      
 
        $user->update([        
-        'is_email_verified' => 1,
+        'is_token_verified' => 1,
         'verified_at' => Carbon::now(),
-        'email_token' => '',
+        'verify_token' => '',
        ]);
        
+       if(session()->has('success') && session()->get('success') !== ''){
+        session()->flash('success', '');
+       }
        session()->flash('success', 'Your account is activated, you can log in now');
        return redirect()->route('login');
 
@@ -63,10 +67,10 @@ class VerificationTokenController extends Controller
     public function postverifytoken(Request $request){
 
         $validated = request()->validate([
-            'email_token' => 'required',           
+            'verify_token' => 'required',           
             ]);
         //finding the user with email verification code.
-        $user = User::where('email_token', $validated['email_token'])->first();
+        $user = User::where('verify_token', $validated['verify_token'])->first();
         
         if(!$user)
         {   
@@ -74,10 +78,10 @@ class VerificationTokenController extends Controller
         }
         else{
             $user->update([
-                'email_token' => mt_rand(10000,99999),
+                'verify_token' => mt_rand(10000,99999),
             ]);
             // for security issue data is encrypted
-            $token = Crypt::encryptString($user->email_token);
+            $token = Crypt::encryptString($user->verify_token);
             
             return redirect()->route('password.reset',[ 'token' => $token, 'email' => $user->email])->with('success','Please update your password.');
         }       

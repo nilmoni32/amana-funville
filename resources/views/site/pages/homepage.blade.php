@@ -91,68 +91,116 @@
                                 @else
                                 <p>{{ config('settings.currency_symbol') }}-{{ round($product->price,0) }}</p>
                                 @endif
-                                <span class="text-left pt-1 d-block">{{ $product->description}}</span>
-
+                                <span class="text-left px-1 py-1 d-block">{{ $product->description}}</span>
                             </div>
-                            <div class="cart-overlay" onclick="addToCart({{ $product->id }}, 0)">
-                                <h5>Add to Cart</h5>
-                            </div>
-                        </div>
-
+                            {{-- <div class="cart-overlay" onclick="addToCart({{ $product->id }}, 0)">
+                            <h5>Add to Cart</h5>
+                        </div> --}}
                     </div>
-                    @elseif($attributeCheck && $product->status)
-                    {{-- if product has attribute value then we display them all--}}
-                    @foreach($product->attributes as $attribute)
-                    <div class="item">
-                        <div class="box">
-                            @foreach($product->images as $image)
-                            <img src="{!! asset('storage/'.$image->full) !!}" alt="image" title="{{ $product->name }}"
-                                class="img-responsive" />
-                            @endforeach
-
-                            <div class="caption">
-                                <h4>{{ $product->name }}-({{ $attribute->size }})</h4>
-                                {{-- if product discount price is available then we set it --}}
-                                @if($attribute->special_price)
-                                <p>{{ config('settings.currency_symbol') }}-{{ round($attribute->special_price,0)}}
-                                </p>
-                                <span
-                                    style="text-decoration: line-through">{{ config('settings.currency_symbol') }}-{{ round($attribute->price,0) }}</span>
-                                {{-- calculating the discount percenate --}}
-                                <span>
-                                    -{{ round(($attribute->price - $attribute->special_price)*100/$attribute->price, 0) }}%</span>
-                                @else
-                                <p>{{ config('settings.currency_symbol') }}-{{ round($attribute->price,0) }}</p>
-                                @endif
-                                <span class="text-left pt-1 d-block">{{ $product->description}}</span>
-
-                            </div>
-                            <div class="cart-overlay" onclick="addToCart({{ $product->id }}, {{ $attribute->id }})">
-                                <h5>Add to Cart</h5>
-                            </div>
-                        </div>
+                    <div class="hoverbox pb-2">
+                        @php
+                        //Checking the product is added to cart or not
+                        if(Auth::check()){ //Auth::check() to check if the user is logged in
+                        // when logged user adds products to cart.
+                        $cart = App\Models\Cart::where('user_id', Auth::id())
+                        ->where('product_id', $product->id)
+                        ->where('order_id', NULL)
+                        ->where('has_attribute', 0)
+                        ->first();
+                        }else{
+                        // when a guest adds product to cart.
+                        $cart = App\Models\Cart::where('ip_address', request()->ip())
+                        ->where('product_id', $product->id)
+                        ->where('has_attribute', 0)
+                        ->first();
+                        }
+                        @endphp
+                        <button class="btn btn-theme-alt btn-cart btn-block {{ $cart ? 'display-none' : '' }}"
+                            id="homeCartProductBtn{{ $product->id }}" onclick="addToCart({{ $product->id }}, 0)">Add
+                            to
+                            Cart</button>
+                        <p class="{{ $cart ? '' : 'display-none' }} cart-msg" id="homeMsg{{ $product->id }}">
+                            Food is added to Cart</p>
                     </div>
-                    @endforeach
-                    @endif
+                </div>
+                @elseif($attributeCheck && $product->status)
+                {{-- if product has attribute value then we display them all--}}
+                @foreach($product->attributes as $attribute)
+                <div class="item">
+                    <div class="box">
+                        @foreach($product->images as $image)
+                        <img src="{!! asset('storage/'.$image->full) !!}" alt="image" title="{{ $product->name }}"
+                            class="img-responsive" />
+                        @endforeach
 
+                        <div class="caption">
+                            <h4>{{ $product->name }}-({{ $attribute->size }})</h4>
+                            {{-- if product discount price is available then we set it --}}
+                            @if($attribute->special_price)
+                            <p>{{ config('settings.currency_symbol') }}-{{ round($attribute->special_price,0)}}
+                            </p>
+                            <span
+                                style="text-decoration: line-through">{{ config('settings.currency_symbol') }}-{{ round($attribute->price,0) }}</span>
+                            {{-- calculating the discount percenate --}}
+                            <span>
+                                -{{ round(($attribute->price - $attribute->special_price)*100/$attribute->price, 0) }}%</span>
+                            @else
+                            <p>{{ config('settings.currency_symbol') }}-{{ round($attribute->price,0) }}</p>
+                            @endif
+                            <span class="text-left px-1 py-1 d-block">{{ $product->description}}</span>
+
+                        </div>
+                        {{-- <div class="cart-overlay" onclick="addToCart({{ $product->id }}, {{ $attribute->id }})">
+                        <h5>Add to Cart</h5>
+                    </div> --}}
+                </div>
+                <div class="hoverbox pb-2">
                     @php
-                    //incrementing the counter to show only five product
-                    $top_5 += 1;
+                    //Checking the product is added to cart or not
+                    if(Auth::check()){ //Auth::check() to check if the user is logged in
+                    // when logged user adds products to cart.
+                    $cart = App\Models\Cart::where('user_id', Auth::id())
+                    ->where('product_id', $attribute->id)
+                    ->where('order_id', NULL)
+                    ->where('has_attribute', 1)
+                    ->first();
+                    }else{
+                    // when a guest adds product to cart.
+                    $cart = App\Models\Cart::where('ip_address', request()->ip())
+                    ->where('product_id', $attribute->id)
+                    ->where('has_attribute', 1)
+                    ->first();
+                    }
                     @endphp
-                    @endforeach
+                    <button class="btn btn-theme-alt btn-cart btn-block {{ $cart ? 'display-none' : '' }}"
+                        id="homeCartSubProductBtn{{ $attribute->id }}" onclick="addToCart(0, {{ $attribute->id }})">Add
+                        to Cart</button>
+                    <p class="{{ $cart ? '' : 'display-none' }} cart-msg" id="homeSubMsg{{ $attribute->id }}">
+                        Food is added to Cart</p>
+
                 </div>
             </div>
-        </div>
-        <!--  view more button  -->
-        <div class="row pt-5">
-            <div class="col-sm-12 col-xs-12">
-                <div class="text-center pb-2">
-                    <a class="btn btn-theme-alt btn-wide" href='{{ route('products.index') }}'>view more <i
-                            class="icofont icofont-curved-double-right"></i></a>
-                </div>
-            </div>
+            @endforeach
+            @endif
+
+            @php
+            //incrementing the counter to show only five product
+            $top_5 += 1;
+            @endphp
+            @endforeach
         </div>
     </div>
+</div>
+<!--  view more button  -->
+<div class="row pt-5">
+    <div class="col-sm-12 col-xs-12">
+        <div class="text-center pb-2">
+            <a class="btn btn-theme-alt btn-wide" href='{{ route('products.index') }}'>view more <i
+                    class="icofont icofont-curved-double-right"></i></a>
+        </div>
+    </div>
+</div>
+</div>
 </div>
 <!-- Popular Dishes End -->
 @endif

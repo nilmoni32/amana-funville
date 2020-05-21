@@ -26,7 +26,7 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-right drophover" aria-labelledby="dropdownMenuLink">
                                 <li class="dropdown-item"><a
-                                        href="{{ route('user.profile') }}">{{ __('Your Profile') }}</a></li>
+                                        href="{{ route('user.dashboard') }}">{{ __('Your Dashboard') }}</a></li>
                                 <li class="dropdown-item"><a href="{{ route('logout') }}" onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}

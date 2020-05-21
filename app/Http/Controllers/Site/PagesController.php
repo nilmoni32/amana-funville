@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Site;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Order;
+use GuzzleHttp\Client;
 
 class PagesController extends Controller
 {
@@ -16,8 +18,9 @@ class PagesController extends Controller
     }
 
     public function about(){
-       
+  
         return view('site.pages.about');
+        
     }
 
     public function reservation(){

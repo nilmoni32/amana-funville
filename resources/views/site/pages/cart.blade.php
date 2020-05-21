@@ -55,7 +55,8 @@
                                             onclick="updateAddtoCart({{ $cart->id }}, 'minus{{$i}}' )"><i
                                                 class="icofont icofont-minus"></i></span>
                                         <input type="text" name="product_quantity" id="input-quantity{{$i}}"
-                                            value="{{ $cart->product_quantity }}" size="2" class="form-control qty" />
+                                            value="{{ $cart->product_quantity }}" size="2" class="form-control qty"
+                                            readonly />
                                         <span id="add{{$i}}" class="add"
                                             onclick="updateAddtoCart({{ $cart->id }}, 'add{{$i}}' )"><i
                                                 class="icofont icofont-plus"></i></span>

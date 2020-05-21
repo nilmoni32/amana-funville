@@ -4,9 +4,15 @@
         <div class="navbar-header">
             <span class="menutext d-block d-md-none"><a href="{{ url('/')}}"><img class="img-fluid"
                         src="{{ asset('frontend/images/funville.png')}}" alt="Funville" style="max-height:25px;"></a>
-                <a href="{{ route('cart.index') }}" class="btn-sm float-right text-white" style="margin:0 auto"><i
-                        class="icofont icofont-cart-alt h5"></i>(<span
+                @if(App\Models\Cart::totalItems())
+                <a href="{{ route('cart.index') }}" class="btn-sm float-right text-white cart-icon"
+                    style="margin:0 auto"><i class="icofont icofont-cart-alt h5"></i>(<span
                         id="totalItems_mob">{{ App\Models\Cart::totalCarts()->count() }}</span>)</a>
+                @else
+                <a href="{{ route('cart.index') }}" class="btn-sm float-right text-white cart-icon disabledbutton"
+                    style="margin:0 auto"><i class="icofont icofont-cart-alt h5"></i>(<span
+                        id="totalItems_mob">{{ App\Models\Cart::totalCarts()->count() }}</span>)</a>
+                @endif
             </span>
 
             <button data-target=".navbar-ex1-collapse" data-toggle="collapse" class="btn btn-navbar navbar-toggler"

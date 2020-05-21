@@ -17,7 +17,8 @@
 <!-- adding session messages -->
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-sm-12 mt-5 text-center">
+        <div class="offset-md-1"></div>
+        <div class="col-md-10 col-12 my-5 text-center">
             @if (session('error'))
             <div class="alert alert-error alert-block bg-danger text-white">
                 <button type="button" class="close" data-dismiss="alert">×</button>
@@ -32,6 +33,7 @@
             @endif
 
         </div>
+        <div class="offset-md-1"></div>
     </div>
 </div>
 
@@ -49,7 +51,7 @@
             </div>
             <div class="col-lg-10 col-md-12">
                 <div class="row justify-content-center mt-5">
-                    <div class="col-sm-12 col-md-6">
+                    <div class="col-md-6 col-sm-12 ">
                         <div class="loginnow">
                             <h5>Register</h5>
                             <p>Do You have an account? So <a href="{{ route('login') }}">login</a> And starts less than
@@ -57,7 +59,6 @@
                             <form action="{{ route('register') }}" method="post" role="form">
                                 @csrf
                                 <div class="form-group">
-                                    <i class="icofont icofont-ui-user"></i>
                                     <input type="text" class="form-control @error('name') is-invalid @enderror"
                                         name="name" id="name" value="{{ old('name') }}" placeholder="Your Name" required
                                         autocomplete="name">
@@ -67,20 +68,7 @@
                                     </span>
                                     @enderror
                                 </div>
-
                                 <div class="form-group">
-                                    <i class="icofont icofont-stock-mobile"></i>
-                                    <input type="text" class="form-control @error('mobile') is-invalid @enderror"
-                                        name="mobile" value="{{ old('mobile') }}" placeholder="Mobile No" id="mobile"
-                                        required autocomplete="mobile" />
-                                    @error('mobile')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                                <div class="form-group">
-                                    <i class="icofont icofont-ui-message"></i>
                                     <input type="email" class="form-control @error('email') is-invalid @enderror"
                                         name="email" value="{{ old('email') }}" placeholder="E-Mail Address" id="email"
                                         required autocomplete="email" />
@@ -90,9 +78,7 @@
                                     </span>
                                     @enderror
                                 </div>
-
                                 <div class="form-group">
-                                    <i class="icofont icofont-lock"></i>
                                     <input type="password" class="form-control @error('password') is-invalid @enderror"
                                         name="password" value="{{ old('password') }}" placeholder="Password"
                                         id="password" required autocomplete="new-password" />
@@ -104,7 +90,6 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <i class="icofont icofont-lock"></i>
                                     <input type="password"
                                         class="form-control @error('password_confirmation') is-invalid @enderror"
                                         name="password_confirmation" placeholder="Confirm Password"
@@ -114,6 +99,25 @@
                                         <strong>{{ $message }}</strong>
                                     </span>
                                     @enderror
+                                </div>
+                                <div class="input-group mb-4 pb-1">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="phone_number">+880</span>
+                                    </div>
+                                    <input type="text" class="form-control @error('phone_number') is-invalid @enderror"
+                                        name="phone_number" value="{{ old('phone_number') }}"
+                                        placeholder="Phone Number e.g.017xxxxxxxx" id="phone_number" required
+                                        autocomplete="phone_number" />
+                                    @error('phone_number')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
+                                </div>
+                                <div class="form-group">
+                                    <textarea placeholder="Contact Address" id="current-address"
+                                        class="form-control mt-1" rows="4" name="address" required
+                                        autocomplete="address" style="height:80px; align-items:center;"></textarea>
                                 </div>
                                 <div class="form-group">
                                     <input type="submit" value="SIGN UP"

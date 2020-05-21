@@ -55,7 +55,7 @@
                         </div>
                         <div class="form-group">
                             <label>Phone Number:</label>
-                            <input name="phone_no" value="{{ auth()->user()->mobile }}" id="phone_no"
+                            <input name="phone_no" value="{{ auth()->user()->phone_number }}" id="phone_no"
                                 class="form-control  @error('phone_no') is-invalid @enderror" type="text" required>
                             @error('phone_no')
                             <span class="invalid-feedback" role="alert">
@@ -117,7 +117,7 @@
                             <label>Delivery Date & Time :</label>
                             @php
                             $time = \Carbon\Carbon::now();
-                            $morning = \Carbon\Carbon::create($time->year, $time->month, $time->day, 10, 0, 0);
+                            $morning = \Carbon\Carbon::create($time->year, $time->month, $time->day, 0, 0, 0);
                             $evening = \Carbon\Carbon::create($time->year, $time->month, $time->day, 19, 0, 0);
                             if($time->between($morning, $evening, true)) {
                             $deliver_time = $time->toDateString();

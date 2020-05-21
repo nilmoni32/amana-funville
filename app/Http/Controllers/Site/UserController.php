@@ -6,15 +6,15 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Rules\Lowercase;
 use Auth;
+use App\Models\Order;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
    
-   public function profile(){   
-    $user = Auth::user();
-    return view('site.pages.user.profile', compact('user'));
-
+   public function dashboard(){
+    $user = Auth::user();   
+    return view('site.pages.user.dashboard', compact('user'));
    }
 
    public function updateProfile(Request $request){
@@ -26,33 +26,13 @@ class UserController extends Controller
         'address' =>  'required|string|max:191',                      
     ]);
 
-    if($user->is_mobile_verified && $user->is_mobile_verified){      
+    if($user->is_token_verified){      
         $user->name = $request->name;
         $user->address = $request->address;
         $user->save();
-        session()->flash('success', 'Your profile information has been updated');
-        return redirect()->back();
-    }elseif($user->is_mobile_verified){    
-        $this->validate($request,[ 
-            'email' => 'required|string|email|max:100|unique:users,email',                        
-        ]);
-        $user->name = $request->name;
-        $user->email = $request->email;        
-        $user->address = $request->address;
-        $user->save();
-        session()->flash('success', 'Your profile information has been updated');
-        return redirect()->back();
-    }elseif($user->is_email_verified){
-        $this->validate($request,[                                 
-            'mobile' =>  'required|string|max:15|unique:users,mobile',                             
-        ]);
-        $user->name = $request->name;        
-        $user->mobile = $request->mobile;
-        $user->address = $request->address;
-        $user->save();
-        session()->flash('success', 'Your profile information has been updated');
-        return redirect()->back();
-    }    
+        session()->flash('success_msg', 'Your profile information has been updated');
+        return redirect()->back();       
+    }
 
    }
 
@@ -69,13 +49,21 @@ class UserController extends Controller
         $user->update([
             'password' => Hash::make($request->password),            
         ]);
-        session()->flash('success', 'Your password is modified.');
+       
+        session()->flash('success_msg', 'Your password is modified.');
         return redirect()->back();
-     }else{
-        session()->flash('error', 'Your old password is incorrect.');
+
+     }else{ 
+        session()->flash('err_msg', 'Your old password is incorrect.');
         return redirect()->back();
      }
     
+   }
+
+   public function paymenyHistory($year){    
+    //find the order by date of the respective user.    
+    $order = Order::where('user_id', auth()->user()->id)->where('order_date', 'like', $year.'%')->orderBy('created_at', 'desc')->get();   
+    return json_encode($order);
    }
 
 }

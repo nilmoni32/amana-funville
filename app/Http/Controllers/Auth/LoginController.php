@@ -10,6 +10,7 @@ use App\Models\User;
 use Auth;
 use App\Mail\VerificationEmail;
 use Illuminate\Support\Str;
+use App\Models\Cart;
 
 class LoginController extends Controller
 {
@@ -59,12 +60,18 @@ class LoginController extends Controller
         if(!is_null($user)){ // if user is exists.
 
             // if user email_verification status true, only then user is allowed to access his account.
-            if($user->is_email_verified == 1 || $user->is_mobile_verified ){               
+            if($user->is_token_verified){               
                 // checking the default laravel gaurd for user ( web  in config/auth )
                 // if user email & password is okay then we redirect to the intended homepage.
-                if(Auth::guard('web')->attempt(['email' => $validated['email'], 'password' => $validated['password'] ], $request->get('remember') )) {               
-                        // here intended method is used to redirect the homepage is requested by user after successful login.                 
-                        return redirect()->intended(route('index'));
+                if(Auth::guard('web')->attempt(['email' => $validated['email'], 'password' => $validated['password'] ], $request->get('remember') )) {              
+                        
+                        /**
+                        * when guest add items to cart and then he is logged in then we need to set that user id to cart
+                        * so that he can see the recently added products in the cart after sign in.
+                        */
+                        Cart::guestAuthenticatedCart();
+                        // here intended method is used to redirect the homepage is requested by user after successful login.
+                        return redirect()->intended();
                 }
                 else{                   
                     return redirect()->back()->with('error','Invalid password. Please try again!');             
@@ -75,14 +82,20 @@ class LoginController extends Controller
                 
                 // if user exists but email verification status is not 1
                 // generating a token number for that user and send it for verify.
-                if(is_null($user->is_email_verified)){
+                if(is_null($user->is_token_verified)){
                     $user->update([ 
-                        'email_token' =>  mt_rand(10000,99999),            
+                        'verify_token' =>  mt_rand(10000,99999),            
                     ]);
                 }
                 // we send him token again via mailable class
                 \Mail::to($user->email)->send(new VerificationEmail($user)); 
-                session()->flash('success', 'A new verification code has sent to you.. Please check mail to activate your account.');
+                 // sending token to phone_number 
+                SendCode::sendCode($user->phone_number, $user->verify_token);
+
+                if(session()->has('success') && session()->get('success') !== ''){
+                    session()->flash('success', '');
+                }
+                session()->flash('success', 'A new verification code has sent to you.. Please check mail or Phone to activate your account.');
                 return view('auth.verification');
                 }   
         
@@ -94,5 +107,7 @@ class LoginController extends Controller
         
 
     }
+
+
 
 }

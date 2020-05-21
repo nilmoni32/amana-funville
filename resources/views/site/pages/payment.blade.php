@@ -17,8 +17,8 @@
 <div class="mycart">
     <div class="container paycard">
         <div class="row">
-            <div class="offset-md-2"></div>
-            <div class="col-md-8 col-12 mb-5 text-center">
+            <div class="offset-md-1"></div>
+            <div class="col-md-10 col-12 mb-5 text-center">
                 @if (session('success'))
                 <div class="alert alert-success alert-block bg-success text-white">
                     <button type="button" class="close" data-dismiss="alert">×</button>
@@ -32,18 +32,16 @@
                 </div>
                 @endif
             </div>
-            <div class="offset-md-2"></div>
+            <div class="offset-md-1"></div>
         </div>
         <div class="row">
             <div class="col-12 pb-5">
                 <h5 class="card-title mt-2 text-center mb-2">Order Number:
                     {{ $order->order_number }}</h5>
-                <p class="text-center pt-0 font-weight-bold">Your order is on its way, please pay <a
-                        href="{{ route('checkout.cash', $order->id) }}" class="btn btn-theme-alt"
-                        style="width:100px; height:30px; padding:0; font-weight:normal; text-transform:capitalize; line-height:1.6rem ">
-                        with
-                        cash</a> on delivery
-                    orders.
+                <p class="text-center pt-0 font-weight-bold">Your order is on its way, please pay with &nbsp;<a
+                        href="{{ route('checkout.cash', $order->id) }}" class="btn btn-theme-alt cash-delivery">Cash
+                        on delivery
+                    </a>
                 </p>
             </div>
         </div>
@@ -56,18 +54,11 @@
                     <div class="card-body px-5">
                         <ul class="list-inline text-center link pb-4">
                             <li class="list-inline-item">
-                                <small>Bangladeshi credit/debit card</small><br>
+                                <small>All Bangladeshi credit/debit card</small><br>
                                 <a href="{{ route('order.payment', $order->id) }}" class="btn btn-theme-alt my-2"
                                     role="button"><img src="{{ asset('frontend')}}/images/payment.png" alt="visa"
-                                        title="Bangladeshi credit/debit card" class="img-fluid" width="130px">
+                                        title="Bangladeshi credit/debit card" class="img-fluid" width="150px">
                                 </a>
-                            </li>
-                            <li class="list-inline-item">
-                                <small>Mobile Banking</small><br>
-                                <a href="#" class="btn btn-theme-alt my-2" role="button"><img
-                                        src="{{ asset('frontend')}}/images/bkash.png" alt="master" title="bCash"
-                                        class="img-fluid" width="90px"></a>
-
                             </li>
                         </ul>
                     </div>

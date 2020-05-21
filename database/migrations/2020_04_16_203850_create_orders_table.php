@@ -17,18 +17,13 @@ class CreateOrdersTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');            
             $table->string('order_number')->unique();           
-            $table->enum('status', ['pending', 'processing', 'completed','decline'])->default('pending'); 
-            // for sslcommerz          
-            $table->boolean('payment_status')->default(0);
-            $table->string('payment_method')->default('cash');
-            
-            // for bkash
-            $table->unsignedInteger('payment_number')->nullable();
-            $table->string('payment_type_bkash')->nullable();
-            $table->string('transaction_id')->nullable(); 
-            // for bKash
+            $table->enum('status', ['pending', 'accept', 'cooking','packing', 'delivered', 'cancel' ])->default('pending'); 
+                   
+            $table->boolean('payment_status')->default(0);             // 1 means completed
+            $table->string('payment_method')->default('cash');         // for sslcommerze card_type 
             $table->decimal('grand_total', 20, 6);
-            $table->unsignedInteger('item_count');            
+            $table->unsignedInteger('item_count');   
+            // user details         
             $table->string('name');   
             $table->string('email');      
             $table->string('phone_no');
@@ -37,6 +32,24 @@ class CreateOrdersTable extends Migration
             $table->string('zone');
             $table->string('order_date');
             $table->dateTime('delivery_date');
+
+            // for sslcommerze TRANSACTION INFO
+            $table->string('tran_date')->nullable();
+            $table->string('tran_id')->nullable();
+            $table->string('val_id')->nullable();
+            $table->string('amount')->nullable();
+            $table->string('store_amount')->nullable(); 
+            $table->string('bank_tran_id')->nullable();             
+            $table->string('currency_type')->nullable();
+            $table->string('currency_amount')->nullable();
+            $table->string('error')->nullable();
+            // card details
+            $table->string('card_type')->nullable();
+            $table->string('card_no')->nullable();
+            $table->string('card_brand')->nullable();
+            $table->string('card_issuer')->nullable(); 
+            $table->string('card_issuer_country')->nullable(); 
+            $table->string('card_issuer_country_code')->nullable();
           
             $table->timestamps();
 

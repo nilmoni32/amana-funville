@@ -52,9 +52,6 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
         Route::get('/districts/zones/{id}', 'ZoneController@getZones');
         Route::post('/districts/zones', 'ZoneController@zoneUpdate');
 
-
-
-
         // List categories route /admin/categories
         // Create category route /admin/categories/create : for creating category form
         // Store category route /admin/categories/store : storing the data into the database
@@ -100,6 +97,13 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             // Delete product attribute from the current product
             Route::get('/{id}/delete', 'ProductAttributeController@delete')->name('products.attribute.delete');
         });
+
+        Route::group(['prefix' => 'orders'], function () {
+            Route::get('/', 'OrderController@index')->name('orders.index');
+            Route::get('/edit/{id}', 'OrderController@edit')->name('orders.edit');
+            Route::post('/update', 'OrderController@update')->name('orders.update');
+            // Route::get('/{order}/show', 'OrderController@show')->name('orders.show');
+         });
         
     });
 

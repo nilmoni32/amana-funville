@@ -42,11 +42,11 @@ class ResetPasswordController extends Controller
          $token = Crypt::decryptString($token);
 
         //finding the user with email verification code.
-        $user = User::where('email_token', $token)->first();      
+        $user = User::where('verify_token', $token)->first();      
         //updating user password.
         $user->update([
             'password' => Hash::make($request->password),
-            'email_token' => "",
+            'verify_token' => "",
         ]);
         
         return redirect('login')->with('success', 'The password is updated successfully.');

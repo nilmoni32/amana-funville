@@ -17,7 +17,8 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-sm-12 mt-5 text-center">           
+        <div class="offset-md-1"></div>
+        <div class="col-md-10 col-12 my-5 text-center">
             @if (session('success'))
             <div class="alert alert-success alert-block bg-success text-white">
                 <button type="button" class="close" data-dismiss="alert">×</button>
@@ -31,6 +32,7 @@
             </div>
             @endif
         </div>
+        <div class="offset-md-1"></div>
     </div>
 </div>
 
@@ -40,18 +42,19 @@
             <div class="card mb-5 mt-5">
                 <div class="card-header"><strong>{{ __('Verify Code') }}</strong></div>
 
-                <div class="card-body">                   
+                <div class="card-body">
                     <form method="POST" action="{{ route('verify') }}">
                         @csrf
                         <div class="form-group row">
-                            <label for="email_token"
+                            <label for="verify_token"
                                 class="col-md-4 col-form-label text-md-right">{{ __('Verification Code') }}</label>
 
                             <div class="col-md-6">
-                                <input id="email_token" type="text" class="form-control @error('email_token') is-invalid @enderror"
-                                    name="email_token" value="" required autofocus>
+                                <input id="verify_token" type="text"
+                                    class="form-control @error('verify_token') is-invalid @enderror" name="verify_token"
+                                    value="" required autofocus>
 
-                                @error('email_token')
+                                @error('verify_token')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>

@@ -33,7 +33,7 @@ class CheckoutController extends Controller
     $this->validate($request,[  
         'name' => 'required|string|max:40',
         'email' => 'required|string|email|max:100,', 
-        'phone_no' =>  'required|string|max:15,',
+        'phone_no' =>  'required|regex:/(01)[3-9]{1}(\d){8}/|max:13',       
         'address_txt' =>  'required|string|max:191', 
         'district' => 'required|string',
         'zone' => 'required|string',
@@ -43,11 +43,20 @@ class CheckoutController extends Controller
     $sub_total = Cart::calculateSubtotal();
     $grand_total = $sub_total + $shipping_cost;
 
-    $order = new Order();
-    $order->user_id = auth()->user()->id;
-    // since the random number can be duplicate, we use order_id as transaction id.
-    $order->order_number = 'ORD-'.strtoupper(uniqid()); 
-    $order->payment_method = 'cash';
+    // finding last order id: we use it for curstomer order id (customized) for billing purpose
+    // it will be false only for the first record.
+    if(!Order::orderBy('id', 'desc')->first()){
+        $ord_id = 0;
+    }
+    else{
+        $ord_id = Order::orderBy('id', 'desc')->first()->id; 
+    }   
+    $ord_id = '#'.(100000 + ($ord_id + 1));
+
+    $order = new Order(); // we use order_id as online transaction id.
+    $order->user_id = auth()->user()->id;     
+    $order->order_number = $ord_id; 
+    $order->payment_method = 'Cash';
     $order->status = 'pending';
     $order->payment_status = 0;
     $order->grand_total = $grand_total;
@@ -58,12 +67,14 @@ class CheckoutController extends Controller
     $order->address = $request->address_txt;
     $order->district = District::where('id', $request->district)->first()->name;
     $order->zone = Zone::where('id',  $request->zone)->first()->name;
-    $order->order_date = \Carbon\Carbon::now()->toDateString();
+    $order->order_date = \Carbon\Carbon::now()->toDateTimeString();
     $order->delivery_date = $request->delivery_timings;
     $order->save();
-
+    // when order is placed we set order_id to cart for that cart and set cart ip_address to null as it is used
+    // for guest only.
     foreach(Cart::totalCarts() as $cart){
         $cart->order_id = $order->id;
+        $cart->ip_address = NULL;       
         $cart->save();
     }
     return redirect()->route('checkout.payment', $order->id);
@@ -79,21 +90,28 @@ class CheckoutController extends Controller
     public function cancelOrder($id){
         //getting the order for the respective user.
         $order = Order::where('id', $id)->first();
-        $order->status = "decline";
-        $order->payment_method = 'Cancelled by User';
+        $order->status = "cancel";
+        $order->payment_method = 'None';
+        $order->error = 'Cancelled by user';
         $order->save();
+        if(session()->has('error') && session()->get('error') !== ''){
+            session()->flash('error', '');
+        }
         session()->flash('error', 'The Order has been Canceled by user.');
         return view('site.pages.paynotify', compact('order'));
     }
 
     public function cashOrder($id){
          //getting the order for the respective user.
-         $order = Order::where('id', $id)->first();
-         $order->status = "processing";
-         $order->payment_method = 'cash';
-         $order->save();
-         session()->flash('success', 'Thank you for your recent order from our Funville shop. Your shipment is on its way!');
-         return view('site.pages.paynotify', compact('order'));
+        $order = Order::where('id', $id)->first();        
+        $order->payment_method = 'Cash';
+        $order->bank_tran_id = 'N/A';
+        $order->save();
+        if(session()->has('success') && session()->get('success') !== ''){
+            session()->flash('success', '');
+        }
+        session()->flash('success', 'Thank you for your recent order from our Funville restaurant. Your shipment is on its way!');
+        return view('site.pages.paynotify', compact('order'));
     }   
 
    /**
@@ -155,46 +173,83 @@ class CheckoutController extends Controller
         }   
     }
     public function order_success(Request $request){
-        // Auth::user() returns an instance of the authenticated user.
-       // dd($request->all());
+        // Auth::user() returns an instance of the authenticated user.     
         $user = Auth::user();
         $sslc = new SSLCommerz();
         $tran_id = $_SESSION['tran_id'];        
         $order = Order::find($tran_id);        
-        if($request->status == "VALID"){
+        if($request->status == "VALID"){            
             $order->payment_status = 1; // payment = 1 means paid.
-            $order->payment_method = $request->card_type; // specify the card 
-            $order->status = 'processing';
-            $order->save();
-            session()->flash('success', 'The payment corresponding to the order has received and your shipment is on its way!');       
-            return view('site.pages.paynotify', compact('order'));
-        }        
-        session()->flash('error', 'The payment corresponding to the order has failed.');       
+            $order->payment_method = $request->card_type; // specify the card
+          
+            $order->tran_date = $request->tran_date;
+            $order->tran_id = $tran_id;
+            $order->amount = $request->amount;
+            $order->store_amount = $request->store_amount; 
+            $order->bank_tran_id = $request->bank_tran_id;
+            $order->currency_type = $request->currency_type;
+            $order->currency_amount = $request->currency_amount;
+            $order->card_no = $request->card_no;
+            $order->card_brand = $request->card_brand;
+            $order->card_issuer = $request->card_issuer;
+
+            $order->save();            
+        } 
+        if(session()->has('success') && session()->get('success') !== ''){
+            session()->flash('success', '');
+        }
+        session()->flash('success', 'The payment corresponding to the order has received and your shipment is on its way!');       
         return view('site.pages.paynotify', compact('order'));
-        
     }
-    public function order_fail(Request $request){        
+    public function order_fail(Request $request){              
         $user = Auth::user();
         $sslc = new SSLCommerz();
         $tran_id = $_SESSION['tran_id'];
         $order = Order::find($tran_id);
         if($request->status == "FAILED"){
-            $order->status = 'decline';
-            $order->payment_method = 'card failed';
+            $order->status = 'cancel';
+            $order->payment_method = 'Failed';
+            $order->error = $request->error; 
+
+            $order->tran_date = $request->tran_date;
+            $order->tran_id = $tran_id;
+            $order->amount = $request->amount;            
+            $order->bank_tran_id = $request->bank_tran_id;
+            $order->currency_type = $request->currency_type;
+            $order->currency_amount = $request->currency_amount;
+            $order->card_no = $request->card_no;
+            $order->card_brand = $request->card_brand;
+            $order->card_issuer = $request->card_issuer;
+
             $order->save();           
+        }
+        if(session()->has('error') && session()->get('error') !== ''){
+            session()->flash('error', '');
         }
         session()->flash('error', 'Sorry!! the payment corresponding to the order has failed.');
         return view('site.pages.paynotify', compact('order'));
     }
     public function order_cancel(Request $request){
+        dd($request->all());  
         $user = Auth::user();
         $sslc = new SSLCommerz();
         $tran_id = $_SESSION['tran_id'];
         $order = Order::find($tran_id);
         if($request->status == "CANCELLED"){
-            $order->status = 'decline';
-            $order->payment_method = 'Cancelled by User';       
+            $order->status = 'cancel';
+            $order->payment_method = 'None'; 
+            $order->error = $request->error; 
+
+            $order->tran_date = $request->tran_date;
+            $order->tran_id = $tran_id;
+            $order->amount = $request->amount;
+            $order->currency_type = $request->currency_type;
+            $order->currency_amount = $request->currency_amount;
+
             $order->save();
+        }
+        if(session()->has('error') && session()->get('error') !== ''){
+            session()->flash('error', '');
         }
         session()->flash('error', 'The payment corresponding to the order has been canceled.');
         return view('site.pages.paynotify', compact('order'));        

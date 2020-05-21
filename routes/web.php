@@ -16,9 +16,10 @@ require 'admin.php'; // adding admin php with web.php
 Route::get('/', 'Site\PagesController@index')->name('index');
 
 //other pages
-Route::get('/about', 'Site\PagesController@about')->name('about');
+
 Route::get('/reservation', 'Site\PagesController@reservation')->name('reservation');
 Route::get('/contact', 'Site\PagesController@contact')->name('contact');
+Route::get('/about', 'Site\PagesController@about')->name('about');
 
 //User Authentication
 Auth::routes(['verify' => true]);
@@ -32,11 +33,13 @@ Route::post('/postverifytoken','Auth\VerificationTokenController@postverifytoken
 //Reset Password
 Route::resource('/resetpassword', 'Auth\ResetPasswordController');
 
-//user profile : route is protected via middleware
+//user Dashboard : route is protected via middleware
 Route::group(['middleware' => ['auth:web']], function () {     
-Route::get('user/profile', 'Site\UserController@profile')->name('user.profile');
-Route::post('user/profile/update', 'Site\UserController@updateProfile')->name('user.updateProfile');
-Route::post('user/profile/change-password', 'Site\UserController@changePassword')->name('user.changePassword');
+Route::get('user/dashboard', 'Site\UserController@dashboard')->name('user.dashboard');
+Route::post('user/dashboard/profile-update', 'Site\UserController@updateProfile')->name('user.updateProfile');
+Route::post('user/dashboard/change-password', 'Site\UserController@changePassword')->name('user.changePassword');
+//ajax route for user payment history.
+Route::get('user/dashboard/payment-history/{year}', 'Site\UserController@paymenyHistory');
 });
 
 

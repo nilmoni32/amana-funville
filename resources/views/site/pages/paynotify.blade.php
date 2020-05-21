@@ -17,8 +17,8 @@
 <div class="mycart">
     <div class="container paycard">
         <div class="row">
-            <div class="offset-md-2"></div>
-            <div class="col-md-8 col-12 mb-5 text-center">
+            <div class="offset-md-1"></div>
+            <div class="col-md-10 col-12 mb-5 text-center">
                 @if (session('success'))
                 <div class="alert alert-success alert-block bg-success text-white">
                     <button type="button" class="close" data-dismiss="alert">×</button>
@@ -32,7 +32,7 @@
                 </div>
                 @endif
             </div>
-            <div class="offset-md-2"></div>
+            <div class="offset-md-1"></div>
         </div>
         <div class="row">
             <div class="col-12 pb-5">

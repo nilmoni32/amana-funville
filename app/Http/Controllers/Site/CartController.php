@@ -75,17 +75,19 @@ class CartController extends Controller
             $cart = new Cart();
             //adding user id to cart for logged user.
             if(Auth::check()){
-                $cart->user_id = Auth::id();
+                $cart->user_id = Auth::id();                
+            }else{
+            // when user is not logged in and we store the unkown guest ip address to cart
+                $cart->ip_address = $request->ip();
             }
+
             if(!$request->attribute_id){  // if no product attribute is present
                 $cart->product_id = $request->product_id; // getting the product id when add to cart button is clicked.
             }
             else{ // if product attribute is present then we set has_attribute to 1 and product_id to attribute product id.
                 $cart->product_id = $request->attribute_id; // getting the product attribute id when add to cart button is clicked. 
                 $cart->has_attribute = 1; // setting the attribute flag to 1.
-            }
-            // when user is not logged in and we store the unkown guest ip address
-            $cart->ip_address = $request->ip(); 
+            }             
             $cart->save(); 
         }
               
@@ -103,7 +105,7 @@ class CartController extends Controller
     public function update(Request $request)
     {  
          $id = $request->cart_id;        
-         $cart = Cart::find($id);
+         $cart = Cart::find($id);//primary key id
          $cart->product_quantity = $request->product_quantity;           
          $cart->save();
 

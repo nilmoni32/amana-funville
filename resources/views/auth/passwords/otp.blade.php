@@ -44,15 +44,15 @@
                     <form method="POST" action="{{ route('postverifytoken') }}">
                         @csrf
                         <div class="form-group row">
-                            <label for="email_token"
+                            <label for="verify_token"
                                 class="col-md-4 col-form-label text-md-right">{{ __('Verification OTP') }}</label>
 
                             <div class="col-md-6">
-                                <input id="email_token" type="text"
-                                    class="form-control @error('email_token') is-invalid @enderror" name="email_token"
+                                <input id="verify_token" type="text"
+                                    class="form-control @error('verify_token') is-invalid @enderror" name="verify_token"
                                     value="" required autofocus>
 
-                                @error('email_token')
+                                @error('verify_token')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>

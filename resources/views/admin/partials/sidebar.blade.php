@@ -47,6 +47,13 @@
       </a>
     </li>
     <li>
+      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.orders.index' ? 'active' : '' }}"
+        href="{{ route('admin.orders.index') }}">
+        <i class="app-menu__icon fa fa-bar-chart"></i>
+        <span class="app-menu__label">Manage Orders</span>
+      </a>
+    </li>
+    <li>
       {{-- if current route name is admin.settings we will set active class here --}}
       <a class="app-menu__item {{ Route::currentRouteName() == 'admin.settings' ? 'active' : '' }}"
         href="{{ route('admin.settings')}}">

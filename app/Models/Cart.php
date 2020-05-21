@@ -14,7 +14,7 @@ use Auth;
 class Cart extends Model
 {
     
-    protected $fillable = ['product_id', 'user_id', 'order_id', 'product_quantity', 'ip_address' ];
+    protected $fillable = ['product_id', 'user_id', 'order_id', 'product_quantity', 'ip_address', 'has_attribute' ];
 
     public function user(){
 
@@ -91,6 +91,24 @@ class Cart extends Model
 
         return $total_taka;
 
+    }
+    /**
+     * when guest add items to cart and then he is logged in or sign in then we need to set that user id to cart
+     * so that he can see the recently added products in the cart after sign in.
+     */
+
+    public static function guestAuthenticatedCart(){
+        // finding those carts where user id and order id are null.
+       // and we will set this user id for these carts.
+       $carts = Cart::where('ip_address',  request()->ip())->where('user_id', NULL)->where('order_id', NULL)->get();
+       //return dd($carts);
+       if($carts){
+            foreach($carts as $cart){
+                $cart->user_id = Auth::id();
+                $cart->ip_address = NULL;  // ip_address is used only for guest users so we set ip_address = null for the authenticated users.
+                $cart->save(); 
+            }
+       }
     }
 
 }

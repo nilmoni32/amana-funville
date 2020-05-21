@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use App\Mail\VerificationEmail;
 use Illuminate\Http\Request;
 use App\Rules\Lowercase;
+use App\Sms\SendCode;
 
 class RegisterController extends Controller
 {
@@ -72,7 +73,8 @@ class RegisterController extends Controller
         // we need to call validator method, if we want to use register method here.
         $this->validator($request->all())->validate();
         $this->validate($request,[                       
-            'mobile'               =>  'required|string|max:15|unique:users,mobile',                        
+            'phone_number'               =>  'required|regex:/(01)[3-9]{1}(\d){8}/|max:11|unique:users,phone_number', 
+                                   
         ]);
 
         $user = User::create([
@@ -80,13 +82,20 @@ class RegisterController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'address' => $request->address,
-            'mobile' => $request->mobile,
-            'email_token' => mt_rand(10000,99999),            
+            'phone_number' => $request->phone_number,
+            'verify_token' => mt_rand(10000,99999),            
         ]);
-        // sending mail to mailable class VerificationEmail for the user with it's email id
-        \Mail::to($user->email)->send(new VerificationEmail($user));
 
-        session()->flash('success', 'Please check your email to get the verification code to activate your account');
+       // sending mail to mailable class VerificationEmail for the user with it's email id
+       \Mail::to($user->email)->send(new VerificationEmail($user));
+       //sending token to phone_number 
+       SendCode::sendCode($user->phone_number, $user->verify_token);
+
+        if(session()->has('success') && session()->get('success') !== ''){
+            session()->flash('success', '');
+        }
+        session()->flash('success', 'Please check your phone or email to get the verification code to activate your account');
+        
         return view('auth.verification');
 
     }
