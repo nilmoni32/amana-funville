@@ -6,6 +6,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\AdminPasswordResetNotification;
+use App\Models\Role;
+use App\Models\Ordersale;
 
 class Admin extends Authenticatable
 {
@@ -37,7 +39,7 @@ class Admin extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-    ];
+    ];    
   
     // Once we have the reset token, we are ready to send the message out to this
     // Admin user with a link to reset their password. 
@@ -47,6 +49,31 @@ class Admin extends Authenticatable
         $this->notify( new AdminPasswordResetNotification($token, $this->email));
     }
 
+    public function roles(){
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function hasAnyRoles($roles){
+        // here $this is referencing the Admin model itself
+        // finding the admin user who has the any role in $roles array
+        if($this->roles()->whereIn('name', $roles)->first()){
+            return true;
+        }
+        return false;
+    }
+
+    public function hasRole($role){
+        // finding the admin user who has the role 
+        if($this->roles()->where('name', $role)->first()){
+            return true;
+        }
+        return false;
+    }
+
+    public function ordersales(){
+        return $this->hasMany(Ordersale::class);  
+    }
+   
         
     
 }

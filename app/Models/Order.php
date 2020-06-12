@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Cart;
-use App\Models\Payment;
+
 
 class Order extends Model
 {

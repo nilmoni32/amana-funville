@@ -21,6 +21,8 @@ class CreateCartsTable extends Migration
             $table->string('ip_address')->nullable();
             $table->integer('product_quantity')->default(1);           
             $table->integer('has_attribute')->default(0);
+            $table->decimal('unit_price', 8, 2)->nullable();
+            $table->integer('order_cancel')->default(0);
 
             $table->timestamps();
 

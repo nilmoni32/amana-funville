@@ -14,7 +14,7 @@ use Auth;
 class Cart extends Model
 {
     
-    protected $fillable = ['product_id', 'user_id', 'order_id', 'product_quantity', 'ip_address', 'has_attribute' ];
+    protected $fillable = ['product_id', 'user_id', 'order_id', 'product_quantity', 'ip_address', 'has_attribute', 'unit_price', 'order_cancel' ];
 
     public function user(){
 

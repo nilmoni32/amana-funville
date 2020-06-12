@@ -8,6 +8,7 @@ use App\Models\Cart;
 use App\Models\Order;
 use Auth;
 use App\Models\ProductAttribute;
+use App\Models\Product;
 
 class CartController extends Controller
 {
@@ -83,10 +84,24 @@ class CartController extends Controller
 
             if(!$request->attribute_id){  // if no product attribute is present
                 $cart->product_id = $request->product_id; // getting the product id when add to cart button is clicked.
+                // setting product price into the cart.
+                if(Product::find($request->product_id)->discount_price){
+                    $cart->unit_price = Product::find($request->product_id)->discount_price;
+                }else{
+                    $cart->unit_price = Product::find($request->product_id)->price;
+                }
+              
             }
             else{ // if product attribute is present then we set has_attribute to 1 and product_id to attribute product id.
                 $cart->product_id = $request->attribute_id; // getting the product attribute id when add to cart button is clicked. 
                 $cart->has_attribute = 1; // setting the attribute flag to 1.
+                // setting product attribute price into the cart.
+                if(ProductAttribute::find($request->attribute_id)->special_price){
+                    $cart->unit_price = ProductAttribute::find($request->attribute_id)->special_price;
+                }else{
+                    $cart->unit_price = ProductAttribute::find($request->attribute_id)->price;
+                }
+
             }             
             $cart->save(); 
         }

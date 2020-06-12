@@ -23,8 +23,25 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->registerPolicies();
+        $this->registerPolicies(); 
+        
+        Gate::define('funville-dashboard', function($user){
+            return $user->hasAnyRoles(['admin', 'order_controller', 'user']);
+        });
 
-        //
+        Gate::define('manage-reports', function($user){
+            return $user->hasAnyRoles(['admin', 'order_controller', 'user']);
+        });
+
+        Gate::define('manage-orders', function($user){
+            return $user->hasAnyRoles(['admin', 'order_controller']);
+        });
+
+        Gate::define('all-admin-features', function($user){
+            return $user->hasRole('admin');
+        });
+
+        
+
     }
 }

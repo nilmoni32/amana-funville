@@ -43,7 +43,7 @@ class CheckoutController extends Controller
     $sub_total = Cart::calculateSubtotal();
     $grand_total = $sub_total + $shipping_cost;
 
-    // finding last order id: we use it for curstomer order id (customized) for billing purpose
+    // finding last order id: we use it for customer order id (customized) for billing purpose
     // it will be false only for the first record.
     if(!Order::orderBy('id', 'desc')->first()){
         $ord_id = 0;
@@ -94,6 +94,13 @@ class CheckoutController extends Controller
         $order->payment_method = 'None';
         $order->error = 'Cancelled by user';
         $order->save();
+        // when order is canceled by user after checkout, we need to set order_cancel to 1 in the cart table for that cart 
+        // we need this for reporting purpose.       
+        foreach(Cart::where('user_id', Auth::id())->where('order_id', $order->id)->get() as $cart){
+            $cart->order_cancel = 1;
+            $cart->save();
+        }
+        
         if(session()->has('error') && session()->get('error') !== ''){
             session()->flash('error', '');
         }
@@ -229,8 +236,7 @@ class CheckoutController extends Controller
         session()->flash('error', 'Sorry!! the payment corresponding to the order has failed.');
         return view('site.pages.paynotify', compact('order'));
     }
-    public function order_cancel(Request $request){
-        dd($request->all());  
+    public function order_cancel(Request $request){        
         $user = Auth::user();
         $sslc = new SSLCommerz();
         $tran_id = $_SESSION['tran_id'];
@@ -247,6 +253,14 @@ class CheckoutController extends Controller
             $order->currency_amount = $request->currency_amount;
 
             $order->save();
+
+            // when order is canceled by user after checkout, we need to set order_cancel to 1 in the cart table for that cart 
+            // we need this for reporting purpose.       
+            foreach(Cart::where('user_id', Auth::id())->where('order_id', $order->id)->get() as $cart){
+                $cart->order_cancel = 1;
+                $cart->save();
+            }
+           
         }
         if(session()->has('error') && session()->get('error') !== ''){
             session()->flash('error', '');

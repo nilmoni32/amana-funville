@@ -6,8 +6,8 @@
             <div class="row">
                 <div class="col-sm-12 col-xs-12">
                     <ul class="list-inline float-left icon">
-                        <li class="list-inline-item"><a href="#"><i class="icofont icofont-phone"></i> Hotline :
-                                {{ config('settings.phone_no') }}</a></li>
+                        <li class="list-inline-item"><a href="#"><i
+                                    class="icofont icofont-phone"></i>{{ config('settings.phone_no') }}</a></li>
                     </ul>
                     <ul class="list-inline float-right icon">
                         <li class="list-inline-item dropdown">

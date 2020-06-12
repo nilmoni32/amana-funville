@@ -54,13 +54,13 @@
                             <!--  Menu Tabs Start  -->
                             <ul class="nav nav-tabs flex-column">
                                 <li class="nav-item">
-                                    <a class="nav-link active" data-toggle="tab" href="#profile" aria-expanded="true">
+                                    <a class="nav-link" data-toggle="tab" href="#profile" aria-expanded="true">
                                         <i class="icofont icofont-ui-user"></i>
                                         <span>Your Profile</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" href="#orders" aria-expanded="true">
+                                    <a class="nav-link active" data-toggle="tab" href="#orders" aria-expanded="true">
                                         <i class="icofont icofont-shopping-cart"></i>
                                         <span>Your Orders</span>
                                     </a>
@@ -83,10 +83,10 @@
                     </div>
                     <div class="col-md-8 col-lg-10">
                         <div class="tab-content">
-                            <div id="profile" class="tab-pane fade active show">
+                            <div id="profile" class="tab-pane fade">
                                 @include('site.pages.user.includes.profile')
                             </div>
-                            <div id="orders" class="tab-pane fade">
+                            <div id="orders" class="tab-pane fade active show">
                                 @include('site.pages.user.includes.orders')
                             </div>
                             <div id="payments" class="tab-pane fade">

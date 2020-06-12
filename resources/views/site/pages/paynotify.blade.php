@@ -40,6 +40,12 @@
                     {{ $order->order_number }}</h5>
                 <p class="text-center pt-0 font-weight-bold">
                 </p>
+                @if(session('success'))
+                <p class="text-center py-3">
+                    <strong>[ Track your recent order: <a href="{{ route('index')}}/user/dashboard"
+                            style="color:#E9457A;">{{ route('index')}}/user/dashboard ]</a></strong>
+                </p>
+                @endif
             </div>
         </div>
         <div class="row">

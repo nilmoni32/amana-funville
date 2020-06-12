@@ -15,7 +15,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Food Name</th>
-                                        <th>Quantity</th>
+                                        <th>Qty</th>
                                         <th>Price</th>
                                         <th>Total</th>
                                     </tr>
@@ -85,16 +85,48 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            @if($order->status != 'cancel')
+                            <p class="p-0 m-0"><strong class="ml-0">Status:</strong></p>
+                            <div class="cart-status d-flex cart-status-direction mt-1">
+                                @if($order->status == 'pending')
+                                <div class="cart-flex-item-active">Pending</div>
+                                @else
+                                <div class="cart-flex-item-nonactive">Pending</div>
+                                @endif
+                                @if($order->status == 'accept')
+                                <div class="cart-flex-item-active">Accept</div>
+                                @else
+                                <div class="cart-flex-item-nonactive">Accept</div>
+                                @endif
+                                @if($order->status == 'cooking')
+                                <div class="cart-flex-item-active">Cooking</div>
+                                @else
+                                <div class="cart-flex-item-nonactive">Cooking</div>
+                                @endif
+                                @if($order->status == 'packing')
+                                <div class="cart-flex-item-active">Packing</div>
+                                @else
+                                <div class="cart-flex-item-nonactive">Packing</div>
+                                @endif
+                                @if($order->status == 'delivered')
+                                <div class="cart-flex-item-active">Delivered</div>
+                                @else
+                                <div class="cart-flex-item-nonactive">Delivered</div>
+                                @endif
+                            </div>
+                            @else
+                            <p class="p-0 m-0"><strong class="ml-0">Status:</strong></p>
+                            <div class="cart-status d-flex cart-status-direction mt-1">
+                                <div class="cart-flex-item-cancel">Cancelled</div>
+                            </div>
+                            @endif
+
                         </div>
                         <div class="item-footer">
                             <p>
-                                @if($order->status == 'cancel')
-                                <span class="btn btn-danger text-white text-capitalize">{{ $order->status }}</span>
-                                @else
-                                <span class="btn btn-success text-white text-capitalize">{{ $order->status }}</span>
-                                @endif
-                                <strong>Order Date:</strong>{{ $order->order_date }}<strong>Grand
-                                    Total:</strong>{{ config('settings.currency_symbol') }}
+                                <strong class="ml-0">Expected
+                                    Date:</strong>{{  date('Y-m-d', strtotime($order->delivery_date )) }}
+                                <strong>Grand Total:</strong>{{ config('settings.currency_symbol') }}
                                 {{ round($order->grand_total,0) }}
                             </p>
                         </div>

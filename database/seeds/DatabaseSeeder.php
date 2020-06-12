@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
         $this->call(CategoriesTableSeeder::class);
         $this->call(DistrictsTableSeeder::class);
         $this->call(ZonesTableSeeder::class);
+        $this->call(RolesTableSeeder::class);
+
        // Model::reguard(); // Enable mass assignment
     }
 }

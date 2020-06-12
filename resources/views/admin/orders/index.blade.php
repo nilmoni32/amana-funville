@@ -12,10 +12,24 @@
         <p>{{ $subTitle }}</p>
     </div>
 </div>
+
 <div class="row">
     <div class="col-md-12">
         <div class="tile">
             <div class="tile-body">
+                <form action="{{ route('admin.orders.search') }}" method="get">
+                    @csrf
+                    <div class="row mb-3 mr-4">
+                        <div class="app-search offset-xl-10 col-xl-2 offset-md-6 col-md-3 col-7">
+                            <input class="app-search__input"
+                                style="background:rgb(230, 230, 230); border: 1px solid rgb(201, 201, 201);"
+                                type="search" placeholder="Search" name="search" />
+                            <button type="submit" class="app-search__button" style="margin-right:-15px;">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
                 <table class="table table-hover table-bordered" id="sampleTable">
                     <thead>
                         <tr>
@@ -59,8 +73,15 @@
                             </td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                 <div class="btn-group" role="group" aria-label="Second group">
-                                    <a href="{{ route('admin.orders.edit', $order->id )}}"
+                                    <a href="{{ route('admin.orders.edit', $order->id) }}"
                                         class="btn btn-sm btn-info"><i class="fa fa-edit"></i></a>
+                                    @if($order->status == 'delivered')
+                                    <a href="{{ route('admin.orders.invoice', $order->id) }}"
+                                        class="btn btn-sm btn-dark" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+                                    @else
+                                    <a href="#" class="btn btn-sm btn-secondary" disabled><i
+                                            class="fa fa-file-pdf-o"></i></a>
+                                    @endif
                                 </div>
                             </td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
@@ -89,7 +110,20 @@
         </div>
     </div>
 </div>
-<div class="pt-4 text-center">
+
+<div class="pt-4 text-right">
     {{ $orders->links() }}
 </div>
+
 @endsection
+{{-- Reloading this page after 30 sec --}}
+@push('scripts')
+<script type="text/javascript">
+    setTimeout(function(){
+ 
+        location.reload();
+ 
+    },60000);
+ 
+</script>
+@endpush
