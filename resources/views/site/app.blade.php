@@ -9,6 +9,7 @@
     <title>@yield('title') - {{ config('app.name') }}</title>
     <!-- Styles -->
     @include('site.partials.styles')
+    <script src="https://use.fontawesome.com/3a7e4171cb.js"></script>
 </head>
 
 <body>

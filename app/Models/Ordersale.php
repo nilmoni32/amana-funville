@@ -9,7 +9,7 @@ use App\Models\Sale;
 class Ordersale extends Model
 {
     protected $fillable = [
-        'admin_id', 'order_number', 'grand_total', 'order_date',
+        'admin_id', 'order_number', 'grand_total', 'order_date', 'customer_name', 'customer_mobile', 'customer_email', 'customer_notes',
     ];
 
     public function admin(){

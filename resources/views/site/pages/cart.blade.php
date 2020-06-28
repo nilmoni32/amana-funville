@@ -40,11 +40,12 @@
                                 <td class="text-left">
                                     {{-- getting the product image from cart to product image table using relatioship --}}
                                     <img src="{{ asset('storage/'.$cart->product->images->first()->full) }}"
-                                        title="{{ $cart->product->name }}" class="img-responsive pr-2 rounded"
-                                        width="70px" />
+                                        title="{{ $cart->product->name }}"
+                                        class="img-responsive pr-2 rounded d-inline-block" width="100px" />
                                     @if($cart->has_attribute)
                                     {{-- if this condition is true then $cart product_id is product_attribute id --}}
-                                    {{ App\Models\ProductAttribute::find($cart->product_id)->product->name }}-({{ App\Models\ProductAttribute::find($cart->product_id)->size }})
+                                    {{ $cart->product->name }}-({{ App\Models\ProductAttribute::find($cart->product_attribute_id)->size }})
+
                                     @else
                                     {{ $cart->product->name }}
                                     @endif
@@ -67,10 +68,10 @@
                                     @if($cart->has_attribute)
                                     {{-- we face data from product attribute table --}}
                                     {{-- if this condition is true then $cart product_id is product_attribute id --}}
-                                    @if( App\Models\ProductAttribute::find($cart->product_id)->special_price)
-                                    {{ round(App\Models\ProductAttribute::find($cart->product_id)->special_price,0) }}
+                                    @if( App\Models\ProductAttribute::find($cart->product_attribute_id)->special_price)
+                                    {{ round(App\Models\ProductAttribute::find($cart->product_attribute_id)->special_price,0) }}
                                     @else
-                                    {{ round(App\Models\ProductAttribute::find($cart->product_id)->price,0) }}
+                                    {{ round(App\Models\ProductAttribute::find($cart->product_attribute_id)->price,0) }}
                                     @endif
                                     @else
                                     @if($cart->product->discount_price)
@@ -85,14 +86,15 @@
                                     @if($cart->has_attribute)
                                     {{-- we face data from product attribute table --}}
                                     {{-- if this condition is true then $cart product_id is product_attribute id --}}
-                                    @if( App\Models\ProductAttribute::find($cart->product_id)->special_price)
-                                    {{ App\Models\ProductAttribute::find($cart->product_id)->special_price *  $cart->product_quantity }}
+                                    @if( App\Models\ProductAttribute::find($cart->product_attribute_id)->special_price)
+                                    {{ App\Models\ProductAttribute::find($cart->product_attribute_id)->special_price *  $cart->product_quantity }}
                                     @php $total_taka +=
-                                    App\Models\ProductAttribute::find($cart->product_id)->special_price *
+                                    App\Models\ProductAttribute::find($cart->product_attribute_id)->special_price *
                                     $cart->product_quantity @endphp
                                     @else
-                                    {{ App\Models\ProductAttribute::find($cart->product_id)->price *  $cart->product_quantity  }}
-                                    @php $total_taka += App\Models\ProductAttribute::find($cart->product_id)->price *
+                                    {{ App\Models\ProductAttribute::find($cart->product_attribute_id)->price *  $cart->product_quantity  }}
+                                    @php $total_taka +=
+                                    App\Models\ProductAttribute::find($cart->product_attribute_id)->price *
                                     $cart->product_quantity @endphp
                                     @endif
                                     @else

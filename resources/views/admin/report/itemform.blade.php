@@ -24,13 +24,15 @@
                             <div class="form-group mb-2">
                                 <label>
                                     <span class="font-weight-bold pr-1">Choose Start Date :</span>
-                                    <input type="date" name="start_date" value="<?php echo date('Y-m-d'); ?>" required>
+                                    <input type="text" class="datetimepicker" name="start_date"
+                                        placeholder="choose date (d-m-Y)" required>
                                 </label>
                             </div>
                             <div class="form-group mx-sm-3 mb-2">
                                 <label class="font-bold">
                                     <span class="font-weight-bold pr-1">Choose End Date :</span>
-                                    <input type="date" name="end_date" value="<?php echo date('Y-m-d'); ?>" required>
+                                    <input type="text" class="datetimepicker" name="end_date"
+                                        placeholder="choose date (d-m-Y)" required>
                                 </label>
                             </div>
 
@@ -71,3 +73,17 @@
     </div>
 </div>
 @endsection
+@push('scripts')
+
+<script>
+    $(document).ready(function () {
+      $('.datetimepicker').datetimepicker({
+        timepicker:false,
+        datepicker:true,        
+        format: 'd-m-Y',              
+      });
+      $(".datetimepicker").attr("autocomplete", "off");
+    });
+</script>
+
+@endpush

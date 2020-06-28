@@ -45,8 +45,21 @@
                 <input class="form-control" type="text" placeholder="Enter Shipping Cost" name="delivery_charge"
                     id="delivery_charge" value="{{ config('settings.delivery_charge') }}">
             </div>
-
-
+            <div class="form-group">
+                <label class="control-label" for="client_lists">Top Client Lists</label>
+                <input class="form-control" type="text" placeholder="Enter Client Lists" name="client_lists"
+                    id="delivery_charge" value="{{ config('settings.client_lists') }}">
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="open_hours">Restaurant Opening Hours</label>
+                <input class="form-control" type="text" placeholder="Enter open_hours" name="open_hours" id="open_hours"
+                    value="{{ config('settings.open_hours') }}">
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="google_map">Funville Google Map</label>
+                <input class="form-control" type="text" placeholder="Google Map iframe" name="google_map"
+                    id="google_map" value="{{ config('settings.google_map') }}">
+            </div>
         </div>
         <div class="tile-footer">
             <div class="row d-print-none mt-2">

@@ -102,20 +102,23 @@
             if(Auth::check()){ //Auth::check() to check if the user is logged in
             // when logged user adds products to cart.
             $cart = App\Models\Cart::where('user_id', Auth::id())
-            ->where('product_id', $attribute->id)
+            ->where('product_id', $product->id)
+            ->where('product_attribute_id', $attribute->id)
             ->where('order_id', NULL)
             ->where('has_attribute', 1)
             ->first();
             }else{
             // when a guest adds product to cart.
             $cart = App\Models\Cart::where('ip_address', request()->ip())
-            ->where('product_id', $attribute->id)
+            ->where('product_id', $product->id)
+            ->where('product_attribute_id', $attribute->id)
             ->where('has_attribute', 1)
             ->first();
             }
             @endphp
             <button class="btn btn-theme-alt btn-cart btn-block {{ $cart ? 'display-none' : '' }}"
-                id="cartSubProductBtn{{ $attribute->id }}" onclick="addToCart(0, {{ $attribute->id }})">Add
+                id="cartSubProductBtn{{ $attribute->id }}"
+                onclick="addToCart({{ $product->id }}, {{ $attribute->id }})">Add
                 to Cart</button>
             <p class="{{ $cart ? '' : 'display-none' }} cart-msg" id="subMsg{{ $attribute->id }}">
                 Food is added to Cart</p>

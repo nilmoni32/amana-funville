@@ -16,7 +16,7 @@ class Sale extends Model
     * @var array
     */
     protected $fillable = [
-        'product_id', 'admin_id', 'ordersale_id', 'product_quantity', 'unit_price', 
+        'product_id', 'admin_id', 'ordersale_id', 'product_name','product_quantity', 'unit_price', 
     ];
 
     public function admin(){
@@ -32,4 +32,5 @@ class Sale extends Model
 
         return $this->belongsTo(Ordersale::class);
     }
+
 }

@@ -28,32 +28,29 @@
                                         </td>
                                         <td class="text-left" style="text-transform:capitalize">
                                             <img src="{{ asset('storage/'.$cart->product->images->first()->full) }}"
-                                                title="{{ $cart->product->name }}" class="img-responsive pr-2 rounded"
-                                                width="70px" />
+                                                title="{{ $cart->product->name }}"
+                                                class="img-responsive d-inline-block pr-2 rounded" width="70px" />
                                             @if($cart->has_attribute)
                                             {{-- if this condition is true then $cart product_id is product_attribute id --}}
-                                            {{ App\Models\ProductAttribute::find($cart->product_id)->product->name }}-({{ App\Models\ProductAttribute::find($cart->product_id)->size }})
+                                            {{ $cart->product->name }}-({{ App\Models\ProductAttribute::find($cart->product_attribute_id)->size }})
                                             @else
                                             {{ $cart->product->name }}
                                             @endif
                                         </td>
 
                                         <td class="text-center">
-                                            @if($cart->has_attribute)
                                             {{ $cart->product_quantity }}
-                                            @else
-                                            {{ $cart->product_quantity }}
-                                            @endif
                                         </td>
 
                                         <td class="text-center" style="text-transform:capitalize">
                                             @if($cart->has_attribute)
                                             {{-- we face data from product attribute table --}}
                                             {{-- if this condition is true then $cart product_id is product_attribute id --}}
-                                            @if( App\Models\ProductAttribute::find($cart->product_id)->special_price)
-                                            {{ round(App\Models\ProductAttribute::find($cart->product_id)->special_price,0) }}
+                                            @if(
+                                            App\Models\ProductAttribute::find($cart->product_attribute_id)->special_price)
+                                            {{ round(App\Models\ProductAttribute::find($cart->product_attribute_id)->special_price,0) }}
                                             @else
-                                            {{ round(App\Models\ProductAttribute::find($cart->product_id)->price,0) }}
+                                            {{ round(App\Models\ProductAttribute::find($cart->product_attribute_id)->price,0) }}
                                             @endif
                                             @else
                                             @if($cart->product->discount_price)
@@ -68,10 +65,11 @@
                                             @if($cart->has_attribute)
                                             {{-- we face data from product attribute table --}}
                                             {{-- if this condition is true then $cart product_id is product_attribute id --}}
-                                            @if( App\Models\ProductAttribute::find($cart->product_id)->special_price)
-                                            {{ App\Models\ProductAttribute::find($cart->product_id)->special_price *  $cart->product_quantity }}
+                                            @if(
+                                            App\Models\ProductAttribute::find($cart->product_attribute_id)->special_price)
+                                            {{ App\Models\ProductAttribute::find($cart->product_attribute_id)->special_price *  $cart->product_quantity }}
                                             @else
-                                            {{ App\Models\ProductAttribute::find($cart->product_id)->price *  $cart->product_quantity  }}
+                                            {{ App\Models\ProductAttribute::find($cart->product_attribute_id)->price *  $cart->product_quantity  }}
                                             @endif
                                             @else
                                             @if($cart->product->discount_price)
@@ -125,7 +123,7 @@
                         <div class="item-footer">
                             <p>
                                 <strong class="ml-0">Expected
-                                    Date:</strong>{{  date('Y-m-d', strtotime($order->delivery_date )) }}
+                                    Date:</strong>{{  date('d-m-Y', strtotime($order->delivery_date )) }}
                                 <strong>Grand Total:</strong>{{ config('settings.currency_symbol') }}
                                 {{ round($order->grand_total,0) }}
                             </p>

@@ -22,13 +22,14 @@
                     <div class="form-group">
                         <label class="control-label" for="order_date"> Order Date:</label>
                         <input class="form-control" type="text" name="order_date" id="order_date"
-                            value="{{ $order->order_date }}" readonly>
+                            value="{{ \Carbon\Carbon::parse($order->order_date)->format('d-m-Y H:i:s') }}" readonly>
+
                     </div>
                     <div class="form-group">
                         <label class="control-label" for="delivery_date"> Delivery Date:<span class="text-danger">
                                 *</span></label>
                         <input class="form-control" type="text" name="delivery_date" id="delivery_date"
-                            value="{{  date('Y-m-d', strtotime($order->delivery_date )) }}" readonly>
+                            value="{{  date('d-m-Y', strtotime($order->delivery_date )) }}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="status">Change Order Status:<span class="text-danger">*</span></label>

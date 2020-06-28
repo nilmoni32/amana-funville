@@ -110,6 +110,18 @@ class SettingsTableSeeder extends Seeder
             'key'   => 'delivery_charge',
             'value' => '',
         ],
+        [
+            'key'   => 'client_lists',
+            'value' => '',
+        ],
+        [
+            'key'   => 'open_hours',
+            'value' => '',
+        ],
+        [
+            'key'   => 'google_map',
+            'value' => '',
+        ],
 
 
     ];

@@ -82,26 +82,40 @@
     @endcan
 
     @can('manage-orders')
-    <li>
-      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.orders.index' ? 'active' : '' }}"
-        href="{{ route('admin.orders.index') }}">
-        <i class="app-menu__icon fa fa-database"></i>
-        <span class="app-menu__label">POS Sales Report</span>
+    @php if(Route::currentRouteName() == 'admin.sales.index'){
+    $temp1 = 1;
+    }else{
+    $temp1 = 0;
+    }
+    @endphp
+    <li class="{{ $temp1 ? 'treeview is-expanded' : 'treeview' }}">
+      <a class="app-menu__item" href="#" data-toggle="treeview">
+        <i class="app-menu__icon fa fa-product-hunt"></i><span class="app-menu__label">POS</span>
+        <i class="treeview-indicator fa fa-angle-right"></i>
       </a>
-    </li>
-    <li>
-      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.orders.index' ? 'active' : '' }}"
-        href="{{ route('admin.orders.index') }}">
-        <i class="app-menu__icon fa fa-bars"></i>
-        <span class="app-menu__label">POS Sales Order</span>
-      </a>
-    </li>
-    <li>
-      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.sales.index' ? 'active' : '' }}"
-        href="{{ route('admin.sales.index') }}">
-        <i class="app-menu__icon fa fa-calculator"></i>
-        <span class="app-menu__label">POS Sales</span>
-      </a>
+      <ul class="treeview-menu">
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.sales.index' ? 'active' : '' }}"
+            href="{{ route('admin.sales.index') }}">
+            <i class="app-menu__icon fa fa-database"></i>
+            <span class="app-menu__label">POS Sales Report</span>
+          </a>
+        </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.sales.index' ? 'active' : '' }}"
+            href="{{ route('admin.sales.index') }}">
+            <i class="app-menu__icon fa fa-podcast"></i>
+            <span class="app-menu__label">POS Sales Order</span>
+          </a>
+        </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.sales.index' ? 'active' : '' }}"
+            href="{{ route('admin.sales.index') }}">
+            <i class="app-menu__icon fa fa-calculator"></i>
+            <span class="app-menu__label">POS Sales</span>
+          </a>
+        </li>
+      </ul>
     </li>
     <li>
       <a class="app-menu__item {{ Route::currentRouteName() == 'admin.orders.index' ? 'active' : '' }}"
@@ -127,35 +141,34 @@
         <i class="app-menu__icon fa fa-cutlery"></i>
         <span class="app-menu__label">Food Menu</span></a>
     </li>
-    <li>
-      {{-- if current route name is dashboard we will set active class  --}}
-      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.districts.index' ? 'active' : ''}}"
-        href="{{route('admin.districts.index')}}">
-        <i class="app-menu__icon fa fa-sitemap"></i>
-        <span class="app-menu__label">Manage District</span>
+    @php if(Route::currentRouteName() == 'admin.adduser.form' ||
+    Route::currentRouteName() == 'admin.users.index' ){
+    $temp2 = 1;
+    }else{
+    $temp2 = 0;
+    }
+    @endphp
+    <li class="{{ $temp2 ? 'treeview is-expanded' : 'treeview' }}">
+      <a class="app-menu__item" href="#" data-toggle="treeview">
+        <i class="app-menu__icon fa fa-users"></i><span class="app-menu__label">Manage Users</span>
+        <i class="treeview-indicator fa fa-angle-right"></i>
       </a>
-    </li>
-    <li>
-      {{-- if current route name is dashboard we will set active class  --}}
-      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.zones.index' ? 'active' : ''}}"
-        href="{{route('admin.zones.index')}}">
-        <i class="app-menu__icon fa fa-chrome"></i>
-        <span class="app-menu__label">Manage Area</span>
-      </a>
-    </li>
-    <li>
-      {{-- if current route name is admin.settings we will set active class here --}}
-      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.adduser.form' ? 'active' : '' }}"
-        href="{{ route('admin.adduser.form') }}">
-        <i class="app-menu__icon fa fa-user"></i>
-        <span class="app-menu__label">Add User</span></a>
-    </li>
-    <li>
-      {{-- if current route name is admin.settings we will set active class here --}}
-      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.users.index' ? 'active' : '' }}"
-        href="{{ route('admin.users.index') }}">
-        <i class="app-menu__icon fa fa-users"></i>
-        <span class="app-menu__label">Manage Users & Roles</span></a>
+      <ul class="treeview-menu">
+        <li>
+          {{-- if current route name is admin.settings we will set active class here --}}
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.adduser.form' ? 'active' : '' }}"
+            href="{{ route('admin.adduser.form') }}">
+            <i class="app-menu__icon fa fa-user"></i>
+            <span class="app-menu__label">Add User</span></a>
+        </li>
+        <li>
+          {{-- if current route name is admin.settings we will set active class here --}}
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.users.index' ? 'active' : '' }}"
+            href="{{ route('admin.users.index') }}">
+            <i class="app-menu__icon fa fa-user"></i>
+            <span class="app-menu__label">Edit Users & Roles</span></a>
+        </li>
+      </ul>
     </li>
     <li>
       {{-- if current route name is admin.settings we will set active class here --}}
@@ -163,6 +176,67 @@
         href="{{ route('admin.settings')}}">
         <i class="app-menu__icon fa fa-cogs"></i>
         <span class="app-menu__label">Settings</span></a>
+    </li>
+    @php if(Route::currentRouteName() == 'admin.districts.index' ||
+    Route::currentRouteName() == 'admin.zones.index' ||
+    Route::currentRouteName() == 'admin.zones.getall' ){
+    $temp4 = 1;
+    }else{
+    $temp4 = 0;
+    }
+    @endphp
+    <li class="{{ $temp4 ? 'treeview is-expanded' : 'treeview' }}">
+      <a class="app-menu__item" href="#" data-toggle="treeview">
+        <i class="app-menu__icon fa fa-map-marker"></i><span class="app-menu__label">User Location</span>
+        <i class="treeview-indicator fa fa-angle-right"></i>
+      </a>
+      <ul class="treeview-menu">
+        <li>
+          {{-- if current route name is dashboard we will set active class  --}}
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.districts.index' ? 'active' : ''}}"
+            href="{{route('admin.districts.index')}}">
+            <i class="app-menu__icon fa fa-map-signs"></i>
+            <span class="app-menu__label">Manage District</span>
+          </a>
+        </li>
+        <li>
+          {{-- if current route name is dashboard we will set active class  --}}
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.zones.index' ||
+          Route::currentRouteName() == 'admin.zones.getall' ? 'active' : ''}}" href="{{route('admin.zones.index')}}">
+            <i class="app-menu__icon fa fa-map-signs"></i>
+            <span class="app-menu__label">Manage Area</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    @php if(Route::currentRouteName() == 'admin.services.create' ||
+    Route::currentRouteName() == 'admin.services.index' ){
+    $temp3 = 1;
+    }else{
+    $temp3 = 0;
+    }
+    @endphp
+    <li class="{{ $temp3 ? 'treeview is-expanded' : 'treeview' }}">
+      <a class="app-menu__item" href="#" data-toggle="treeview">
+        <i class="app-menu__icon fa fa-paw"></i><span class="app-menu__label">Manage Services</span>
+        <i class="treeview-indicator fa fa-angle-right"></i>
+      </a>
+      <ul class="treeview-menu">
+        <li>
+          {{-- if current route name is admin.settings we will set active class here --}}
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.services.create' ? 'active' : '' }}"
+            href="{{ route('admin.services.create')}}">
+            <i class="app-menu__icon fa fa-crosshairs"></i>
+            <span class="app-menu__label">Add Services</span></a>
+        </li>
+        <li>
+          {{-- if current route name is admin.settings we will set active class here --}}
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.services.index' ? 'active' : '' }}"
+            href="{{ route('admin.services.index') }}">
+            <i class="app-menu__icon fa fa-crosshairs"></i>
+            <span class="app-menu__label">All Services</span></a>
+        </li>
+      </ul>
     </li>
     @endcan
 

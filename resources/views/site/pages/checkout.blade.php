@@ -145,7 +145,7 @@
                                         <td>
                                             @if($cart->has_attribute)
                                             {{-- if this condition is true then $cart product_id is product_attribute id --}}
-                                            {{ App\Models\ProductAttribute::find($cart->product_id)->product->name }}-({{ App\Models\ProductAttribute::find($cart->product_id)->size }})
+                                            {{ $cart->product->name }}-({{ App\Models\ProductAttribute::find($cart->product_attribute_id)->size }})
                                             x {{ $cart->product_quantity }}
                                             @else
                                             {{ $cart->product->name }} x {{ $cart->product_quantity }}
@@ -155,12 +155,13 @@
                                             @if($cart->has_attribute)
                                             {{-- we face data from product attribute table --}}
                                             {{-- if this condition is true then $cart product_id is product_attribute id --}}
-                                            @if( App\Models\ProductAttribute::find($cart->product_id)->special_price)
+                                            @if(
+                                            App\Models\ProductAttribute::find($cart->product_attribute_id)->special_price)
                                             {{ config('settings.currency_symbol') }}
-                                            {{ round(App\Models\ProductAttribute::find($cart->product_id)->special_price,0) *  $cart->product_quantity }}
+                                            {{ round(App\Models\ProductAttribute::find($cart->product_attribute_id)->special_price,0) *  $cart->product_quantity }}
                                             @else
                                             {{ config('settings.currency_symbol') }}
-                                            {{ round(App\Models\ProductAttribute::find($cart->product_id)->price,0) *  $cart->product_quantity }}
+                                            {{ round(App\Models\ProductAttribute::find($cart->product_attribute_id)->price,0) *  $cart->product_quantity }}
                                             @endif
                                             @else
                                             @if($cart->product->discount_price)
@@ -214,22 +215,30 @@
 @push('scripts')
 <script type="text/javascript">
     // var $tb = $("#address_txt");
-    $('input[name="address_chk"]').on("change", function () {       
-        if (this.checked) {
-            $.ajax({
-            url: "/checkout/user/address/",
-            type: "GET",
-            dataType: "json",
-            success: function(data) {               
-                if (data.status == "success") {                    
-                  $('textarea[name="address_txt"]').html(data.address); 
-                 }
-                }
-            });
-        }else{
-            $('textarea[name="address_txt"]').html("");
-        }
+
+    $(function() { 
+        $('form').submit(function(){
+            $(this).find('input[type=submit]').prop('disabled', true);
+        });
+
+        $('input[name="address_chk"]').on("change", function () {       
+            if (this.checked) {
+                $.ajax({
+                url: "/checkout/user/address/",
+                type: "GET",
+                dataType: "json",
+                success: function(data) {               
+                    if (data.status == "success") {                    
+                    $('textarea[name="address_txt"]').html(data.address); 
+                    }
+                    }
+                });
+            }else{
+                $('textarea[name="address_txt"]').html("");
+            }
+        });
     });
+   
 
 
 </script>

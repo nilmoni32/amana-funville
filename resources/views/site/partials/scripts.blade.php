@@ -1,5 +1,7 @@
 <!-- jquery -->
 <script src="{{ asset('frontend') }}/libs/jquery/jquery.min.js"></script>
+<!-- jquery datetimepicker js -->
+<script src="{{ asset('frontend') }}/js/jquery.datetimepicker.full.min.js"></script>
 <!-- jquery Validate -->
 <script src="{{ asset('frontend') }}/libs/jquery-validation/jquery.validate.min.js"></script>
 <!-- popper js -->

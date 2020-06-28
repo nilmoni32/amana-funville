@@ -8,7 +8,7 @@
 @section('content')
 <div class="app-title">
     <div>
-        <h1><i class="fa fa-tags"></i>&nbsp;{{ $pageTitle }}</h1>
+        <h1><i class="fa fa-map-marker"></i>&nbsp;{{ $pageTitle }}</h1>
         <p>{{ $subTitle }}</p>
     </div>
 </div>

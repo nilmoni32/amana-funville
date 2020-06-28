@@ -51,7 +51,8 @@
                                 {{ $order->order_number }}
                             </td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
-                                {{ $order->order_date }}
+                                {{-- {{ $order->order_date }} --}}
+                                {{ \Carbon\Carbon::parse($order->order_date)->format('d-m-Y H:i:s') }}
                             </td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                 {{ round($order->grand_total,0) }}
@@ -123,7 +124,7 @@
  
         location.reload();
  
-    },60000);
+    },90000);
  
 </script>
 @endpush

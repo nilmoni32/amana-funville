@@ -25,11 +25,12 @@ class SingleItemExport implements FromCollection, WithHeadings
         //single item sale reports 
         return DB::table('carts')
                 ->join('products', 'carts.product_id', '=', 'products.id')
-                ->select(DB::raw('Date(carts.created_at) as date, products.name, unit_price, SUM(product_quantity) as total_qty, unit_price * SUM(product_quantity) as subtotal')) 
-                ->whereRaw('has_attribute = 0 and order_id is not NULL and order_cancel = 0')
+                ->leftJoin('product_attributes', 'carts.product_attribute_id', '=', 'product_attributes.id')
+                ->select(DB::raw('Date(carts.created_at) as date, products.name, product_attributes.size, unit_price, SUM(product_quantity) as total_qty, unit_price * SUM(product_quantity) as subtotal')) 
+                ->whereRaw('order_id is not NULL and order_cancel = 0')
                 ->whereBetween('carts.created_at', [$this->start_date, $this->end_date])
-                ->where('product_id', $product->id)
-                ->groupByRaw('Date(carts.created_at), products.name, unit_price')
+                ->where('carts.product_id', $product->id)
+                ->groupByRaw('Date(carts.created_at), products.name, product_attributes.size, unit_price')
                 ->orderByRaw('Date(carts.created_at) DESC')
                 ->get();
     }
@@ -39,6 +40,7 @@ class SingleItemExport implements FromCollection, WithHeadings
         return [
             'Date',
             'Food Name',
+            'Size',
             'Unit Price',
             'Total Qty',
             'Subtotal',

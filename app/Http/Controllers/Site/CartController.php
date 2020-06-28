@@ -36,14 +36,16 @@ class CartController extends Controller
             if(Auth::check()){ //Auth::check() to check if the user is logged in
                 // when logged user adds products to cart. 
                 $cart = Cart::where('user_id', Auth::id())
-                            ->where('product_id', $request->attribute_id) // when attribute table, cart product id should be attribute_id.
+                            ->where('product_id', $request->product_id)
+                            ->where('product_attribute_id', $request->attribute_id) // when attribute table, cart product id should be attribute_id.
                             ->where('has_attribute', 1) 
                             ->where('order_id', NULL)                           
                             ->first();
             }else{
                 // when a guest adds product to cart.           
                 $cart = Cart::where('ip_address',  $request->ip())
-                        ->where('product_id', $request->attribute_id) // when attribute table, cart product id should be attribute_id.
+                        ->where('product_id', $request->product_id)
+                        ->where('product_attribute_id', $request->attribute_id) // when attribute table, cart product id should be attribute_id.
                         ->where('has_attribute', 1)                      
                         ->first();
             }   
@@ -93,7 +95,8 @@ class CartController extends Controller
               
             }
             else{ // if product attribute is present then we set has_attribute to 1 and product_id to attribute product id.
-                $cart->product_id = $request->attribute_id; // getting the product attribute id when add to cart button is clicked. 
+                $cart->product_id = $request->product_id; 
+                $cart->product_attribute_id = $request->attribute_id; // getting the product attribute id when add to cart button is clicked. 
                 $cart->has_attribute = 1; // setting the attribute flag to 1.
                 // setting product attribute price into the cart.
                 if(ProductAttribute::find($request->attribute_id)->special_price){
@@ -126,10 +129,10 @@ class CartController extends Controller
 
          //calculating total single cart price
          if($cart->has_attribute){ 
-            if(ProductAttribute::find($cart->product_id)->special_price){
-                    $total_unit_price = ProductAttribute::find($cart->product_id)->special_price * $cart->product_quantity;
+            if(ProductAttribute::find($cart->product_attribute_id)->special_price){
+                    $total_unit_price = ProductAttribute::find($cart->product_attribute_id)->special_price * $cart->product_quantity;
             }else{
-                    $total_unit_price = ProductAttribute::find($cart->product_id)->price * $cart->product_quantity;
+                    $total_unit_price = ProductAttribute::find($cart->product_attribute_id)->price * $cart->product_quantity;
             }
         }else{  //if has_attribute = 0 then we face data from product table
             if($cart->product->discount_price){

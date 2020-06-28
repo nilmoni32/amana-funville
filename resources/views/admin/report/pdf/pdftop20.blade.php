@@ -200,7 +200,11 @@
                     <tr>
                         <td>{{ $loop->index + 1 }}</td>
                         <td style="text-transform:capitalize">
+                            @if($cart->product_attribute_id)
+                            {{ App\Models\Product::find($cart->product_id)->name }}-({{ App\Models\ProductAttribute::find($cart->product_attribute_id)->size }})
+                            @else
                             {{ App\Models\Product::find($cart->product_id)->name }}
+                            @endif
                         </td>
                         <td>
                             {{ round( $cart->unit_price,0) }} {{ config('settings.currency_symbol') }}

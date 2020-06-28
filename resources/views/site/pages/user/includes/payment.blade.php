@@ -75,7 +75,7 @@
                         {{ $order->order_number }}
                     </td>
                     <td class="text-center">
-                        {{ $order->order_date }}
+                        {{ \Carbon\Carbon::parse($order->order_date)->format('d-m-Y H:i:s') }}
                     </td>
                     <td class="text-center" style="text-transform:capitalize">
                         {{ config('settings.currency_symbol') }} {{ round($order->grand_total,0) }}

@@ -49,7 +49,14 @@
                         @foreach($daily_carts as $cart)
                         <tr>
                             <td class="text-center">{{ $loop->index + 1  }}</td>
-                            <td class="text-center">{{ App\Models\Product::find($cart->product_id)->name }}</td>
+                            <td class="text-center">
+                                @if($cart->product_attribute_id)
+                                {{ App\Models\Product::find($cart->product_id)->name }}-({{ App\Models\ProductAttribute::find($cart->product_attribute_id)->size }})
+                                @else
+                                {{ App\Models\Product::find($cart->product_id)->name }}
+                                @endif
+
+                            </td>
                             <td class="text-center">{{ round( $cart->unit_price,0) }}
                                 {{ config('settings.currency_symbol') }}
                             </td>

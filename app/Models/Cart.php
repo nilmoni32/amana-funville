@@ -14,7 +14,7 @@ use Auth;
 class Cart extends Model
 {
     
-    protected $fillable = ['product_id', 'user_id', 'order_id', 'product_quantity', 'ip_address', 'has_attribute', 'unit_price', 'order_cancel' ];
+    protected $fillable = ['product_id', 'user_id', 'order_id', 'product_attribute_id','product_quantity', 'ip_address', 'has_attribute', 'unit_price', 'order_cancel' ];
 
     public function user(){
 
@@ -24,6 +24,11 @@ class Cart extends Model
     public function product(){
 
         return $this->belongsTo(Product::class);
+    }
+    
+    public function subproduct(){
+
+        return $this->belongsTo(ProductAttribute::class);
     }
 
     public function order(){
@@ -75,10 +80,10 @@ class Cart extends Model
         foreach(Cart::totalCarts() as $cart){
             //if has_attribute = 1 then we face data from product attribute
             if($cart->has_attribute){ 
-                if(ProductAttribute::find($cart->product_id)->special_price){
-                        $total_taka += ProductAttribute::find($cart->product_id)->special_price * $cart->product_quantity;
+                if(ProductAttribute::find($cart->product_attribute_id)->special_price){
+                        $total_taka += ProductAttribute::find($cart->product_attribute_id)->special_price * $cart->product_quantity;
                 }else{
-                        $total_taka += ProductAttribute::find($cart->product_id)->price * $cart->product_quantity;
+                        $total_taka += ProductAttribute::find($cart->product_attribute_id)->price * $cart->product_quantity;
                 }
             }else{  //if has_attribute = 0 then we face data from product table
                 if($cart->product->discount_price){

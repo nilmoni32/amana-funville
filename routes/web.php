@@ -16,8 +16,12 @@ require 'admin.php'; // adding admin php with web.php
 Route::get('/', 'Site\PagesController@index')->name('index');
 
 //other pages
-
 Route::get('/reservation', 'Site\PagesController@reservation')->name('reservation');
+// Reservation request route
+Route::post('/reservation/mail', 'Site\ContactController@mailReservation')->name('reservation.post.mail');
+// contact us mail
+Route::post('/contact/mail', 'Site\ContactController@contact')->name('contact.post.mail');
+
 Route::get('/contact', 'Site\PagesController@contact')->name('contact');
 Route::get('/about', 'Site\PagesController@about')->name('about');
 

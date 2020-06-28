@@ -17,7 +17,8 @@ class CreateSalesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('product_id'); 
             $table->unsignedBigInteger('admin_id')->nullable();
-            $table->unsignedBigInteger('ordersale_id')->nullable();           
+            $table->unsignedBigInteger('ordersale_id')->nullable(); 
+            $table->string('product_name')->nullable();         
             $table->integer('product_quantity')->default(1);
             $table->decimal('unit_price', 8, 2)->nullable();
             

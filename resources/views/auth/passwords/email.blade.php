@@ -18,7 +18,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="offset-md-1"></div>
-            <div class="col-md-10 col-12 my-5 text-center">
+            <div class="col-md-10 col-12 commontop my-5 text-center">
                 <h4>User Account Recovery</h4>
                 <div class="divider style-1 center">
                     <span class="hr-simple left"></span>

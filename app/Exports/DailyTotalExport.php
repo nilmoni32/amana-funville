@@ -14,7 +14,7 @@ class DailyTotalExport implements FromCollection, WithHeadings
         //Day wise sale reports 
         return DB::table('carts')
             ->select( DB::raw('Date(created_at) as date, SUM(product_quantity * unit_price ) as subtotal')) 
-            ->whereRaw('has_attribute = 0 and order_id is not NULL and order_cancel = 0')
+            ->whereRaw('order_id is not NULL and order_cancel = 0')
             ->groupByRaw('Date(created_at)')
             ->orderByRaw('Date(created_at) DESC')
             ->get(); 

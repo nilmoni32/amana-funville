@@ -7,11 +7,13 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Http\Controllers\BaseController;
 use PDF;
+use Carbon\Carbon;
+use DateTime;
 
 class OrderController extends BaseController
 {
     public function index(){
-         // Attaching pagetitle and subtitle to view.
+        // Attaching pagetitle and subtitle to view.
         view()->share(['pageTitle' => 'Orders', 'subTitle' => 'List of all orders' ]);
         $orders = Order::orderBy('created_at', 'desc')->paginate(15);
         return view('admin.orders.index', compact('orders'));
@@ -33,7 +35,7 @@ class OrderController extends BaseController
     public function search(Request $request){
          // Attaching pagetitle and subtitle to view.
         view()->share(['pageTitle' => 'Orders', 'subTitle' => 'List of Search orders' ]);
-        $search = $request->search; // getting the search key
+        $search = trim($request->search); // getting the search key
 
         if($search == 'paid' || $search == 'Paid'){
             $search = 1; 
@@ -43,11 +45,11 @@ class OrderController extends BaseController
             $search = 0;
             $orders = Order::Where('payment_status', 'like', '%'.$search.'%')->paginate(15);
             return view('admin.orders.index', compact('orders'));
-        }
+        }  
 
-        // for other search criteria.
+       // for other search criteria.
         $orders = Order::orWhere('order_number', 'like', '%'.$search.'%')
-        ->orWhere('order_date', 'like', '%'.$search.'%')
+        ->orWhere('order_date', 'like', '%'. ($this->validateDate($search) ? Carbon::createFromFormat('d-m-Y', $search)->format('Y-m-d') : $search).'%')                  
         ->orWhere('grand_total', 'like', '%'.$search.'%')
         ->orWhere('status', 'like', '%'.$search.'%')
         ->orWhere('payment_method', 'like', '%'.$search.'%')->paginate(15);         
@@ -61,5 +63,12 @@ class OrderController extends BaseController
         return $pdf->stream('invoice.pdf');
         
         //return view('admin.orders.invoice', compact('order'));
+    }
+
+
+    public function validateDate($date, $format = 'd-m-Y')
+    {
+        $d = DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) == $date;
     }
 }

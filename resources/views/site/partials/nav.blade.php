@@ -20,11 +20,17 @@
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse padd0">
             <ul class="nav navbar-nav ml-auto">
-                <li class="nav-item"><a href="{{ route('index') }}">Home</a></li>
-                <li class="nav-item"><a href="{{ route('about') }}">About us</a></li>
-                <li class="nav-item"><a href="{{ route('products.index')}}">Food Menu</a></li>
-                <li class="nav-item"><a href="{{ route('reservation') }}">Reservation</a></li>
-                <li class="nav-item"><a href="{{ route('contact') }}">contact us</a></li>
+                <li class="nav-item"><a href="{{ route('index') }}"
+                        class="{{ Route::currentRouteName() == 'index' ? 'active' : '' }}">Home</a></li>
+                <li class="nav-item"><a href="{{ route('about') }}"
+                        class="{{ Route::currentRouteName() == 'about' ? 'active' : '' }}">About us</a></li>
+                <li class="nav-item"><a href="{{ route('products.index') }}"
+                        class="{{ Route::currentRouteName() == 'products.index' ||  Route::currentRouteName() == 'categoryproduct.show' ? 'active' : '' }}">Food
+                        Menu</a></li>
+                <li class="nav-item"><a href="{{ route('reservation') }}"
+                        class="{{ Route::currentRouteName() == 'reservation' ? 'active' : '' }}">Reservation</a></li>
+                <li class="nav-item"><a href="{{ route('contact') }}"
+                        class="{{ Route::currentRouteName() == 'contact' ? 'active' : '' }}">contact us</a></li>
             </ul>
         </div>
     </nav>

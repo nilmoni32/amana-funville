@@ -18,6 +18,7 @@
             class="btn btn-sm btn-info"><i class="fa fa-file-excel-o" style="font-size:17px;"></i></a>
     </div>
 </div>
+@include('admin.partials.flash')
 <div class="row">
     <div class="col-md-12">
         <div class="tile">
@@ -29,14 +30,16 @@
                             @csrf
                             <div class="form-group mb-2">
                                 <label>
-                                    <span class="font-weight-bold pr-1">Choose Start Date :</span>
-                                    <input type="date" name="start_date" value="{{ $start_date }}" required>
+                                    <span class="font-weight-bold pr-1">Start Date :</span>
+                                    <input type="text" name="start_date" class="datetimepicker"
+                                        value="{{ \Carbon\Carbon::parse($start_date)->format('d-m-Y') }}" required>
                                 </label>
                             </div>
                             <div class="form-group mx-sm-3 mb-2">
                                 <label class="font-bold">
-                                    <span class="font-weight-bold pr-1">Choose End Date :</span>
-                                    <input type="date" name="end_date" value="{{ $end_date }}" required>
+                                    <span class="font-weight-bold pr-1">End Date :</span>
+                                    <input type="text" name="end_date" class="datetimepicker"
+                                        value="{{ \Carbon\Carbon::parse($end_date)->format('d-m-Y') }}" required>
                                 </label>
                             </div>
                             <div class="form-group mb-2">
@@ -72,7 +75,13 @@
                         <tr>
                             <td class="text-center">{{ $loop->index + 1  }}</td>
                             <td class="text-center">{{ $cart->date }}</td>
-                            <td class="text-center">{{ App\Models\Product::find($cart->product_id)->name }}</td>
+                            <td class="text-center">
+                                @if($cart->product_attribute_id)
+                                {{ App\Models\Product::find($cart->product_id)->name }}-({{ App\Models\ProductAttribute::find($cart->product_attribute_id)->size }})
+                                @else
+                                {{ App\Models\Product::find($cart->product_id)->name }}
+                                @endif
+                            </td>
                             <td class="text-center">{{ round( $cart->unit_price,0) }}
                                 {{ config('settings.currency_symbol') }}
                             </td>
@@ -90,3 +99,15 @@
     </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+    $(document).ready(function () {
+      $('.datetimepicker').datetimepicker({
+        timepicker:false,
+        datepicker:true,        
+        format: 'd-m-Y',              
+      });
+      $(".datetimepicker").attr("autocomplete", "off");
+    });
+</script>
+@endpush

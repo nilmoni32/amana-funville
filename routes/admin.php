@@ -58,7 +58,10 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             });
 
             Route::group(['prefix' => 'sales'], function(){
-                Route::get('index', 'SalesController@index')->name('sales.index');
+                Route::get('/index', 'SalesController@index')->name('sales.index'); 
+                //used for ajax request.           
+                Route::post('/getfoods','SalesController@getFoods')->name('sales.getfoods');
+                Route::post('/foods/addsales','SalesController@addToSales')->name('sales.addtosales');
 
             });
 
@@ -104,7 +107,7 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             
             // for manage Zones 
             Route::get('/districts/zones', 'ZoneController@index')->name('zones.index');
-            Route::get('/districts/zones/{id}', 'ZoneController@getZones');
+            Route::get('/districts/zones/{id}', 'ZoneController@getZones')->name('zones.getall');
             Route::post('/districts/zones', 'ZoneController@zoneUpdate');
 
             // List categories route /admin/categories
@@ -162,6 +165,17 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             Route::post('/role/users', 'RoleUserController@update')->name('users.update');
             Route::get('/role/users/{id}', 'RoleUserController@destroy')->name('users.destroy');
             // Route::resource('/role/users', 'RoleUserController', ['except' => ['show','create', 'store']]);
+
+            // Add Services
+            Route::group(['prefix' => 'services'], function(){  
+            Route::get('/create', 'ServiceController@create')->name('services.create'); 
+            Route::post('/store', 'ServiceController@store')->name('services.store');
+            Route::get('/all', 'ServiceController@index')->name('services.index'); 
+            Route::get('/{id}/edit','ServiceController@edit')->name('services.edit');
+            Route::post('/update', 'ServiceController@update')->name('services.update');
+            Route::get('/{id}/delete', 'ServiceController@delete')->name('services.delete');
+            });
+
         });
 
         

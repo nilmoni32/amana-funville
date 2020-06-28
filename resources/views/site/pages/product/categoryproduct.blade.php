@@ -19,7 +19,7 @@
 <div class="shop pb-5">
     <div class="container py-3">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-3 px-2">
                 <!-- Left Filter Start -->
                 <div class="left-side">
                     <h4>{{ __('Funville Cuisine')}}</h4>
@@ -54,7 +54,7 @@
                 </div>
                 <!-- Left Filter End -->
             </div>
-            <div class="col-md-9">
+            <div class="col-md-9 pl-4">
                 <!-- Title Content Start -->
                 <div class="col-sm-12 commontop text-center mb-5">
                     <h4 class="mt-0">{{ $category->category_name }}</h4>

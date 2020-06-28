@@ -30,13 +30,15 @@
                             <div class="form-group mb-2">
                                 <label>
                                     <span class="font-weight-bold pr-1">Choose Start Date :</span>
-                                    <input type="date" name="start_date" value="{{ $start_date }}" required>
+                                    <input type="text" name="start_date" class="datetimepicker"
+                                        value="{{ \Carbon\Carbon::parse($start_date)->format('d-m-Y') }}" required>
                                 </label>
                             </div>
                             <div class="form-group mx-sm-3 mb-2">
                                 <label class="font-bold">
                                     <span class="font-weight-bold pr-1">Choose End Date :</span>
-                                    <input type="date" name="end_date" value="{{ $end_date }}" required>
+                                    <input type="text" name="end_date" class="datetimepicker"
+                                        value="{{ \Carbon\Carbon::parse($end_date)->format('d-m-Y') }}" required>
                                 </label>
                             </div>
 
@@ -59,7 +61,13 @@
                         @foreach($time_carts as $cart)
                         <tr>
                             <td class="text-center">{{ $loop->index + 1  }}</td>
-                            <td class="text-center">{{ App\Models\Product::find($cart->product_id)->name }}</td>
+                            <td class="text-center">
+                                @if($cart->product_attribute_id)
+                                {{ App\Models\Product::find($cart->product_id)->name }}-({{ App\Models\ProductAttribute::find($cart->product_attribute_id)->size }})
+                                @else
+                                {{ App\Models\Product::find($cart->product_id)->name }}
+                                @endif
+                            </td>
                             <td class="text-center">{{ round( $cart->unit_price,0) }}
                                 {{ config('settings.currency_symbol') }}
                             </td>
@@ -82,6 +90,16 @@
 <script type="text/javascript" src="{{ asset('backend/js/plugins/jquery.dataTables.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('backend/js/plugins/dataTables.bootstrap.min.js') }}"></script>
 <script type="text/javascript">
+    $(document).ready(function () {
+    $('.datetimepicker').datetimepicker({
+        timepicker:false,
+        datepicker:true,        
+        format: 'd-m-Y',              
+    });
+    $(".datetimepicker").attr("autocomplete", "off");
+
     $('#sampleTable').DataTable();
+    });
 </script>
+
 @endpush
