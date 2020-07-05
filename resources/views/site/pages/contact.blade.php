@@ -97,7 +97,7 @@
                         </div>
                     </div>
                     <div class="buttons">
-                        <input class="btn btn-theme btn-block" type="submit" value="Send Message" />
+                        <input class="btn btn-theme-alt btn-block" type="submit" value="Send Message" />
                     </div>
                 </form>
                 <!--  Contact form End  -->

@@ -21,7 +21,7 @@
   @yield('styles')
 </head>
 
-<body class="app sidebar-mini rtl">
+<body class="app sidebar-mini rtl" style="overflow-x: hidden;">
   @include('admin.partials.header');
   @include('admin.partials.sidebar');
   <main class="app-content">

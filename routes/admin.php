@@ -56,13 +56,20 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::get('/search', 'OrderController@search')->name('orders.search');
                 Route::get('/invoice/{id}', 'OrderController@generateInvoice')->name('orders.invoice');
             });
-
+            //pos route
             Route::group(['prefix' => 'sales'], function(){
                 Route::get('/index', 'SalesController@index')->name('sales.index'); 
-                //used for ajax request.           
+                //pos order place
+                Route::post('/index', 'SalesController@orderplace')->name('sales.orderplace');
+                //pos order invoice
+                Route::get('/invoice/{orderId}', 'SalesController@saleInvoice')->name('sales.invoice');
+                //ajax route for pos sales.           
                 Route::post('/getfoods','SalesController@getFoods')->name('sales.getfoods');
                 Route::post('/foods/addsales','SalesController@addToSales')->name('sales.addtosales');
-
+                Route::post('/cart/update', 'SalesController@update')->name('sales.saleCartUpdate');
+                Route::post('/cart/delete', 'SalesController@destroy')->name('sales.saleCartDelete');
+                //end of ajax route for pos sales.
+            
             });
 
         });

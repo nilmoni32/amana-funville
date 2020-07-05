@@ -9,6 +9,7 @@ use App\Http\Controllers\BaseController;
 use PDF;
 use Carbon\Carbon;
 use DateTime;
+use App\Models\Cart;
 
 class OrderController extends BaseController
 {
@@ -19,17 +20,28 @@ class OrderController extends BaseController
         return view('admin.orders.index', compact('orders'));
     }
     public function edit($id){
-          // Attaching pagetitle and subtitle to view.          
-          $order = Order::where('id', $id)->first();
-          view()->share(['pageTitle' => 'Orders', 'subTitle' => 'Order No: '.$order->order_number ]);
-          return view('admin.orders.edit', compact('order'));
+        // Attaching pagetitle and subtitle to view.          
+        $order = Order::where('id', $id)->first();
+        view()->share(['pageTitle' => 'Orders', 'subTitle' => 'Order No: '.$order->order_number ]);
+        return view('admin.orders.edit', compact('order'));
     }
 
     public function update(Request $request){
-        $order = Order::where('id', $request->id)->first();
+        
+        $order = Order::where('id', $request->id)->first(); 
+        if($request->status == 'cancel')
+        {
+            // when order is canceled by user or after checkout, we need to set order_cancel to 1 in the cart table for that cart 
+            // we need this for reporting purpose.       
+            foreach(Cart::where('order_id', $request->id)->get() as $cart){
+                $cart->order_cancel = 1;
+                $cart->save();           
+            } 
+        }
+       
         $order->status = $request->status;
         $order->save();        
-        return $this->responseRedirectBack(' Order status is updated successfully' ,'success', false, false);         
+        return $this->responseRedirectBack(' Order status is updated successfully' ,'success', false, false); 
     }
 
     public function search(Request $request){

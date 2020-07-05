@@ -74,8 +74,14 @@
                             </td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                 <div class="btn-group" role="group" aria-label="Second group">
+                                    @if($order->status == 'cancel')
+                                    <a href="#" class="btn btn-sm btn-secondary"
+                                        style="background-color:rgb(142, 177, 183); border-color:rgb(142, 177, 183);"
+                                        disabled><i class="fa fa-edit"></i></a>
+                                    @else
                                     <a href="{{ route('admin.orders.edit', $order->id) }}"
                                         class="btn btn-sm btn-info"><i class="fa fa-edit"></i></a>
+                                    @endif
                                     @if($order->status == 'delivered')
                                     <a href="{{ route('admin.orders.invoice', $order->id) }}"
                                         class="btn btn-sm btn-dark" target="_blank"><i class="fa fa-file-pdf-o"></i></a>

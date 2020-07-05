@@ -18,6 +18,7 @@
             <span class="h6">[ Placed By: {{ $order->user->name }} ]</span>
             <form action=" {{ route('admin.orders.update') }} " method="POST" role="form" enctype="multipart/form-data">
                 @csrf
+
                 <div class="tile-body mt-4">
                     <div class="form-group">
                         <label class="control-label" for="order_date"> Order Date:</label>
