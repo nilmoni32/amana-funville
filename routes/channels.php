@@ -1,5 +1,6 @@
 <?php
 
+
 /*
 |--------------------------------------------------------------------------
 | Broadcast Channels
@@ -11,6 +12,6 @@
 |
 */
 
-Broadcast::channel('App.User.{id}', function ($user, $id) {
-    return (int) $user->id === (int) $id;
-});
+Broadcast::channel('order.placed', function(\App\Models\Order $order) {
+    return Auth::guard('web')->user()->id === $order->user_id;
+}, ['guards' => ['web','admin']]);

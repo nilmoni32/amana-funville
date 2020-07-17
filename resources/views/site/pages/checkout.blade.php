@@ -107,8 +107,8 @@
                             </span>
                             @enderror
                         </div>
-                        <h6 class="text-danger mt-5 mb-3">We are delivering order 12PM to 7:00 PM Only. If your
-                            order after 7:00 PM, It will be processed for next day.</h6>
+                        <h6 class="text-danger mt-5 mb-3">We are delivering order 11:59 AM to 9:00 PM Only. If your
+                            order after 9:00 PM, It will be processed for next day.</h6>
                         <div class="form-group">
                             <label>Current Date & Time :</label>
                             <p>{{ \Carbon\Carbon::now() }}</p>
@@ -118,7 +118,7 @@
                             @php
                             $time = \Carbon\Carbon::now();
                             $morning = \Carbon\Carbon::create($time->year, $time->month, $time->day, 0, 0, 0);
-                            $evening = \Carbon\Carbon::create($time->year, $time->month, $time->day, 19, 0, 0);
+                            $evening = \Carbon\Carbon::create($time->year, $time->month, $time->day, 21, 0, 0);
                             if($time->between($morning, $evening, true)) {
                             $deliver_time = $time->toDateString();
                             }else{
@@ -177,19 +177,29 @@
                                     @endforeach
                                     <tr>
                                         <td>Subtotal</td>
+                                        @php $subtotal = App\Models\Cart::calculateSubtotal(); @endphp
                                         <td class="px-0">
                                             {{ config('settings.currency_symbol') }}
-                                            {{ App\Models\Cart::calculateSubtotal() }}</td>
+                                            {{ $subtotal }}</td>
                                     </tr>
+                                    @if(config('settings.tax_percentage'))
                                     <tr>
-                                        <td>Shipping</td>
+                                        <td>Vat Percentage ({{config('settings.tax_percentage')}}%)</td>
+                                        <td class="px-0">
+                                            {{ config('settings.currency_symbol') }}
+                                            {{ round($subtotal * (config('settings.tax_percentage')/100),0) }}
+                                        </td>
+                                    </tr>
+                                    @endif
+                                    <tr>
+                                        <td>Shipping Cost</td>
                                         <td class="px-0">{{ config('settings.currency_symbol') }}
                                             {{ config('settings.delivery_charge') }}</td>
                                     </tr>
                                     <tr>
                                         <td>Order Total</td>
                                         <td class="px-0">{{ config('settings.currency_symbol') }}
-                                            {{  App\Models\Cart::calculateSubtotal() + config('settings.delivery_charge') }}
+                                            {{  $subtotal + config('settings.delivery_charge') + ($subtotal* (config('settings.tax_percentage')/100))}}
                                         </td>
                                     </tr>
                                 </tbody>

@@ -21,7 +21,7 @@ class CreateOrdersalesTable extends Migration
             $table->string('order_date');
             $table->string('customer_name')->nullable(); 
             $table->string('customer_mobile')->nullable(); 
-            $table->string('customer_email')->nullable();            
+            $table->text('customer_address')->nullable();            
             $table->text('customer_notes')->nullable();
 
             $table->timestamps();

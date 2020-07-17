@@ -38,7 +38,6 @@
                                 style="font-size:16px;"></i></a>
                         @endif
 
-
                     </div>
                 </div>
                 <div class="row">
@@ -92,11 +91,26 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <div class="col-sm-12" style="visibility:{{ $total_taka ? 'visible': 'hidden' }};" id="total">
-                            <h5 class="text-right pb-3 pr-5">TOTAL-
-                                <span id="sub-total-tk">{{ $total_taka }}</span><span
-                                    class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
-                            </h5>
+                        <div class="row">
+                            <div class="col-sm-5 offset-sm-7 pr-4"
+                                style="visibility:{{ $total_taka ? 'visible': 'hidden' }};" id="total">
+                                @if(config('settings.tax_percentage'))
+                                <h5 class="text-right font-weight-normal pb-2 pr-5">Subtotal-
+                                    <span id="sub-total-tk">{{ $total_taka }}</span><span
+                                        class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
+                                </h5>
+                                <h5 class="text-right font-weight-normal pb-2 pr-5 border-bottom">Vat-
+                                    <span
+                                        id="vat-percent">{{ $total_taka * (config('settings.tax_percentage')/100) }}</span><span
+                                        class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
+                                </h5>
+                                @endif
+                                <h5 class="text-right pb-3 pr-5">Total-
+                                    <span
+                                        id="total-tk">{{ $total_taka + ($total_taka * (config('settings.tax_percentage')/100))}}</span><span
+                                        class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
+                                </h5>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -117,23 +131,11 @@
                                 </div>
                                 <div class="form-group my-4">
                                     <input type="text"
-                                        class="form-control @error('customer_phone') is-invalid @enderror"
-                                        id="customer_phone" placeholder="Customer Phone No" name="customer_phone"
+                                        class="form-control @error('customer_mobile') is-invalid @enderror"
+                                        id="customer_mobile" placeholder="Customer Phone No" name="customer_mobile"
                                         maxlength="13">
 
-                                    @error('customer_phone')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-
-                                </div>
-                                <div class="form-group my-4">
-                                    <input type="email"
-                                        class="form-control @error('customer_email') is-invalid @enderror"
-                                        id="customer_email" placeholder="Customer Email" name="customer_email">
-
-                                    @error('customer_email')
+                                    @error('customer_mobile')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -141,13 +143,18 @@
                                 </div>
 
                                 <div class="form-group my-4">
-                                    <textarea class="form-control" id="customer_notes" rows="4" name="customer_notes"
+                                    <textarea class="form-control" id="customer_address" rows="3"
+                                        name="customer_address" placeholder="Customer Address"></textarea>
+                                </div>
+
+                                <div class="form-group my-4">
+                                    <textarea class="form-control" id="customer_notes" rows="3" name="customer_notes"
                                         placeholder="Customer Notes"></textarea>
                                 </div>
                                 <div class="form-group my-4">
                                     <button type="submit" class="btn btn-primary text-uppercase"
                                         style="display:block; width:100%;">Place
-                                        Order</button>
+                                        Order </button>
                                 </div>
                             </div>
                         </form>
@@ -219,7 +226,11 @@ var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                     "</tr>"; 
                     tableBody.append(markup);
                     $('#total').css('visibility', 'visible');
-                    $("#sub-total-tk").html(data.sub_total);  
+                    if("{{ config('settings.tax_percentage') }}"){
+                        $("#sub-total-tk").html(data.sub_total);
+                        $("#vat-percent").html( data.sub_total * "{{ config('settings.tax_percentage')/100 }}");
+                    }
+                    $("#total-tk").html(data.sub_total + (data.sub_total * "{{ config('settings.tax_percentage')/100 }}") );  
                 }
                 
             if(data.status == 'info'){
@@ -229,6 +240,45 @@ var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                 $('#message').html(message);
             }   
             
+        });
+        }
+
+        $("#customer_mobile").autocomplete({
+        //Using source option to send AJAX post request to route('employees.getEmployees') to fetch data
+        source: function( request, response ) {
+          // Fetch data
+          $.ajax({
+            url:"{{ route('admin.sales.customermobile') }}",
+            type: 'post',
+            dataType: "json",
+            // passing CSRF_TOKEN along with search value in the data
+            data: {
+               _token: CSRF_TOKEN,
+               search: request.term
+            },
+            //On successful callback pass response in response() function.
+            success: function( data ) {
+               response( data );               
+            }
+          });
+        },
+        // Using select option to display selected option label in the #product_search
+        select: function (event, ui) {
+           // Set selection           
+           $('#customer_mobile').val(ui.item.label); // display the selected text           
+           fillCustomerData(ui.item.label);
+           return false;
+        }
+      });
+
+      function fillCustomerData(customerMobile){
+        $.post("{{ route('admin.sales.customerInfo') }}", {        
+            _token: CSRF_TOKEN,
+            mobile: customerMobile            
+        }).done(function(data) { 
+            $('#customer_name').val(data[0].customer_name);
+            $('#customer_address').val(data[0].customer_address);        
+            $('#customer_notes').val(data[0].customer_notes); 
         });
         }
 
@@ -262,7 +312,11 @@ var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                     // finding the rowno from the id such add1, add2, minus1 etc.
                     var row = id.substring(id.length - 1); //Displaying the last character                    
                     $("#price" + row).html(data.total_unit_price);
-                    $("#sub-total-tk").html(data.sub_total);
+                    if("{{ config('settings.tax_percentage') }}"){
+                        $("#sub-total-tk").html(data.sub_total);
+                        $("#vat-percent").html( data.sub_total * "{{ config('settings.tax_percentage')/100 }}");
+                    }
+                    $("#total-tk").html(data.sub_total + (data.sub_total * "{{ config('settings.tax_percentage')/100 }}") ); 
                     // location.reload();
                 }
             });
@@ -277,7 +331,12 @@ var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                 data = JSON.parse(data);
                 if (data.status == "success") {                 
                     // not to reload the page, just removing the row from DOM
-                    $("#sub-total-tk").html(data.sub_total);
+                    if("{{ config('settings.tax_percentage') }}"){
+                        $("#sub-total-tk").html(data.sub_total);
+                        $("#vat-percent").html( data.sub_total * "{{ config('settings.tax_percentage')/100 }}");
+                    }
+                    $("#total-tk").html(data.sub_total + (data.sub_total * "{{ config('settings.tax_percentage')/100 }}") ); 
+
                     parent.slideUp(100, function() {
                         parent.closest("tr").remove();
                     });

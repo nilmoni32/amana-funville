@@ -60,6 +60,11 @@
                 <input class="form-control" type="text" placeholder="Google Map iframe" name="google_map"
                     id="google_map" value="{{ config('settings.google_map') }}">
             </div>
+            <div class="form-group">
+                <label class="control-label" for="tax_percentage">Tax Percentage</label>
+                <input class="form-control" type="text" placeholder="Tax Percentage" name="tax_percentage"
+                    id="tax_percentage" value="{{ config('settings.tax_percentage') }}">
+            </div>
         </div>
         <div class="tile-footer">
             <div class="row d-print-none mt-2">

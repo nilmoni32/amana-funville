@@ -68,6 +68,9 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::post('/foods/addsales','SalesController@addToSales')->name('sales.addtosales');
                 Route::post('/cart/update', 'SalesController@update')->name('sales.saleCartUpdate');
                 Route::post('/cart/delete', 'SalesController@destroy')->name('sales.saleCartDelete');
+
+                Route::post('/customer/mobile','SalesController@getMobileNo')->name('sales.customermobile');
+                Route::post('/customer/info','SalesController@addCustomerInfo')->name('sales.customerInfo');
                 //end of ajax route for pos sales.
             
             });

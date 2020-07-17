@@ -1,8 +1,11 @@
 <?php
 namespace App\Http\Controllers\Site;
 
-define("SSLCZ_STORE_ID", "amana5eb2f2622be00");
-define("SSLCZ_STORE_PASSWD", "amana5eb2f2622be00@ssl");
+// define("SSLCZ_STORE_ID", "amana5eb2f2622be00");
+// define("SSLCZ_STORE_PASSWD", "amana5eb2f2622be00@ssl");
+
+define("SSLCZ_STORE_ID", config('settings.store_id'));
+define("SSLCZ_STORE_PASSWD", config('settings.store_passwd'));
 
 # IF SANDBOX TRUE, THEN IT WILL CONNECT WITH SSLCOMMERZ SANDBOX (TEST) SYSTEM
 define("SSLCZ_IS_SANDBOX", true);

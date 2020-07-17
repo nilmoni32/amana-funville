@@ -18,7 +18,7 @@
     <div class="container paycard">
         <div class="row">
             <div class="offset-md-1"></div>
-            <div class="col-md-10 col-12 mb-5 text-center">
+            <div class="col-md-10 col-12 text-center">
                 @if (session('success'))
                 <div class="alert alert-success alert-block bg-success text-white">
                     <button type="button" class="close" data-dismiss="alert">×</button>
@@ -36,12 +36,14 @@
         </div>
         <div class="row">
             <div class="col-12 pb-5">
-                <h5 class="card-title mt-2 text-center mb-2">Order Number:
+                <h5 class="card-title text-center mb-2">Order Number:
                     {{ $order->order_number }}</h5>
-                <p class="text-center pt-0 font-weight-bold">Your order is on its way, please pay with &nbsp;<a
+                <p class="text-center pt-0 font-weight-bold">Your order is on its way, please pay with <span
+                        class="cash-btn"> Cash</span> on delivery
+                    {{-- <a
                         href="{{ route('checkout.cash', $order->id) }}" class="btn btn-theme-alt cash-delivery">Cash
-                        on delivery
-                    </a>
+                    on delivery
+                    </a> --}}
                 </p>
             </div>
         </div>
@@ -107,15 +109,26 @@
                             </div>
                             <div class="card-body text-center">
                                 <table class="table table-borderless">
+                                    @php $subtotal = ($order->grand_total - config('settings.delivery_charge'))/(1+
+                                    (config('settings.tax_percentage')/100)) @endphp
                                     <tbody>
                                         <tr>
                                             <td class="text-left">Subtotal</td>
                                             <td class="text-left">{{ config('settings.currency_symbol') }}
-                                                {{  round(($order->grand_total - config('settings.delivery_charge')),0) }}
+                                                {{ $subtotal }}
                                             </td>
                                         </tr>
+                                        @if(config('settings.tax_percentage'))
                                         <tr>
-                                            <td class="text-left">shipping</td>
+                                            <td class="text-left">Vat ({{config('settings.tax_percentage')}}%)</td>
+                                            <td class="text-left">
+                                                {{ config('settings.currency_symbol') }}
+                                                {{ round($subtotal * (config('settings.tax_percentage')/100),0) }}
+                                            </td>
+                                        </tr>
+                                        @endif
+                                        <tr>
+                                            <td class="text-left">Shipping Cost</td>
                                             <td class="text-left">{{ config('settings.currency_symbol') }}
                                                 {{  config('settings.delivery_charge') }}</td>
                                         </tr>
@@ -133,19 +146,19 @@
             </div>
             <div class="offset-md-2"></div>
         </div>
-        <div class="row pt-2 mb-4">
+        {{-- <div class="row pt-2 mb-4">
             <div class="col-sm-12 col-xs-12">
                 <div class="text-center pb-2">
                     <a class="btn btn-theme-alt btn-wide" href="{{ route('checkout.cancel', $order->id) }}">Cancel
-                        Order</a>
-                </div>
-            </div>
-        </div>
-
-
-
-
+        Order</a>
     </div>
+</div>
+</div> --}}
+
+
+
+
+</div>
 </div>
 
 @endsection

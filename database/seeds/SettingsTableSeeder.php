@@ -122,6 +122,11 @@ class SettingsTableSeeder extends Seeder
             'key'   => 'google_map',
             'value' => '',
         ],
+        [
+            'key'   => 'tax_percentage',
+            'value' => '',
+        ],
+
 
 
     ];

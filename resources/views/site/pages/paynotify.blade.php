@@ -89,15 +89,26 @@
                             </div>
                             <div class="card-body text-center">
                                 <table class="table table-borderless">
+                                    @php $subtotal = ($order->grand_total - config('settings.delivery_charge'))/(1+
+                                    (config('settings.tax_percentage')/100)) @endphp
                                     <tbody>
                                         <tr>
                                             <td class="text-left">Subtotal</td>
                                             <td class="text-left">{{ config('settings.currency_symbol') }}
-                                                {{  round(($order->grand_total - config('settings.delivery_charge')),0) }}
+                                                {{  round($subtotal,0) }}
                                             </td>
                                         </tr>
+                                        @if(config('settings.tax_percentage'))
                                         <tr>
-                                            <td class="text-left">shipping</td>
+                                            <td class="text-left">Vat ({{config('settings.tax_percentage')}}%)</td>
+                                            <td class="text-left">
+                                                {{ config('settings.currency_symbol') }}
+                                                {{ round($subtotal * (config('settings.tax_percentage')/100),0) }}
+                                            </td>
+                                        </tr>
+                                        @endif
+                                        <tr>
+                                            <td class="text-left">Shipping Cost</td>
                                             <td class="text-left">{{ config('settings.currency_symbol') }}
                                                 {{  config('settings.delivery_charge') }}</td>
                                         </tr>

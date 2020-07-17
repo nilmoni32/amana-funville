@@ -29,7 +29,7 @@
                                 <th>Name</th>
                                 <th>Qty</th>
                                 <th>Price</th>
-                                <th>Total</th>
+                                <th>SubTotal</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -117,10 +117,21 @@
                             @endforeach
                             <tr>
                                 <td colspan="5">
-                                    <h3 class="text-right pb-3 pr-5">SUBTOTAL-
-                                        <span id="sub-total-tk">{{ $total_taka }}</span><span
-                                            class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
-                                    </h3>
+                                    {{-- @if(config('settings.tax_percentage'))
+                                    <h4 class="text-right pb-3 h5 right-margin">SUBTOTAL-
+                                        <span id="sub-total-tk" class="">{{ $total_taka }}</span><span
+                                        class="ml-1">{{ config('settings.currency_symbol') }}</span>
+                                    </h4>
+                                    <h4 class="text-right pb-3 h5 right-margin">VAT-
+                                        <span id="sub-total-tk"
+                                            class="">{{ $total_taka * (config('settings.tax_percentage')/100) }}</span><span
+                                            class="ml-1">{{ config('settings.currency_symbol') }}</span>
+                                    </h4>
+                                    @endif --}}
+                                    <h4 class="text-right pb-5 h5 right-margin">TOTAL-
+                                        <span id="sub-total-tk" class="">{{ $total_taka }}</span><span
+                                            class="ml-1">{{ config('settings.currency_symbol') }}</span>
+                                    </h4>
                                     <div class="buttons float-left">
                                         <a href="{{ route('products.index') }}"
                                             class="btn btn-theme btn-md btn-wide">Continue

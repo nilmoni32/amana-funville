@@ -11,6 +11,8 @@ use App\Models\ProductAttribute;
 use App\Models\District;
 use Session;
 use Auth;
+use App\Events\OrderPlaced;
+
 session_start();
 
 class CheckoutController extends Controller
@@ -40,9 +42,10 @@ class CheckoutController extends Controller
         'zone' => 'required|string',
     ]);
     
-    $shipping_cost = (float)config('settings.delivery_charge');
+    $shipping_cost = (float)config('settings.delivery_charge');    
     $sub_total = Cart::calculateSubtotal();
-    $grand_total = $sub_total + $shipping_cost;
+    $vat = $sub_total * (config('settings.tax_percentage')/100);
+    $grand_total = $sub_total + $shipping_cost + $vat;
 
     // finding last order id: we use it for customer order id (customized) for billing purpose
     // it will be false only for the first record.
@@ -58,6 +61,7 @@ class CheckoutController extends Controller
     $order->user_id = auth()->user()->id;     
     $order->order_number = $ord_id; 
     $order->payment_method = 'Cash';
+    $order->bank_tran_id = 'N/A';
     $order->status = 'pending';
     $order->payment_status = 0;
     $order->grand_total = $grand_total;
@@ -78,6 +82,10 @@ class CheckoutController extends Controller
         $cart->ip_address = NULL;       
         $cart->save();
     }
+
+    // An event is triggered to notify backend user for an new order placement
+    event(new OrderPlaced($order->order_number));
+   
     return redirect()->route('checkout.payment', $order->id);
 
     }
@@ -102,6 +110,9 @@ class CheckoutController extends Controller
             $cart->save();
         }
         
+        // // An event is triggered to notify backend user for an new order placement
+        // event(new OrderPlaced($order->order_number));
+        
         if(session()->has('error') && session()->get('error') !== ''){
             session()->flash('error', '');
         }
@@ -115,6 +126,10 @@ class CheckoutController extends Controller
         $order->payment_method = 'Cash';
         $order->bank_tran_id = 'N/A';
         $order->save();
+
+        // // An event is triggered to notify backend user for an new order placement
+        // event(new OrderPlaced($order->order_number));
+
         if(session()->has('success') && session()->get('success') !== ''){
             session()->flash('success', '');
         }
@@ -201,7 +216,9 @@ class CheckoutController extends Controller
             $order->card_brand = $request->card_brand;
             $order->card_issuer = $request->card_issuer;
 
-            $order->save();            
+            $order->save();  
+            //  // An event is triggered to notify backend user for an new order placement
+            // event(new OrderPlaced($order->order_number));          
         } 
         if(session()->has('success') && session()->get('success') !== ''){
             session()->flash('success', '');
@@ -229,7 +246,9 @@ class CheckoutController extends Controller
             $order->card_brand = $request->card_brand;
             $order->card_issuer = $request->card_issuer;
 
-            $order->save();           
+            $order->save(); 
+            // // An event is triggered to notify backend user for an new order placement
+            // event(new OrderPlaced($order->order_number));             
         }
         if(session()->has('error') && session()->get('error') !== ''){
             session()->flash('error', '');
@@ -254,6 +273,8 @@ class CheckoutController extends Controller
             $order->currency_amount = $request->currency_amount;
 
             $order->save();
+            // // An event is triggered to notify backend user for an new order placement
+            // event(new OrderPlaced($order->order_number));
 
             // when order is canceled by user after checkout, we need to set order_cancel to 1 in the cart table for that cart 
             // we need this for reporting purpose.       

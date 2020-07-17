@@ -124,7 +124,7 @@
 
 @endsection
 {{-- Reloading this page after 30 sec --}}
-@push('scripts')
+{{-- @push('scripts')
 <script type="text/javascript">
     setTimeout(function(){
  
@@ -133,4 +133,4 @@
     },90000);
  
 </script>
-@endpush
+@endpush --}}

@@ -12,51 +12,21 @@
       </button>
     </li> --}}
     <!--Notification Menu-->
-    <li class="dropdown">
+    <li class="dropdown order-notifications">
       <a class="app-nav__item" href="#" data-toggle="dropdown" aria-label="Show notifications">
-        <i class="fa fa-bell-o fa-lg"></i></a>
+        <i data-count="0" class="fa fa-bell-o fa-lg notification-icon"></i>
+      </a>
       <ul class="app-notification dropdown-menu dropdown-menu-right">
         <li class="app-notification__title">
-          You have 4 new notifications.
+          (<span class="notif-count">0</span>) New Orders has been placed.
         </li>
         <div class="app-notification__content">
-          <li>
-            <a class="app-notification__item" href="javascript:;">
-              <span class="app-notification__icon">
-                <span class="fa-stack fa-lg">
-                  <i class="fa fa-circle fa-stack-2x text-danger"></i>
-                  <i class="fa fa-hdd-o fa-stack-1x fa-inverse"></i>
-                </span>
-              </span>
-              <div>
-                <p class="app-notification__message">
-                  Mail server not working
-                </p>
-                <p class="app-notification__meta">5 min ago</p>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a class="app-notification__item" href="javascript:;">
-              <span class="app-notification__icon">
-                <span class="fa-stack fa-lg">
-                  <i class="fa fa-circle fa-stack-2x text-success"></i>
-                  <i class="fa fa-money fa-stack-1x fa-inverse"></i>
-                </span>
-              </span>
-              <div>
-                <p class="app-notification__message">
-                  Transaction complete
-                </p>
-                <p class="app-notification__meta">2 days ago</p>
-              </div>
-            </a>
-          </li>
         </div>
         <li class="app-notification__footer">
           <a href="#">See all notifications.</a>
         </li>
       </ul>
+
     </li>
     <!-- User Menu-->
     <li class="dropdown">
@@ -77,3 +47,60 @@
     </li>
   </ul>
 </header>
+@push('scripts')
+
+<script type="text/javascript">
+  var notificationsWrapper   = $('.order-notifications');
+  var notificationsToggle    = notificationsWrapper.find('a[data-toggle]');
+  var notificationsCountElem = notificationsToggle.find('i[data-count]');
+  var notificationsCount     = parseInt(notificationsCountElem.data('count'));
+  var notifications          = notificationsWrapper.find('div.app-notification__content');
+
+  if (notificationsCount <= 0) {
+    notificationsWrapper.hide();
+  }
+
+  // Enable pusher logging - don't include this in production
+  // Pusher.logToConsole = true;
+
+  var pusher = new Pusher('506197d379eb42e13c2d', {
+    cluster: 'ap2',
+    encrypted: true
+  });
+
+  // Subscribe to the channel we specified in our Laravel Event
+  var channel = pusher.subscribe('order.placed');
+
+  // Bind a function to a Event (the full Laravel class)
+  // this is called when the event notification is received
+  channel.bind('App\\Events\\OrderPlaced', function(data) {       
+    var existingNotifications = notifications.html();
+    var avatar = Math.floor(Math.random() * (71 - 20 + 1)) + 20;
+    var newNotificationHtml = `
+          <li>
+            <a class="app-notification__item" href="javascript:;">
+              <span class="app-notification__icon">
+                <span class="fa-stack fa-lg">
+                  <i class="fa fa-circle fa-stack-2x text-success"></i>
+                  <i class="fa fa-money fa-stack-1x fa-inverse"></i>
+                </span>
+              </span>
+              <div>
+                <p class="app-notification__message">`
+                   + data.message + `
+                </p>
+                <p class="app-notification__meta">At `+  new Date().toLocaleTimeString() +`</p>
+              </div>
+            </a>
+          </li>      
+    `;
+    notifications.html(newNotificationHtml + existingNotifications);
+
+    notificationsCount += 1;
+    notificationsCountElem.attr('data-count', notificationsCount);
+    notificationsWrapper.find('.notif-count').text(notificationsCount);
+    notificationsWrapper.show();
+  });
+</script>
+
+@endpush

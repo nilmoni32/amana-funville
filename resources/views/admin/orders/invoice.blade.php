@@ -265,12 +265,29 @@
                     </tr>
                     @endforeach
                     <tr>
+                        @php $subtotal = ($order->grand_total - config('settings.delivery_charge'))/(1+
+                        (config('settings.tax_percentage')/100)) @endphp
+
                         <td colspan="5" class="colspantd" style="padding-top:10px;">
-                            <span class="font-bold">Total:</span>&nbsp;
-                            {{ round(($order->grand_total - config('settings.delivery_charge')),0) }}
+                            <span class="font-bold">Subtotal:</span>&nbsp;
+                            {{ round($subtotal,0) }}
                             {{ config('settings.currency_symbol') }}
                         </td>
                     </tr>
+                    @if(config('settings.tax_percentage'))
+                    <tr>
+                        <td colspan="5" class="colspantd">
+                            <span class="font-bold">Vat ({{ config('settings.tax_percentage')}}%):</span>
+                            @if(strlen(round($order->grand_total,0)) == 4)
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            @else
+                            &nbsp;&nbsp;
+                            @endif
+                            {{ round($subtotal* (config('settings.tax_percentage')/100),0)  }}
+                            {{ config('settings.currency_symbol') }}
+                        </td>
+                    </tr>
+                    @endif
                     <tr>
                         <td colspan="5" class="colspantd">
                             <span class="font-bold">Delivery
