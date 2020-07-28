@@ -19,6 +19,7 @@ class CreateOrdersalesTable extends Migration
             $table->string('order_number')->unique();
             $table->decimal('grand_total', 20, 6); 
             $table->string('order_date');
+            $table->string('order_tableNo')->nullable();
             $table->string('customer_name')->nullable(); 
             $table->string('customer_mobile')->nullable(); 
             $table->text('customer_address')->nullable();            

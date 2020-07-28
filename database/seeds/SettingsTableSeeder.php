@@ -126,6 +126,14 @@ class SettingsTableSeeder extends Seeder
             'key'   => 'tax_percentage',
             'value' => '',
         ],
+        [
+            'key'   => 'protocol',
+            'value' => '',
+        ],
+        [
+            'key'   => 'printer_name',
+            'value' => '',
+        ],
 
 
 

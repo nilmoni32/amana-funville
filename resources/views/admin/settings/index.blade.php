@@ -22,6 +22,7 @@
                 <li class="nav-item"><a class="nav-link" href="#social-links" data-toggle="tab">Social Links</a></li>
                 <li class="nav-item"><a class="nav-link" href="#analytics" data-toggle="tab">Analytics</a></li>
                 <li class="nav-item"><a class="nav-link" href="#payments" data-toggle="tab">Payments</a></li>
+                <li class="nav-item"><a class="nav-link" href="#pos-printer" data-toggle="tab">POS Printer </a></li>
             </ul>
         </div>
     </div>
@@ -44,6 +45,9 @@
             </div>
             <div class="tab-pane fade" id="payments">
                 @include('admin.settings.includes.payments')
+            </div>
+            <div class="tab-pane fade" id="pos-printer">
+                @include('admin.settings.includes.pos')
             </div>
         </div>
     </div>

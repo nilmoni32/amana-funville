@@ -117,7 +117,16 @@
                         <form method="POST" action="{{ route('admin.sales.orderplace') }}">
                             @csrf
                             <div class="border px-3 rounded" style="border-color:rgb(182, 182, 182);">
-                                <h4 class="text-center my-3">Customer Details</h4>
+                                <h4 class="text-center my-3">Customer Details & Table No</h4>
+                                <div class="form-group my-4">
+                                    <input type="text" class="form-control @error('order_tableNo') is-invalid @enderror"
+                                        id="order_tableNo" placeholder="Enter Order Table No" name="order_tableNo">
+                                    @error('order_tableNo')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
+                                </div>
                                 <div class="form-group my-4">
                                     <input type="text" class="form-control @error('customer_name') is-invalid @enderror"
                                         id="customer_name" placeholder="Customer Name" name="customer_name">

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schema;
 class CreateSalesTable extends Migration
 {
     /**
+     * This is a POS CART
      * Run the migrations.
      *
      * @return void

@@ -137,6 +137,7 @@ class SalesController extends Controller
         }
       
         $this->validate($request,[  
+            'order_tableNo'    => 'required|string|max:10',
             'customer_name'     => 'nullable|string|max:40',             
             'customer_mobile'   => 'nullable|regex:/(01)[3-9]{1}(\d){8}/|max:13',
             'customer_address'  => 'nullable|string|max:191',       
@@ -157,7 +158,8 @@ class SalesController extends Controller
         $order->admin_id = auth()->user()->id;     
         $order->order_number = $ord_id; 
         $order->grand_total = $this->calculateSubtotal();  
-        $order->order_date = \Carbon\Carbon::now()->toDateTimeString();      
+        $order->order_date = \Carbon\Carbon::now()->toDateTimeString(); 
+        $order->order_tableNo = $request->order_tableNo;      
         $order->customer_name = $request->customer_name;        
         $order->customer_mobile = $request->customer_mobile;
         $order->customer_address = $request->customer_address;
@@ -188,9 +190,10 @@ class SalesController extends Controller
         $store_phone = config('settings.phone_no');
         $store_email = config('settings.default_email_address');
         $store_website = 'funville.com';
+        $store_tableNo =  $saleOrder->order_tableNo;
         $tax_percentage = config('settings.tax_percentage');
-        $transaction_id = $saleOrder->order_number;  
-        
+        $transaction_id = $saleOrder->order_number; 
+       
         
         // Set items
         $items = [];       
@@ -199,20 +202,22 @@ class SalesController extends Controller
             $items[] = ['name' => $saleCart->product_name, 'qty' => $saleCart->product_quantity, 'price' => $saleCart->unit_price ];
         }
 
-        dd($items);
+        //dd($items);
         
         // Init printer
         $printer = new ReceiptPrinter;
         
         $printer->init(
             //Connection protocol to communicate with the receipt printer.
-            config('receiptprinter.connector_type'),  
+            //config('receiptprinter.connector_type'),  
+            config('settings.protocol'),
             //Typically printer name or IP address.
-            config('receiptprinter.connector_descriptor')
+            //config('receiptprinter.connector_descriptor')
+            config('settings.printer_name')
         );
 
          // Set store info
-        $printer->setStore($mid, $store_name, $store_address, $store_phone, $store_email, $store_website);
+        $printer->setStore($mid, $store_name, $store_address, $store_phone, $store_email, $store_website,$store_tableNo);
 
         // Add items
         foreach ($items as $item) {
@@ -240,11 +245,8 @@ class SalesController extends Controller
         // Print receipt
         $printer->printReceipt();
 
-        // Attaching pagetitle and subtitle to view.
-        view()->share(['pageTitle' => 'POS Sales', 'subTitle' => 'Select products for sales and make order placement' ]); 
-      
-        return view('admin.sales.index')->with('order_id', 0);
-
+        return redirect()->back();
+        
     }
 
     public function getMobileNo(Request $request){
