@@ -27,7 +27,12 @@
             </div>
             <div class="row px-5">
                 <div class="col-md-4 col-sm-12 text-center mb-3 pl-4">
-                    <img src="{{ asset('/frontend')}}/images/funVill.png" alt="" class="img-responsive img-story">
+                    <picture>
+                        <source srcset="{{ asset('/frontend')}}/images/funville.webp">
+                        <source srcset="{{ asset('/frontend')}}/images/funville.jpg">
+                        <img src="{{ asset('/frontend')}}/images/funville.jpg" alt="" class="img-responsive img-story">
+                    </picture>
+
                 </div>
                 <div class="col-md-8 col-sm-12 about">
                     <p class="text-left mt-3">

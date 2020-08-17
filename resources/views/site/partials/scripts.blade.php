@@ -18,6 +18,8 @@
 <script src="{{ asset('frontend') }}/libs/animated-headlines/animated-headlines.js"></script>
 <!-- mb.YTPlayer js code-->
 <script src="{{ asset('frontend') }}/libs/mb.YTPlayer/jquery.mb.YTPlayer.min.js"></script>
+<!--modernizr js is used here to detect webp image feature is enabled or not for the browser-->
+<script src="{{ asset('frontend') }}/js/modernizr-custom.js"></script>
 <!--internal js-->
 <script src="{{ asset('frontend') }}/js/internal.js"></script>
 <!--sticky header js-->

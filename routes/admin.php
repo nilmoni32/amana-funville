@@ -186,6 +186,50 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             Route::get('/{id}/delete', 'ServiceController@delete')->name('services.delete');
             });
 
+            //Ingredient Types
+
+            Route::group(['prefix' => 'ingredient-types'], function(){
+                Route::get('/', 'IngredientTypesController@index')->name('ingredienttypes.index');
+                Route::get('/create', 'IngredientTypesController@create')->name('ingredienttypes.create');
+                Route::post('/store', 'IngredientTypesController@store')->name('ingredienttypes.store');
+                Route::get('/edit/{id}', 'IngredientTypesController@edit')->name('ingredienttypes.edit');
+                Route::post('/update', 'IngredientTypesController@update')->name('ingredienttypes.update');
+                Route::get('/delete/{id}', 'IngredientTypesController@delete')->name('ingredienttypes.delete');
+            });
+
+            //all Ingredient lists
+            Route::group(['prefix' => 'ingredient'], function(){
+                Route::get('/', 'IngredientController@index')->name('ingredient.index');
+                Route::get('/create', 'IngredientController@create')->name('ingredient.create');
+                Route::post('/store', 'IngredientController@store')->name('ingredient.store');
+                Route::get('/edit/{id}', 'IngredientController@edit')->name('ingredient.edit');
+                Route::post('/update', 'IngredientController@update')->name('ingredient.update');
+                Route::get('/delete/{id}', 'IngredientController@delete')->name('ingredient.delete');
+            });
+
+            //purchase ingredient
+            Route::group(['prefix' => 'ingredient/purchase'], function(){
+                Route::get('/{id}', 'IngredientPurchaseController@index')->name('ingredient.purchase.index');
+                Route::get('/{id}/create', 'IngredientPurchaseController@create')->name('ingredient.purchase.create');
+                Route::post('/store', 'IngredientPurchaseController@store')->name('ingredient.purchase.store');
+                Route::get('/{id}/edit', 'IngredientPurchaseController@edit')->name('ingredient.purchase.edit');
+                Route::post('/update', 'IngredientPurchaseController@update')->name('ingredient.purchase.update');
+                Route::get('/{id}/delete', 'IngredientPurchaseController@delete')->name('ingredient.purchase.delete');
+            });
+
+            //purchase ingredient
+            Route::group(['prefix' => 'ingredient/damage'], function(){
+                Route::get('/', 'IngredientDamageController@index')->name('ingredient.damage.index');
+                Route::get('/create', 'IngredientDamageController@create')->name('ingredient.damage.create');
+                Route::post('/store', 'IngredientDamageController@store')->name('ingredient.damage.store');
+                Route::get('/edit/{id}', 'IngredientDamageController@edit')->name('ingredient.damage.edit');
+                Route::post('/update', 'IngredientDamageController@update')->name('ingredient.damage.update');
+                Route::get('/delete/{id}', 'IngredientDamageController@delete')->name('ingredient.damage.delete');
+            });
+
+
+
+
         });
 
         

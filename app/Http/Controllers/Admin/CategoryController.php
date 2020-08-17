@@ -40,7 +40,7 @@ class CategoryController extends BaseController
 
         $categories = $this->categoryRepository->listCategories(); // getting all the categories using repository pattern technique.
 
-        $this->setPageTitle('Categories', 'List of all categories'); // Attaching title and subtitle using BaseController setPageTitle function.
+        $this->setPageTitle('Food Category', 'List of all categories'); // Attaching title and subtitle using BaseController setPageTitle function.
         return view('admin.categories.index', compact('categories'));  // returning the admin.categories.index view with categories
     }   
 
@@ -51,7 +51,7 @@ class CategoryController extends BaseController
     public function create(){
         $categories = $this->categoryRepository->listCategories('id','asc');
 
-        $this->setPageTitle('Categories', 'Create Category');   
+        $this->setPageTitle('Food Category', 'Create Category');   
         return view('admin.categories.create', compact('categories'));
     }
 
@@ -91,7 +91,7 @@ class CategoryController extends BaseController
         $targetCategory = $this->categoryRepository->findCategoryById($id);        
         $categories = $this->categoryRepository->listCategories();
 
-        $this->setPageTitle('Categories' ,'Edit Category : '.$targetCategory->category_name);        
+        $this->setPageTitle('Food Category' ,'Edit Category : '.$targetCategory->category_name);        
         return view('admin.categories.edit', compact('categories', 'targetCategory'));
         
      }

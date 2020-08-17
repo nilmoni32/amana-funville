@@ -43,6 +43,7 @@
                                         <label class="control-label" for="categories">Categories</label>
                                         <select name="categories[]" id="categories" class="form-control" multiple>
                                             @foreach($categories as $category)
+                                            <option></option>
                                             <option value="{{ $category->id }}">{{ $category->category_name }}</option>
                                             @endforeach
                                         </select>
@@ -113,7 +114,9 @@
 <script type="text/javascript" src="{{ asset('backend/js/plugins/select2.min.js') }}"></script>
 <script>
     $( document ).ready(function() {
-            $('#categories').select2();
+            $('#categories').select2(
+                { placeholder: " Select Food Category",}
+            );
         });
 </script>
 @endpush

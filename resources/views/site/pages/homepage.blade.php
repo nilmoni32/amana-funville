@@ -7,12 +7,20 @@
     <div class="slideshow owl-carousel">
         <!-- Slider Backround Image Start -->
         <div class="item">
-            <img src="{{ asset('frontend') }}/images/background/banner-1.jpg" alt="banner" title="banner"
-                class="img-responsive" />
+            <picture>
+                <source srcset="{{ asset('frontend') }}/images/background/banner-1.webp" type="image/webp">
+                <source srcset="{{ asset('frontend') }}/images/background/banner-1.jpg" type="image/jpeg">
+                <img src="{{ asset('frontend') }}/images/background/banner-1.jpg" alt="banner" title="banner"
+                    class="img-responsive" />
+            </picture>
         </div>
         <div class="item">
-            <img src="{{ asset('frontend') }}/images/background/banner-2.jpg" alt="banner" title="banner"
-                class="img-responsive" />
+            <picture>
+                <source srcset="{{ asset('frontend') }}/images/background/banner-2.webp" type="image/webp">
+                <source srcset="{{ asset('frontend') }}/images/background/banner-2.jpg" type="image/jpeg">
+                <img src="{{ asset('frontend') }}/images/background/banner-2.jpg" alt="banner" title="banner"
+                    class="img-responsive" />
+            </picture>
         </div>
         <!-- Slider Backround Image End -->
     </div>
@@ -173,7 +181,5 @@
 </div>
 
 <!-- Top Lists End  -->
-
-
 
 @endsection

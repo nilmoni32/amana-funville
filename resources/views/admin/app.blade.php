@@ -33,6 +33,7 @@
   <script src="{{ asset('backend') }}/js/popper.min.js"></script>
   <script src="{{ asset('backend') }}/js/bootstrap.min.js"></script>
   <script src="{{ asset('backend') }}/js/jquery.datetimepicker.full.min.js"></script>
+  <script src="{{ asset('backend/js/plugins/select2.min.js') }}"></script>
   <script src="{{ asset('backend') }}/js/bootstrap-toggle.min.js"></script>
   <script src="{{ asset('backend') }}/js/pusher.min.js"></script>
   <script src="{{ asset('backend') }}/js/main.js"></script>
