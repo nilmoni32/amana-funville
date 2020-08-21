@@ -121,6 +121,13 @@
     @can('all-admin-features')
     <li>
       {{-- if current route name is admin.settings we will set active class here --}}
+      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.ingredientunit.index' ? 'active' : '' }}"
+        href="{{ route('admin.ingredientunit.index')}}">
+        <i class="app-menu__icon fa fa-object-ungroup"></i>
+        <span class="app-menu__label">Unit Measurement</span></a>
+    </li>
+    <li>
+      {{-- if current route name is admin.settings we will set active class here --}}
       <a class="app-menu__item {{ Route::currentRouteName() == 'admin.ingredienttypes.index' ? 'active' : '' }}"
         href="{{ route('admin.ingredienttypes.index')}}">
         <i class="app-menu__icon fa fa-ils"></i>

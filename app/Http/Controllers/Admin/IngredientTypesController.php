@@ -58,8 +58,10 @@ class IngredientTypesController extends BaseController
             // Attaching pagetitle and subtitle to view.
             view()->share(['pageTitle' => 'Ingredient Types', 'subTitle' => 'List of all ingredient types' ]); 
 
-            $ingredienttypes = Typeingredient::all();
-            return view('admin.ingredient_types.index', compact('ingredienttypes')); 
+            // $ingredienttypes = Typeingredient::all();
+            // return view('admin.ingredient_types.index', compact('ingredienttypes')); 
+            return redirect()->route('admin.ingredienttypes.index');
+            
         }else{
             return $this->responseRedirectBack(' Error occurred while creating category.' ,'error', false, false);    
         }
@@ -103,9 +105,9 @@ class IngredientTypesController extends BaseController
         // Attaching pagetitle and subtitle to view.
         view()->share(['pageTitle' => 'Ingredient Types', 'subTitle' => 'List of all ingredient types' ]); 
 
-        $ingredienttypes = Typeingredient::all();
-        return view('admin.ingredient_types.index', compact('ingredienttypes')); 
-        
+        // $ingredienttypes = Typeingredient::all();
+        // return view('admin.ingredient_types.index', compact('ingredienttypes')); 
+        return redirect()->route('admin.ingredienttypes.index');
     }
 
      /**

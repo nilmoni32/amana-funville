@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Traits\FlashMessages;
 use App\Models\Typeingredient;
 use App\Models\Ingredient; 
+use App\Models\Unit; 
 use App\Models\IngredientPurchase;
 use App\Http\Controllers\BaseController;
 use Illuminate\Support\Facades\Storage;
@@ -30,8 +31,9 @@ class IngredientController extends Controller
     public function create(){
         // Attaching pagetitle and subtitle to view.
         view()->share(['pageTitle' => 'Ingredients', 'subTitle' => 'Add ingredient' ]);
-        $ingredienttypes = Typeingredient::where('id', '<>', 1)->get(); //except the root category.       
-        return view('admin.ingredients.create', compact('ingredienttypes'));  
+        $ingredienttypes = Typeingredient::where('id', '<>', 1)->get(); //except the root category.  
+        $units = Unit::all(); //except the root category.       
+        return view('admin.ingredients.create', compact('ingredienttypes', 'units'));  
     }
 
     /**
@@ -49,14 +51,9 @@ class IngredientController extends Controller
             'pic' => 'nullable|mimes:jpeg,png,jpg,gif,svg,webp|max:200',
         ]);           
         
-        // setting smallest measurement unit of the ingredient
-        if($request->measurement_unit == 'Kg'){
-            $smallest_unit = 'gm';
-        }elseif($request->measurement_unit == 'liter'){
-            $smallest_unit = 'ml';
-        }else{
-            $smallest_unit = $request->measurement_unit;
-        }
+        // setting smallest measurement unit of the ingredient       
+        $unit = Unit::where('measurement_unit', $request->measurement_unit)->first();
+        $smallest_unit = $unit->smallest_measurement_unit;
                 
         $ingredient= Ingredient::create([
             'name' => $request->name,
@@ -86,8 +83,11 @@ class IngredientController extends Controller
             // Attaching pagetitle and subtitle to view.
             view()->share(['pageTitle' => 'Ingredients', 'subTitle' => 'List of all ingredients' ]); 
 
-            $ingredients = Ingredient::orderBy('created_at', 'DESC')->get();
-            return view('admin.ingredients.index', compact('ingredients'));
+            // $ingredients = Ingredient::orderBy('created_at', 'DESC')->get();
+            // return view('admin.ingredients.index', compact('ingredients'));
+
+            return redirect()->route('admin.ingredient.index');
+
         }else{
             return $this->responseRedirectBack(' Error occurred while adding an ingredient .' ,'error', false, false);    
         }
@@ -122,13 +122,9 @@ class IngredientController extends Controller
         // setting smallest measurement unit of the ingredient
         // checking purchase table has no ingredient purchase record or not
         if(!IngredientPurchase::where('ingredient_id', $ingredient->id)->count()){
-            if($request->measurement_unit == 'Kg'){
-                $smallest_unit = 'gm';
-            }elseif($request->measurement_unit == 'liter'){
-                $smallest_unit = 'ml';
-            }else{
-                $smallest_unit = $request->measurement_unit;
-            } 
+            
+            $unit = Unit::where('measurement_unit', $request->measurement_unit)->first();
+            $smallest_unit = $unit->smallest_measurement_unit;
         }        
           
         // updating the ingredient data.
@@ -166,8 +162,9 @@ class IngredientController extends Controller
             // Attaching pagetitle and subtitle to view.
             view()->share(['pageTitle' => 'Ingredients', 'subTitle' => 'List of all ingredients' ]); 
 
-            $ingredients = Ingredient::orderBy('created_at', 'DESC')->get();
-            return view('admin.ingredients.index', compact('ingredients'));
+            // $ingredients = Ingredient::orderBy('created_at', 'DESC')->get();
+            // return view('admin.ingredients.index', compact('ingredients'));
+            return redirect()->route('admin.ingredient.index');
         }else{
             return $this->responseRedirectBack(' Error occurred while updating the ingredient .' ,'error', false, false);    
         }

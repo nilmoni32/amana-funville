@@ -23,10 +23,9 @@
                             <th class="text-center"> Qty </th>
                             <th class="text-center"> Price </th>
                             <th class="text-center"> Alert Qty </th>
-                            <th class="text-center"> Cook Unit</th>
-                            <th class="text-center"> P.U. Cost</th>
-                            <th style="width:100px; min-width:100px;" class="text-center text-danger"><i
-                                    class="fa fa-bolt"> </i></th>
+                            <th class="text-center"> Small Unit</th>
+                            <th class="text-center"> S.U. Cost</th>
+                            <th class="text-center text-danger"><i class="fa fa-bolt"> </i></th>
                         </tr>
                     </thead>
                     <tbody>

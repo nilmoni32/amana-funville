@@ -17,7 +17,7 @@ class CreateIngredientDamagesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('ingredient_id')->index(); 
             $table->string('name')->nullable();
-            $table->decimal('quantity',5,2);
+            $table->decimal('quantity',8,2);
             $table->string('unit');
             $table->decimal('price', 8, 2);
             $table->string('reported_by')->nullable();

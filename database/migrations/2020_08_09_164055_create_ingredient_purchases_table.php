@@ -19,7 +19,7 @@ class CreateIngredientPurchasesTable extends Migration
             $table->string('name')->nullable(); 
             $table->datetime('purchase_date');
             $table->datetime('expire_date');
-            $table->decimal('quantity',5,2);
+            $table->decimal('quantity',8,2);
             $table->string('unit');
             $table->decimal('price', 8, 2);
             $table->string('added_by')->nullable(); 

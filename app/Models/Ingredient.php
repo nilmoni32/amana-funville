@@ -8,7 +8,7 @@ class Ingredient extends Model
 {
     protected $fillable = [
         'typeingredient_id','name', 'description', 'total_quantity', 'total_price', 'alert_quantity',
-        'measurement_unit', 'smallest_unit', 'smallest_unit_cost', 'status', 'pic'
+        'measurement_unit', 'smallest_unit', 'smallest_unit_price', 'status', 'pic', 
     ];
 
     protected $casts = [

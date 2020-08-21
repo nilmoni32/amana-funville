@@ -9,6 +9,7 @@ use App\Traits\FlashMessages;
 use App\Models\Ingredient; 
 use App\Models\IngredientPurchase;
 use Carbon\Carbon;
+use App\Models\Unit;
 
 class IngredientPurchaseController extends BaseController
 {
@@ -63,35 +64,32 @@ class IngredientPurchaseController extends BaseController
             'expire_date' => $expire_date,
             'added_by' => auth()->user()->name,
         ]);
+      
 
         //getting the ingredient details       
         $ingredient = Ingredient::find($request->ingredient_id);
         // Setting ingredient total quantity, total price, per unit cost price 
         $ingredient_total_quantity = $ingredient->total_quantity;
         $ingredient_total_price = $ingredient->total_price;
-        $ingredient_measurement_unit = $ingredient->measurement_unit;
-        $ingredient_smallest_unit = $ingredient->smallest_unit;        
-
-        //increasing ingredient quantity
-        if($ingredient->measurement_unit == $ingredientPurchase->unit){
-            // for measuring unit Killogram or Liter
-            $ingredient_total_quantity += $ingredientPurchase->quantity; 
-
-        }elseif($ingredient_measurement_unit == 'Kg' &&  $ingredientPurchase->unit  == 'gm' ||
-        $ingredient_measurement_unit == 'liter' &&  $ingredientPurchase->unit  == 'ml' ){
-            // for measuring unit gram or ml
-            $ingredient_total_quantity += ($ingredientPurchase->quantity/1000); 
-        }
-        
-        // increasing total ingredient price 
+                
+        // calculating total ingredient price 
         $ingredient_total_price += $ingredientPurchase->price; 
-        // calculating ingredient unit price in gm or ml
-        if($ingredient->measurement_unit == 'Kg' || $ingredient->measurement_unit == 'liter' ){
-            $ingredient_smallest_unit_price = $ingredient_total_price /($ingredient_total_quantity * 1000);
-        }else{
-            $ingredient_smallest_unit_price = $ingredient_total_price/$ingredient_total_quantity;
-        }
 
+        //calculating ingredient quantity and  ingredient unit price
+        if($ingredient->measurement_unit == $ingredientPurchase->unit){
+            // getting unit conversion value 
+            $unit = Unit::where('measurement_unit', $ingredientPurchase->unit)->first();            
+            $unit_conversion = $unit->unit_conversion; 
+            $ingredient_total_quantity += $ingredientPurchase->quantity; 
+            $ingredient_smallest_unit_price = $ingredient_total_price/($ingredient_total_quantity * $unit_conversion);
+        }else{
+            // getting unit conversion value 
+            $unit = Unit::where('smallest_measurement_unit', $ingredientPurchase->unit)->first();            
+            $unit_conversion = $unit->unit_conversion; 
+            $ingredient_total_quantity += ($ingredientPurchase->quantity/$unit_conversion); 
+            $ingredient_smallest_unit_price = $ingredient_total_price/($ingredient_total_quantity * $unit_conversion);
+        } 
+      
         // updating the ingredient total quatity, total price and unit price
         $ingredient->total_quantity = $ingredient_total_quantity;        
         $ingredient->total_price = $ingredient_total_price;
@@ -107,9 +105,10 @@ class IngredientPurchaseController extends BaseController
             // Attaching pagetitle and subtitle to view.
             view()->share(['pageTitle' => 'Ingredient Purchase', 'subTitle' => 'Ingredient all purchases list' ]); 
 
-            $purchases =  IngredientPurchase::orderBy('created_at', 'DESC')->where('ingredient_id', $request->ingredient_id)->take(200)->get();            
+            // $purchases =  IngredientPurchase::orderBy('created_at', 'DESC')->where('ingredient_id', $request->ingredient_id)->take(200)->get();
+            // return view('admin.ingredients.purchases.index', compact('purchases', 'ingredient')); 
+            return redirect()->route('admin.ingredient.purchase.index', $ingredient->id);
 
-            return view('admin.ingredients.purchases.index', compact('purchases', 'ingredient'));  
         }else{
             return $this->responseRedirectBack(' Error occurred while adding an ingredient .' ,'error', false, false);    
         }
@@ -130,32 +129,32 @@ class IngredientPurchaseController extends BaseController
             'quantity'  => 'required|numeric',
             'unit' => 'required|string', 
             'price'=>  'required|regex:/^\d+(\.\d{1,2})?$/',            
-        ]);       
-      
+        ]);
+        
+        //coverting date format from m-d-Y to Y-m-d as database stroes date in 'Y-m-d' format
+        $purchase_date = Carbon::createFromFormat('d-m-Y', $request->purchase_date)->format('Y-m-d');
+        $expire_date = Carbon::createFromFormat('d-m-Y', $request->expire_date)->format('Y-m-d');      
 
         //Getting the ingredient purchase details.
         $ingredientPurchase = IngredientPurchase::find($request->purchase_id);
         //getting the ingredient details       
-        $ingredient = Ingredient::find($ingredientPurchase->ingredient_id);           
-
-        //decreasing ingredient quantity before the adding the updated quantity
-        if($ingredient->measurement_unit == $ingredientPurchase->unit){
-            // for measuring unit Killogram or Liter
-            $ingredient->total_quantity -= $ingredientPurchase->quantity; 
-
-        }elseif($ingredient->measurement_unit == 'Kg' &&  $ingredientPurchase->unit  == 'gm' ||
-        $ingredient->measurement_unit == 'liter' &&  $ingredientPurchase->unit  == 'ml' ){
-            // for measuring unit gram or ml
-            $ingredient->total_quantity -= ($ingredientPurchase->quantity/1000); 
-        }
-        //decreasing ingredient price before the adding the updated ingredient_purchase price
-        $ingredient->total_price -= $ingredientPurchase->price;   
+        $ingredient = Ingredient::find($ingredientPurchase->ingredient_id);       
+        $ingredient_total_quantity = $ingredient->total_quantity;
+        $ingredient_total_price = $ingredient->total_price;
         
-        //coverting date format from m-d-Y to Y-m-d as database stroes date in 'Y-m-d' format
-        $purchase_date = Carbon::createFromFormat('d-m-Y', $request->purchase_date)->format('Y-m-d');
-        $expire_date = Carbon::createFromFormat('d-m-Y', $request->expire_date)->format('Y-m-d');
+        //Substracting ingredient price before adding the new ingredient_purchase price
+        $ingredient_total_price -= $ingredientPurchase->price;  
 
-        //now updating the ingredient_purchase details.
+        //Subtracting ingredient quantity before adding the new quantity
+        if($ingredient->measurement_unit == $ingredientPurchase->unit){
+            $ingredient_total_quantity -= $ingredientPurchase->quantity;
+        }else{
+            // getting unit conversion value 
+            $unit = Unit::where('smallest_measurement_unit', $ingredientPurchase->unit)->first();            
+            $unit_conversion = $unit->unit_conversion; 
+            $ingredient_total_quantity -= ($ingredientPurchase->quantity/$unit_conversion); 
+        }
+        //now updating the ingredient_purchase details
         $ingredientPurchase->name = $request->name;
         $ingredientPurchase->quantity = $request->quantity;
         $ingredientPurchase->price = $request->price;
@@ -164,25 +163,28 @@ class IngredientPurchaseController extends BaseController
         $ingredientPurchase->expire_date = $expire_date;
         $ingredientPurchase->save(); 
 
-        //updating the ingredient total quatity, total price and unit price     
+        // Updating ingredient total_price 
+        $ingredient_total_price += $ingredientPurchase->price; 
+        //calculating ingredient quantity and  ingredient unit price
         if($ingredient->measurement_unit == $ingredientPurchase->unit){
-            // for measuring unit Killogram or Liter
-            $ingredient->total_quantity += $ingredientPurchase->quantity; 
-
-        }elseif($ingredient->measurement_unit == 'Kg' &&  $ingredientPurchase->unit  == 'gm' ||
-        $ingredient->measurement_unit == 'liter' &&  $ingredientPurchase->unit  == 'ml' ){
-            // for measuring unit gram or ml
-            $ingredient->total_quantity += ($ingredientPurchase->quantity/1000); 
-        }
-        // increasing total ingredient price 
-        $ingredient->total_price += $ingredientPurchase->price; 
-        // calculating ingredient unit price 
-        if($ingredient->measurement_unit == 'Kg' || $ingredient->measurement_unit == 'liter' ){
-            $ingredient->smallest_unit_price =  $ingredient->total_price / ($ingredient->total_quantity * 1000);
+            // getting unit conversion value 
+            $unit = Unit::where('measurement_unit', $ingredientPurchase->unit)->first();            
+            $unit_conversion = $unit->unit_conversion; 
+            $ingredient_total_quantity += $ingredientPurchase->quantity; 
+            $ingredient_smallest_unit_price = $ingredient_total_price/($ingredient_total_quantity * $unit_conversion);
         }else{
-            $ingredient->smallest_unit_price = $ingredient->total_price /$ingredient->total_quantity;
-        }       
-        $ingredient->save();
+            // getting unit conversion value 
+            $unit = Unit::where('smallest_measurement_unit', $ingredientPurchase->unit)->first();            
+            $unit_conversion = $unit->unit_conversion; 
+            $ingredient_total_quantity += ($ingredientPurchase->quantity/$unit_conversion); 
+            $ingredient_smallest_unit_price = $ingredient_total_price/($ingredient_total_quantity * $unit_conversion);
+        }
+            
+        // updating the ingredient total quatity, total price and unit price
+        $ingredient->total_quantity = $ingredient_total_quantity;        
+        $ingredient->total_price = $ingredient_total_price;
+        $ingredient->smallest_unit_price = $ingredient_smallest_unit_price;
+        $ingredient->save(); 
 
         if($ingredientPurchase){           
 
@@ -193,46 +195,49 @@ class IngredientPurchaseController extends BaseController
             // Attaching pagetitle and subtitle to view.
             view()->share(['pageTitle' => 'Ingredient Purchase', 'subTitle' => 'Ingredient all purchases list' ]); 
 
-            $purchases =  IngredientPurchase::orderBy('created_at', 'DESC')->where('ingredient_id', $ingredientPurchase->ingredient_id)->take(200)->get();            
-
-            return view('admin.ingredients.purchases.index', compact('purchases', 'ingredient'));  
+            // $purchases =  IngredientPurchase::orderBy('created_at', 'DESC')->where('ingredient_id', $ingredientPurchase->ingredient_id)->take(200)->get(); 
+            // return view('admin.ingredients.purchases.index', compact('purchases', 'ingredient'));  
+            return redirect()->route('admin.ingredient.purchase.index', $ingredient->id);
         }else{
             return $this->responseRedirectBack(' Error occurred while updating the ingredient purchase .' ,'error', false, false);    
         }
 
     }
 
+    /**
+     *  Before deleting the purchase record, we need to substract the total quantity and total price from ingredient    stock. and also recalculate the per unit cost.
+     */
     public function delete($id){
         $ingredientPurchase = IngredientPurchase::find($id);
-        //before deleting the purchase record, we need to substract the total quantity and total price from ingredient stock. and also recalculate the per unit cost.
-
         //getting the ingredient details       
-        $ingredient = Ingredient::find($ingredientPurchase->ingredient_id);           
+        $ingredient = Ingredient::find($ingredientPurchase->ingredient_id);       
+        $ingredient_total_quantity = $ingredient->total_quantity;
+        $ingredient_total_price = $ingredient->total_price;
 
-        //decreasing ingredient quantity before the deleting 
+        //Substracting ingredient price before deleting the new ingredient_purchase price
+        $ingredient_total_price -= $ingredientPurchase->price;  
+
+        //Subtracting ingredient quantity before deleting the new quantity and Recalculating per unit cost
         if($ingredient->measurement_unit == $ingredientPurchase->unit){
-            // for measuring unit Killogram or Liter
-            $ingredient->total_quantity -= $ingredientPurchase->quantity; 
-
-        }elseif($ingredient->measurement_unit == 'Kg' &&  $ingredientPurchase->unit  == 'gm' ||
-        $ingredient->measurement_unit == 'liter' &&  $ingredientPurchase->unit  == 'ml' ){
-            // for measuring unit gram or ml
-            $ingredient->total_quantity -= ($ingredientPurchase->quantity/1000); 
+            // getting unit conversion value 
+            $unit = Unit::where('measurement_unit', $ingredientPurchase->unit)->first();            
+            $unit_conversion = $unit->unit_conversion;
+            $ingredient_total_quantity -= $ingredientPurchase->quantity;
+            $ingredient_smallest_unit_price = $ingredient_total_price/($ingredient_total_quantity * $unit_conversion);
+        }else{
+            // getting unit conversion value 
+            $unit = Unit::where('smallest_measurement_unit', $ingredientPurchase->unit)->first();            
+            $unit_conversion = $unit->unit_conversion; 
+            $ingredient_total_quantity -= ($ingredientPurchase->quantity/$unit_conversion); 
+            $ingredient_smallest_unit_price = $ingredient_total_price/($ingredient_total_quantity * $unit_conversion);
         }
-        //decreasing ingredient price before the adding the updated ingredient_purchase price
-        $ingredient->total_price -= $ingredientPurchase->price;   
-        // recalculate the per unit cost of the ingredient 
-        if($ingredient->measurement_unit == $ingredient->smallest_unit){ 
-
-            $ingredient->smallest_unit_price = $ingredient->total_price / $ingredient->total_quantity; 
-
-        }elseif($ingredient->measurement_unit != $ingredient->smallest_unit){
-
-            $ingredient->smallest_unit_price = $ingredient->total_price / ($ingredient->total_quantity*1000);   
-        }
-        
-        $ingredient->save();
-      
+  
+        // updating the ingredient total quatity, total price and unit price
+        $ingredient->total_quantity = $ingredient_total_quantity;        
+        $ingredient->total_price = $ingredient_total_price;
+        $ingredient->smallest_unit_price = $ingredient_smallest_unit_price;
+        $ingredient->save(); 
+        // Deleting the ingredient purchase record.
         $ingredientPurchase->delete();
 
         if(!$ingredientPurchase){
@@ -242,9 +247,9 @@ class IngredientPurchaseController extends BaseController
         $this->showFlashMessages();
         // Attaching pagetitle and subtitle to view.
         view()->share(['pageTitle' => 'Ingredient Purchase', 'subTitle' => 'Ingredient all purchases list' ]); 
-        $purchases =  IngredientPurchase::orderBy('created_at', 'DESC')->where('ingredient_id', $ingredient->id)->take(200)->get();            
-
-        return view('admin.ingredients.purchases.index', compact('purchases', 'ingredient'));        
+        // $purchases =  IngredientPurchase::orderBy('created_at', 'DESC')->where('ingredient_id', $ingredient->id)->take(200)->get();
+        // return view('admin.ingredients.purchases.index', compact('purchases', 'ingredient'));   
+        return redirect()->route('admin.ingredient.purchase.index', $ingredient->id);   
 
     }
 

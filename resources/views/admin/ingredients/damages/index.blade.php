@@ -16,48 +16,47 @@
     <div class="col-md-9">
         <div class="tile">
             <div>
-                <h3>Purchase Ingredient List: {{ $ingredient->name }}</h3>
+                <h3> Damage Ingredient List: {{ $ingredient->name }}</h3>
             </div>
             <div class="tile-body mt-5">
                 <div class="row">
                     <div class="col-md-12">
-                        <table class="table table-hover table-bordered" id="purchaseTable">
+                        <table class="table table-hover table-bordered" id="sampleTable">
                             <thead>
                                 <tr>
                                     <th class="text-center"> # </th>
                                     <th class="text-center">Ingredient Name</th>
-                                    <th class="text-center">Purchase Date</th>
-                                    <th class="text-center">Exp Date </th>
                                     <th class="text-center"> Qty </th>
                                     <th class="text-center"> Price</th>
+                                    <th class="text-center">Report Date</th>
+                                    <th class="text-center">Reported By</th>
                                     {{-- <th class="text-center"> Added By</th> --}}
                                     <th style="width:100px; min-width:100px;" class="text-center text-danger"><i
                                             class="fa fa-bolt"> </i></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($purchases as $purchase)
+                                @foreach($damages as $damage)
                                 <tr>
                                     <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                         {{ $loop->index + 1 }}
                                     </td>
                                     <td style="padding: 0.5rem; vertical-align: 0 ;">
-                                        {{ $purchase->name }}</td>
+                                        {{ $damage->name }}</td>
                                     <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
-                                        {{ date('d-m-Y', strtotime($purchase->purchase_date)) }}</td>
+                                        {{ $damage->quantity }} {{ $damage->unit }}</td>
                                     <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
-                                        {{ date('d-m-Y', strtotime($purchase->expire_date)) }}</td>
+                                        {{ $damage->price }}</td>
                                     <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
-                                        {{ $purchase->quantity }} {{ $purchase->unit }}</td>
+                                        {{ date('d-m-Y', strtotime($damage->reported_date)) }}</td>
                                     <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
-                                        {{ $purchase->price }}</td>
-                                    {{-- <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
-                                        {{ $purchase->added_by }}</td> --}}
+                                        {{ $damage->reported_by  }}</td>
+
                                     <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                         <div class="btn-group" role="group" aria-label="Second group">
-                                            <a href="{{ route('admin.ingredient.purchase.edit', $purchase->id) }}"
+                                            <a href="{{ route('admin.ingredient.damage.edit', $damage->id) }}"
                                                 class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
-                                            <a href="{{ route('admin.ingredient.purchase.delete', $purchase->id) }}"
+                                            <a href="{{ route('admin.ingredient.damage.delete', $damage->id) }}"
                                                 class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
                                         </div>
                                     </td>
@@ -76,6 +75,6 @@
 <script type="text/javascript" src="{{ asset('backend/js/plugins/jquery.dataTables.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('backend/js/plugins/dataTables.bootstrap.min.js') }}"></script>
 <script type="text/javascript">
-    $('#purchaseTable').DataTable();
+    $('#sampleTable').DataTable();
 </script>
 @endpush

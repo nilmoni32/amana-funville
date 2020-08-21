@@ -8,7 +8,7 @@
 </div>
 @include('admin.partials.flash')
 <div class="row user">
-    <div class="col-md-8 mx-auto">
+    <div class="col-md-10 mx-auto">
         <div class="tile">
             <form action="{{ route('admin.ingredient.store') }}" method="POST" role="form"
                 enctype="multipart/form-data">
@@ -19,7 +19,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="control-label" for="name">Name</label>
+                                <label class="control-label" for="name">Ingredient Name</label>
                                 <input class="form-control @error('name') is-invalid @enderror" type="text"
                                     placeholder="Enter name" id="name" name="name" value="{{ old('name') }}" />
                                 <div class="invalid-feedback active">
@@ -31,7 +31,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label" for="ingredienttypes">Ingredient Types</label>
-                                <select name="typeingredient_id" id="ingredienttypes" class="form-control" multiple>
+                                <select name="typeingredient_id" id="ingredienttypes" class="form-control">
                                     @foreach($ingredienttypes as $ingredienttype)
                                     <option></option>
                                     <option value="{{ $ingredienttype->id }}">{{ $ingredienttype->name }}</option>
@@ -63,22 +63,12 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label" for="measurement_unit">Stock Measurement Unit</label>
-                                <select name="measurement_unit" id="measurement_unit" class="form-control" multiple>
+                                <select name="measurement_unit" id="measurement_unit" class="form-control">
+                                    @foreach($units as $unit)
                                     <option></option>
-                                    <option value="Kg">Kg</option>
-                                    <option value="gm">gm</option>
-                                    <option value="liter">liter</option>
-                                    <option value="ml">ml</option>
-                                    <option value="pcs">pcs</option>
-                                    <option value="bundle">bundle</option>
+                                    <option value="{{ $unit->measurement_unit }}">{{ $unit->measurement_unit }}</option>
+                                    @endforeach
                                 </select>
-                                {{-- <input class="form-control @error('measurement_unit') is-invalid @enderror" type="text"
-                                    placeholder="Enter Measurement unit" id="measurement_unit" name="measurement_unit"
-                                    value="{{ old('measurement_unit') }}" />
-                                <div class="invalid-feedback active">
-                                    <i class="fa fa-exclamation-circle fa-fw"></i> @error('measurement_unit')
-                                    <span>{{ $message }}</span> @enderror
-                                </div> --}}
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -126,13 +116,9 @@
              $('#measurement_unit').select2({
                 placeholder: "Select an measurement Unit",              
                 multiple: false, 
-                minimumResultsForSearch: -1,                        
+               // minimumResultsForSearch: -1,                        
              });
-             $('#smallest_unit').select2({
-                placeholder: "Select a smallest measurement unit",           
-                multiple: false, 
-                minimumResultsForSearch: -1,                   
-             });
+            
             //  This code show the image beforeUpload
             function readURL(input) {
                 if (input.files && input.files[0]) {
