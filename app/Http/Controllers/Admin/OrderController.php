@@ -10,6 +10,8 @@ use PDF;
 use Carbon\Carbon;
 use DateTime;
 use App\Models\Cart;
+use App\Models\Recipe;
+use App\Models\Unit;
 
 class OrderController extends BaseController
 {
@@ -40,7 +42,35 @@ class OrderController extends BaseController
         }
        
         $order->status = $request->status;
-        $order->save();        
+        $order->save(); 
+        //Inventory Management: When order status is changed to delivered, we will deduct product quantity and product total cost using product id from ingredient stock. 
+        if($order->status == 'delivered'){
+            //finding the cart using order id... it may return many carts
+            foreach($order->carts as $cart){
+                //getting product quantity that user has purchased.
+                $cart_product_quantity = $cart->product_quantity;
+                //using product id finding the recipe and then finding the ingredients of the recipe
+                foreach(Recipe::where('product_id', $cart->product_id)->first()->recipeingredients as $recipeingredient){
+                    //getting the ingredient.
+                    $ingredient = $recipeingredient->ingredient;                   
+                    //Subtracting ingredient total cost from ingredient stock consumed in recipe ingredients. 
+                    $ingredient->total_price -= ($recipeingredient->ingredient_total_cost * $cart_product_quantity);
+                    // if ingredient stock unit is equal to recipe ingredients... then we just deduct qty from ingredient stock.
+                    if($ingredient->measurement_unit == $recipeingredient->measure_unit){
+                        $ingredient->total_quantity -= ($recipeingredient->quantity * $cart_product_quantity); 
+                    }else{
+                        // getting unit conversion value from Unit 
+                        $unit = Unit::where('smallest_measurement_unit', $recipeingredient->measure_unit)->first();            
+                        $unit_conversion = $unit->unit_conversion; 
+                        $ingredient->total_quantity -= ($recipeingredient->quantity * $cart_product_quantity/$unit_conversion);
+                    }
+                    $ingredient->save();
+
+                }
+
+            }
+
+        }     
         return $this->responseRedirectBack(' Order status is updated successfully' ,'success', false, false); 
     }
 

@@ -236,7 +236,25 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::get('/{id}/delete', 'IngredientDamageController@delete')->name('ingredient.damage.delete');
             });
 
+            //Recipe
+            Route::group(['prefix' => 'recipe'], function(){
+                Route::get('/', 'RecipeController@index')->name('recipe.index');
+                Route::get('/create', 'RecipeController@create')->name('recipe.create');
+                Route::post('/store', 'RecipeController@store')->name('recipe.store');
+                Route::get('/edit/{id}', 'RecipeController@edit')->name('recipe.edit');
+                Route::post('/update', 'RecipeController@update')->name('recipe.update');
+                Route::get('/delete/{id}', 'RecipeController@delete')->name('recipe.delete');
+            });
 
+            //Recipe Ingredients
+            Route::group(['prefix' => 'recipe/ingredients'], function(){
+                Route::get('/{id}', 'RecipeIngredientController@index')->name('recipe.ingredient.index');
+                Route::get('/{id}/create', 'RecipeIngredientController@create')->name('recipe.ingredient.create');
+                Route::post('/store', 'RecipeIngredientController@store')->name('recipe.ingredient.store');
+                Route::get('/edit/{id}', 'RecipeIngredientController@edit')->name('recipe.ingredient.edit');
+                Route::post('/update', 'RecipeIngredientController@update')->name('recipe.ingredient.update');
+                Route::get('/delete/{id}', 'RecipeIngredientController@delete')->name('recipe.ingredient.delete');
+            });
 
 
         });

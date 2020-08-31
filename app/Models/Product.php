@@ -67,4 +67,12 @@ class Product extends Model
         return $this->belongsToMany(Category::class, 'product_categories', 'product_id', 'category_id');
     }
 
+    /**
+     * Get the recipe and its all ingredients .
+     */
+    public function recipe()
+    {
+        return $this->hasOne(Recipe::class);
+    }
+
 }

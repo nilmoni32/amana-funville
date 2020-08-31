@@ -40,4 +40,13 @@ class Ingredient extends Model
         return $this->hasMany(IngredientDamage::class);
     }
 
+    /**
+    * Get the Food menu recipes ingredient lists.
+    */
+    public function recipeingredients(){
+        return $this->hasMany(RecipeIngredient::class);
+    }
+
+
+
 }

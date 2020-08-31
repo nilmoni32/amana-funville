@@ -10,6 +10,8 @@ use App\Models\Sale;
 use App\Models\Ordersale;
 use Auth;
 use App\Traits\FlashMessages; 
+use App\Models\Recipe;
+use App\Models\Unit;
 use charlieuki\ReceiptPrinter\ReceiptPrinter as ReceiptPrinter;
 
 class SalesController extends Controller
@@ -170,6 +172,34 @@ class SalesController extends Controller
             $sale->ordersale_id = $order->id;           
             $sale->save();
         }
+
+         //Inventory Management: We will deduct product quantity and product total cost using product id from ingredient stock. 
+
+         //finding the cart using order id... it may return many sale carts for pos system
+         foreach($order->sales as $cart){
+            //getting product quantity that user has purchased.
+            $cart_product_quantity = $cart->product_quantity;
+            //using product id finding the recipe and then finding the ingredients of the recipe
+            foreach(Recipe::where('product_id', $cart->product_id)->first()->recipeingredients as $recipeingredient){
+                //getting the ingredient.
+                $ingredient = $recipeingredient->ingredient;                   
+                //Subtracting ingredient total cost from ingredient stock consumed in recipe ingredients. 
+                $ingredient->total_price -= ($recipeingredient->ingredient_total_cost * $cart_product_quantity);
+                // if ingredient stock unit is equal to recipe ingredients... then we just deduct qty from ingredient stock.
+                if($ingredient->measurement_unit == $recipeingredient->measure_unit){
+                    $ingredient->total_quantity -= ($recipeingredient->quantity * $cart_product_quantity); 
+                }else{
+                    // getting unit conversion value from Unit 
+                    $unit = Unit::where('smallest_measurement_unit', $recipeingredient->measure_unit)->first();            
+                    $unit_conversion = $unit->unit_conversion; 
+                    $ingredient->total_quantity -= ($recipeingredient->quantity * $cart_product_quantity/$unit_conversion);
+                }
+                $ingredient->save();
+
+            }
+
+        }
+
         // setting flash message using trait
         $this->setFlashMessage(' Order is placed successfully', 'success');    
         $this->showFlashMessages(); 

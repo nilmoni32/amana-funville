@@ -141,6 +141,13 @@
         <span class="app-menu__label">Ingredients Lists</span></a>
     </li>
     <li>
+      {{-- if current route name is admin.settings we will set active class here --}}
+      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.recipe.index' ? 'active' : '' }}"
+        href="{{ route('admin.recipe.index')}}">
+        <i class="app-menu__icon fa fa-modx"></i>
+        <span class="app-menu__label">Recipes</span></a>
+    </li>
+    <li>
       {{-- if current route name is admin.categories.index we will set active class here --}}
       <a class="app-menu__item {{ Route::currentRouteName() == 'admin.categories.index' ? 'active' : '' }}"
         href="{{ route('admin.categories.index')}}">

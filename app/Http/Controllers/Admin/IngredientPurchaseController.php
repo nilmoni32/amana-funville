@@ -33,7 +33,7 @@ class IngredientPurchaseController extends BaseController
     public function create($id){
         //getting the ingredient        
         $ingredient = Ingredient::find($id);
-        view()->share(['pageTitle' => 'Ingredient Purchase', 'subTitle' => 'Adding purchase entry for the ingredient' ]);                
+        view()->share(['pageTitle' => 'Ingredient Purchase', 'subTitle' => 'Add purchase entry for the ingredient' ]);                
         return view('admin.ingredients.purchases.create', compact('ingredient'));         
     }
 
