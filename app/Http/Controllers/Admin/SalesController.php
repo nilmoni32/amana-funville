@@ -18,11 +18,11 @@ class SalesController extends Controller
 {
     
     use FlashMessages;
-    public function index(){
+
+    public function index($id){
         // Attaching pagetitle and subtitle to view.
-        view()->share(['pageTitle' => 'POS Sales', 'subTitle' => 'Select products for sales and make order placement' ]); 
-      
-        return view('admin.sales.index')->with('order_id', 0);
+        view()->share(['pageTitle' => 'POS Sales', 'subTitle' => 'Select products for sales and make order placement' ]);
+        return view('admin.sales.index')->with('order_id', $id);
     }
 
     /*
@@ -130,13 +130,30 @@ class SalesController extends Controller
     }
 
     public function orderplace(Request $request){
-
+        // if no items are added to sale cart
         if(!$this->calculateSubtotal()){
-             // setting flash message using trait
-            $this->setFlashMessage(' Please add items to the cart', 'error');    
-            $this->showFlashMessages(); 
-            return redirect()->back();
+            // setting flash message using trait
+           $this->setFlashMessage(' Please add items to the cart', 'error');    
+           $this->showFlashMessages(); 
+           return redirect()->back();
         }
+
+        //before placement an order we need to check if the food recipe is added of the same food product or not.
+        foreach(Sale::where('admin_id', Auth::id())->where('ordersale_id',NULL)->get() as $sale){
+            // if recipe is added for the food 
+            if(!Recipe::where('product_id', $sale->product_id)->first()){
+                 // setting flash message using trait
+                $this->setFlashMessage(" You might forget to add '".$sale->product_name."' food recipe that you want to sale", 'error');    
+                $this->showFlashMessages(); 
+                return redirect()->back();             
+            }// redipe is added but recipe ingredients is not added for the food
+            elseif(!Recipe::where('product_id', $sale->product_id)->first()->recipeingredients->count()){
+                // setting flash message using trait
+                $this->setFlashMessage(" You might forget to add '".$sale->product_name."' food recipe ingredients which you want to sale", 'error');    
+                $this->showFlashMessages(); 
+                return redirect()->back(); 
+            }
+        }             
       
         $this->validate($request,[  
             'order_tableNo'    => 'required|string|max:10',
@@ -155,12 +172,18 @@ class SalesController extends Controller
             $ord_id = Ordersale::orderBy('id', 'desc')->first()->id; 
         }   
         $ord_id = '#'.(10000 + ($ord_id + 1));
+        //calculating order grand total        
+        $order_total = $this->calculateSubtotal() + ($this->calculateSubtotal() * (config('settings.tax_percentage')/100));
+        $order_grand_total = $order_total - $request->order_discount;
 
         $order = new Ordersale(); // we use order_id as online transaction id.
         $order->admin_id = auth()->user()->id;     
         $order->order_number = $ord_id; 
-        $order->grand_total = $this->calculateSubtotal();  
+        $order->discount = $request->order_discount;
+        $order->discount_reference = $request->order_discount_reference;
+        $order->grand_total = $order_grand_total;  
         $order->order_date = \Carbon\Carbon::now()->toDateTimeString(); 
+        $order->payment_method = 'cash';
         $order->order_tableNo = $request->order_tableNo;      
         $order->customer_name = $request->customer_name;        
         $order->customer_mobile = $request->customer_mobile;
@@ -204,80 +227,11 @@ class SalesController extends Controller
         $this->setFlashMessage(' Order is placed successfully', 'success');    
         $this->showFlashMessages(); 
         //$this->saleInvoice($order->id);
-        view()->share(['pageTitle' => 'POS Sales', 'subTitle' => 'Select products for sales and make order placement' ]);       
-        return view('admin.sales.index')->with('order_id', $order->id);
-        
-    }
-
-    public function saleInvoice($saleOrder_id){
-        
-        $saleOrder = Ordersale::find($saleOrder_id);
-        // dd($saleOrder->order_number);
-        //Set params
-        $mid = '123123456';
-        $store_name = config('settings.site_name');
-        $store_address = config('settings.contact_address');
-        $store_phone = config('settings.phone_no');
-        $store_email = config('settings.default_email_address');
-        $store_website = 'funville.com';
-        $store_tableNo =  $saleOrder->order_tableNo;
-        $tax_percentage = config('settings.tax_percentage');
-        $transaction_id = $saleOrder->order_number; 
+        // view()->share(['pageTitle' => 'POS Sales', 'subTitle' => 'Select products for sales and make order placement' ]);       
+        // return view('admin.sales.index')->with('order_id', $order->id);
+        return redirect()->route('admin.sales.index', $order->id);   
        
-        
-        // Set items
-        $items = [];       
-        //storing values into an associative array.
-        foreach(Sale::where('ordersale_id', $saleOrder->id)->get() as $saleCart){    
-            $items[] = ['name' => $saleCart->product_name, 'qty' => $saleCart->product_quantity, 'price' => $saleCart->unit_price ];
-        }
-
-        //dd($items);
-        
-        // Init printer
-        $printer = new ReceiptPrinter;
-        
-        $printer->init(
-            //Connection protocol to communicate with the receipt printer.
-            //config('receiptprinter.connector_type'),  
-            config('settings.protocol'),
-            //Typically printer name or IP address.
-            //config('receiptprinter.connector_descriptor')
-            config('settings.printer_name')
-        );
-
-         // Set store info
-        $printer->setStore($mid, $store_name, $store_address, $store_phone, $store_email, $store_website,$store_tableNo);
-
-        // Add items
-        foreach ($items as $item) {
-            $printer->addItem(
-                $item['name'],
-                $item['qty'],
-                $item['price']
-            );
-        }
-        // Set tax
-        $printer->setTax($tax_percentage);
-
-        // Calculate total
-        $printer->calculateSubTotal();
-        $printer->calculateGrandTotal();
-
-        // Set transaction ID
-        $printer->setTransactionID($transaction_id);
-
-        // Set qr code
-        $printer->setQRcode([
-            'tid' => $transaction_id,
-        ]);
-
-        // Print receipt
-        $printer->printReceipt();
-
-        return redirect()->back();
-        
-    }
+    }    
 
     public function getMobileNo(Request $request){
 

@@ -26,35 +26,9 @@
                             <div class="form-group">
                                 <label class="control-label" for="name">Product Name</label>
                                 <input class="form-control @error('name') is-invalid @enderror" type="text"
-                                    placeholder="Enter Ingredient name" id="name" name="name"
-                                    value="{{ old('name') }}" />
+                                    placeholder="Enter Ingredient name" id="ingredient_search" name="name" />
                                 <div class="invalid-feedback active">
                                     <i class="fa fa-exclamation-circle fa-fw"></i> @error('name')
-                                    <span>{{ $message }}</span> @enderror
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label" for="price">Price</label>
-                                <input class="form-control @error('price') is-invalid @enderror" type="text"
-                                    placeholder="Enter price" id="price" name="price" value="{{ old('price') }}" />
-                                <div class="invalid-feedback active">
-                                    <i class="fa fa-exclamation-circle fa-fw"></i> @error('price')
-                                    <span>{{ $message }}</span> @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label" for="quantity">Quantity</label>
-                                <input class="form-control @error('quantity') is-invalid @enderror" type="text"
-                                    placeholder="Enter Quantity" id="quantity" name="quantity"
-                                    value="{{ old('quantity') }}" />
-                                <div class="invalid-feedback active">
-                                    <i class="fa fa-exclamation-circle fa-fw"></i> @error('quantity')
                                     <span>{{ $message }}</span> @enderror
                                 </div>
                             </div>
@@ -74,6 +48,32 @@
                                     </option>
                                     @endif
                                 </select>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label" for="quantity">Quantity</label>
+                                <input class="form-control @error('quantity') is-invalid @enderror" type="text"
+                                    placeholder="Enter Quantity" id="quantity" name="quantity"
+                                    value="{{ old('quantity') }}" />
+                                <div class="invalid-feedback active">
+                                    <i class="fa fa-exclamation-circle fa-fw"></i> @error('quantity')
+                                    <span>{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label" for="price">Price</label>
+                                <input class="form-control @error('price') is-invalid @enderror" type="text"
+                                    placeholder="Enter price" id="price" name="price" value="{{ old('price') }}" />
+                                <div class="invalid-feedback active">
+                                    <i class="fa fa-exclamation-circle fa-fw"></i> @error('price')
+                                    <span>{{ $message }}</span> @enderror
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -112,6 +112,8 @@
 @endsection
 @push('scripts')
 <script type="text/javascript">
+    // getting CSRF Token from meta tag
+    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     $(document).ready(function () {
     $('.datetimepicker').datetimepicker({
         timepicker:false,
@@ -124,7 +126,35 @@
                 placeholder: "Select an measurement Unit",              
                 multiple: false, 
                 minimumResultsForSearch: -1,                        
-             });
+    });
+
+    $("#ingredient_search").autocomplete({
+        //Using source option to send AJAX post request to route('ingredient.getingredients') to fetch data
+        source: function( request, response ) {
+          // Fetch data
+          $.ajax({
+            url:"{{ route('admin.ingredient.getingredients') }}",
+            type: 'post',
+            dataType: "json",
+            // passing CSRF_TOKEN along with search value in the data
+            data: {
+               _token: CSRF_TOKEN,
+               search: request.term
+            },
+            //On successful callback pass response in response() function.
+            success: function( data ) {
+               response( data );
+            }
+          });
+        },
+        // Using select option to display selected option label in the #product_search
+        select: function (event, ui) {
+           // Set selection           
+           $('#ingredient_search').val(ui.item.label); // display the selected text        
+           return false;
+        }
+      });
+
 
     });
 </script>

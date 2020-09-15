@@ -60,8 +60,8 @@
                                 @csrf
                                 <div class="form-group">
                                     <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                        name="name" id="name" value="{{ old('name') }}" placeholder="Your Name" required
-                                        autocomplete="name">
+                                        name="name" id="name" value="{{ old('name') }}"
+                                        placeholder="Your Name (Required)" required autocomplete="name">
                                     @error('name')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -71,8 +71,23 @@
                                 <div class="form-group">
                                     <input type="email" class="form-control @error('email') is-invalid @enderror"
                                         name="email" value="{{ old('email') }}" placeholder="E-Mail Address" id="email"
-                                        required autocomplete="email" />
+                                        autocomplete="email" />
                                     @error('email')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
+                                </div>
+
+                                <div class="input-group mb-4 pb-1">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="phone_number">+880</span>
+                                    </div>
+                                    <input type="text" class="form-control @error('phone_number') is-invalid @enderror"
+                                        name="phone_number" value="{{ old('phone_number') }}"
+                                        placeholder="Phone No e.g.017xxxxxxxx (Required)" id="phone_number" required
+                                        autocomplete="phone_number" />
+                                    @error('phone_number')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -80,7 +95,7 @@
                                 </div>
                                 <div class="form-group">
                                     <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                        name="password" value="{{ old('password') }}" placeholder="Password"
+                                        name="password" value="{{ old('password') }}" placeholder="Password (Required)"
                                         id="password" required autocomplete="new-password" />
                                     @error('password')
                                     <span class="invalid-feedback" role="alert">
@@ -92,7 +107,7 @@
                                 <div class="form-group">
                                     <input type="password"
                                         class="form-control @error('password_confirmation') is-invalid @enderror"
-                                        name="password_confirmation" placeholder="Confirm Password"
+                                        name="password_confirmation" placeholder="Confirm Password (Required)"
                                         id="password_confirmation" required autocomplete="new-password" />
                                     @error('password_confirmation')
                                     <span class="invalid-feedback" role="alert">
@@ -100,24 +115,10 @@
                                     </span>
                                     @enderror
                                 </div>
-                                <div class="input-group mb-4 pb-1">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="phone_number">+880</span>
-                                    </div>
-                                    <input type="text" class="form-control @error('phone_number') is-invalid @enderror"
-                                        name="phone_number" value="{{ old('phone_number') }}"
-                                        placeholder="Phone Number e.g.017xxxxxxxx" id="phone_number" required
-                                        autocomplete="phone_number" />
-                                    @error('phone_number')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
                                 <div class="form-group">
                                     <textarea placeholder="Contact Address" id="current-address"
-                                        class="form-control mt-1" rows="4" name="address" required
-                                        autocomplete="address" style="height:80px; align-items:center;"></textarea>
+                                        class="form-control mt-1" rows="4" name="address" autocomplete="address"
+                                        style="height:100px; align-items:center;"></textarea>
                                 </div>
                                 <div class="form-group">
                                     <input type="submit" value="SIGN UP"

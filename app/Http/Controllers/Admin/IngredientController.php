@@ -186,4 +186,31 @@ class IngredientController extends Controller
         return redirect()->route('admin.ingredient.index');
     
     }
+
+    /*
+    * Ajax request
+    */
+    public function getIngredients(Request $request){
+
+        $search = $request->search;
+
+        if($search == ''){
+            $ingredients = Ingredient::orderby('name','asc')
+                                ->select('id','name')                                
+                                ->limit(10)->get();
+        }else{
+            $ingredients = Ingredient::orderby('name','asc')
+                        ->select('id','name')
+                        ->where('name', 'like', '%' .$search . '%')                        
+                        ->limit(10)
+                        ->get();
+        }
+
+        $response = array();
+        foreach($ingredients as $ingredient){            
+            $response[] = array( "value" => $ingredient->id, "label" => $ingredient->name );            
+        }
+
+        return response()->json($response);   
+    }
 }

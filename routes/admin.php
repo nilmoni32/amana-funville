@@ -58,11 +58,10 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             });
             //pos route
             Route::group(['prefix' => 'sales'], function(){
-                Route::get('/index', 'SalesController@index')->name('sales.index'); 
+                Route::get('/index/{id}', 'SalesController@index')->name('sales.index'); 
                 //pos order place
-                Route::post('/index', 'SalesController@orderplace')->name('sales.orderplace');
-                //pos order invoice
-                Route::get('/invoice/{orderId}', 'SalesController@saleInvoice')->name('sales.invoice');
+                Route::post('/orderplace', 'SalesController@orderplace')->name('sales.orderplace');
+                
                 //ajax route for pos sales.           
                 Route::post('/getfoods','SalesController@getFoods')->name('sales.getfoods');
                 Route::post('/foods/addsales','SalesController@addToSales')->name('sales.addtosales');
@@ -216,6 +215,9 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::get('/delete/{id}', 'IngredientController@delete')->name('ingredient.delete');
             });
 
+            // ingredient purchase or damage ajax route to autocomplete ingredient name.
+            Route::post('/getingredients','IngredientController@getIngredients')->name('ingredient.getingredients');
+
             // ingredient purchase
             Route::group(['prefix' => 'ingredients/purchase'], function(){
                 Route::get('/{id}', 'IngredientPurchaseController@index')->name('ingredient.purchase.index');
@@ -225,6 +227,7 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::post('/update', 'IngredientPurchaseController@update')->name('ingredient.purchase.update');
                 Route::get('/{id}/delete', 'IngredientPurchaseController@delete')->name('ingredient.purchase.delete');
             });
+            
 
             // ingredient Damage
             Route::group(['prefix' => 'ingredients/damage'], function(){

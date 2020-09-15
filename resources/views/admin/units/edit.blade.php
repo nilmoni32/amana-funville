@@ -54,9 +54,8 @@
                         <button class="btn btn-primary" type="submit"><i
                                 class="fa fa-fw fa-lg fa-check-circle"></i>Update
                             Category</button>
-                        &nbsp;&nbsp;&nbsp;<a class="btn btn-secondary"
-                            href="{{ route('admin.ingredientunit.index') }}"><i
-                                class="fa fa-fw fa-lg fa-times-circle"></i>Cancel</a>
+                        &nbsp;&nbsp;&nbsp;<a class="btn btn-danger" href="{{ route('admin.ingredientunit.index') }}"><i
+                                class="fa fa-fw fa-lg fa-arrow-left"></i>Go Back</a>
                     </div>
                 </div>
             </form>

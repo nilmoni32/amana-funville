@@ -56,7 +56,7 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:191', 'unique:users,email', new Lowercase],           
+            'email' => ['nullable', 'string', 'email', 'max:191', 'unique:users,email', new Lowercase],           
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }
@@ -85,9 +85,13 @@ class RegisterController extends Controller
             'phone_number' => $request->phone_number,
             'verify_token' => mt_rand(10000,99999),            
         ]);
+        
 
        // sending mail to mailable class VerificationEmail for the user with it's email id
+       if($request->email){
        \Mail::to($user->email)->send(new VerificationEmail($user));
+       }
+
        //sending token to phone_number 
        SendCode::sendCode($user->phone_number, $user->verify_token);
 

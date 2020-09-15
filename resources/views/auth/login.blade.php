@@ -58,11 +58,14 @@
                             <form action="{{ route('login') }}" method="post" role="form">
                                 @csrf
                                 <div class="form-group">
-                                    <i class="icofont icofont-ui-message"></i>
-                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                        name="email" value="{{ old('email')}}" placeholder="E-Mail Address" id="email"
-                                        required autocomplete="email" />
-                                    @error('email')
+                                    <i class="icofont icofont-ui-message fa-fw mr-3"></i>
+                                    <i class="icofont icofont-phone mr-3"></i>
+                                    <input type="text"
+                                        class="form-control @error('email_or_phone') is-invalid @enderror"
+                                        name="email_or_phone" value="{{ old('email_or_phone') }}"
+                                        placeholder="Email or Mobile Number(e.g.017xxxxxxxx)" id="email_or_phone"
+                                        required />
+                                    @error('email_or_phone')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>

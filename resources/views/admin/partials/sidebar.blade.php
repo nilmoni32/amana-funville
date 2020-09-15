@@ -102,7 +102,7 @@
         </li>
         <li>
           <a class="treeview-item {{ Route::currentRouteName() == 'admin.sales.index' ? 'active' : '' }}"
-            href="{{ route('admin.sales.index') }}">
+            href="{{ route('admin.sales.index', 0) }}">
             <i class="app-menu__icon fa fa-calculator"></i>
             <span class="app-menu__label">POS Sales</span>
           </a>

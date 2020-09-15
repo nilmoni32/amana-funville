@@ -118,8 +118,8 @@
                             <button type="submit" class="btn btn-primary"><i class="fa fa-fw fa-lg fa-check-circle"></i>
                                 {{ __('Update Services') }}
                             </button>
-                            <a class="btn btn-secondary" href="{{ route('admin.services.index') }}"><i
-                                    class="fa fa-fw fa-lg fa-times-circle"></i>Cancel</a>
+                            <a class="btn btn-danger" href="{{ route('admin.services.index') }}"><i
+                                    class="fa fa-fw fa-lg fa-arrow-left"></i>Go Back</a>
                         </div>
                     </div>
                 </form>

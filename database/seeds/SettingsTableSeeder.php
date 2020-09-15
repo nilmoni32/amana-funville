@@ -127,11 +127,11 @@ class SettingsTableSeeder extends Seeder
             'value' => '',
         ],
         [
-            'key'   => 'protocol',
+            'key'   => 'email_recipient',
             'value' => '',
         ],
         [
-            'key'   => 'printer_name',
+            'key'   => 'scheduler_timings',
             'value' => '',
         ],
 

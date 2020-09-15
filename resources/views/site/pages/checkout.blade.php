@@ -46,7 +46,7 @@
                         <div class="form-group">
                             <label>Email Address:</label>
                             <input name="email" value="{{ auth()->user()->email }}" placeholder="Email" id="email"
-                                class="form-control @error('email') is-invalid @enderror" type="email" required>
+                                class="form-control @error('email') is-invalid @enderror" type="email">
                             @error('email')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>

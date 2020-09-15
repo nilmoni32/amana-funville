@@ -49,21 +49,46 @@ class LoginController extends Controller
      */
     public function login(Request $request)
     {
-        $validated = request()->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-            ]);
+        // $validated = request()->validate([
+        //     'email' => 'required|email',
+        //     'password' => 'required|string',
+        //     ]);
 
-        // find user by this email.
-        $user = User::where('email', $validated['email'])->first();
+        // // find user by this email.
+        // $user = User::where('email', $validated['email'])->first();
+
+        $phoneOrEmail=$request->email_or_phone;        
+
+        if(is_numeric($phoneOrEmail)){
+            $validated = request()->validate([                
+                'email_or_phone' =>  'required|regex:/(01)[3-9]{1}(\d){8}/|max:11|exists:users,phone_number',  
+                'password' => 'required|string',
+                ]);
+        }else{            
+            $validated = request()->validate([
+                 'email_or_phone' => 'required|email|exists:users,email', 
+                 'password' => 'required|string',
+                ]);
+        } 
+       
+        //finding the user by its email or phone no
+        if(is_numeric($phoneOrEmail)){             
+            $user = User::where('phone_number', $validated['email_or_phone'])->first();
+        }else{             
+            $user = User::where('email', $validated['email_or_phone'])->first();
+        }
+
 
         if(!is_null($user)){ // if user is exists.
 
             // if user email_verification status true, only then user is allowed to access his account.
             if($user->is_token_verified){               
-                // checking the default laravel gaurd for user ( web  in config/auth )
-                // if user email & password is okay then we redirect to the intended homepage.
-                if(Auth::guard('web')->attempt(['email' => $validated['email'], 'password' => $validated['password'] ], $request->get('remember') )) {              
+                
+                // if user has entered phone or email
+                if(is_numeric($validated['email_or_phone'])){
+                    // checking the default laravel gaurd for user ( web  in config/auth )
+                    // if user phone no & password is okay then we redirect to the intended homepage.
+                    if(Auth::guard('web')->attempt(['phone_number' => $validated['email_or_phone'], 'password' => $validated['password'] ], $request->get('remember') )) {              
                         
                         /**
                         * when guest add items to cart and then he is logged in then we need to set that user id to cart
@@ -72,10 +97,31 @@ class LoginController extends Controller
                         Cart::guestAuthenticatedCart();
                         // here intended method is used to redirect the homepage is requested by user after successful login.
                         return redirect()->intended();
+
+                    }
+                    else{                   
+                        return redirect()->back()->with('error','Invalid password. Please try again!');             
+                    }
+
+                }else{
+                    // if user email & password is okay then we redirect to the intended homepage.
+                    if(Auth::guard('web')->attempt(['email' => $validated['email_or_phone'], 'password' => $validated['password'] ], $request->get('remember') )) {              
+                        
+                        /**
+                        * when guest add items to cart and then he is logged in then we need to set that user id to cart
+                        * so that he can see the recently added products in the cart after sign in.
+                        */
+                        Cart::guestAuthenticatedCart();
+                        // here intended method is used to redirect the homepage is requested by user after successful login.
+                        return redirect()->intended();
+
+                    }
+                    else{                   
+                        return redirect()->back()->with('error','Invalid password. Please try again!');             
+                    }
+        
                 }
-                else{                   
-                    return redirect()->back()->with('error','Invalid password. Please try again!');             
-                } 
+                 
 
             }
             else{
@@ -88,7 +134,9 @@ class LoginController extends Controller
                     ]);
                 }
                 // we send him token again via mailable class
-                \Mail::to($user->email)->send(new VerificationEmail($user)); 
+                if($user->email){
+                  \Mail::to($user->email)->send(new VerificationEmail($user)); 
+                }
                  // sending token to phone_number 
                 SendCode::sendCode($user->phone_number, $user->verify_token);
 

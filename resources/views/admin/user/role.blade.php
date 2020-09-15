@@ -80,8 +80,8 @@
                                             class="fa fa-fw fa-lg fa-check-circle"></i>
                                         {{ __('Update User') }}
                                     </button>
-                                    <a class="btn btn-secondary" href="{{ route('admin.users.index') }}"><i
-                                            class="fa fa-fw fa-lg fa-times-circle"></i>Cancel</a>
+                                    <a class="btn btn-danger" href="{{ route('admin.users.index') }}"><i
+                                            class="fa fa-fw fa-lg fa-arrow-left"></i>Go Back</a>
                                 </div>
                             </div>
                         </form>

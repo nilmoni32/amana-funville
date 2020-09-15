@@ -10,7 +10,6 @@
     "require": {
         "php": "^7.2.5",
         "barryvdh/laravel-dompdf": "^0.8.6",
-        "charlieuki/receiptprinter": "^1.1",
         "doctrine/dbal": "^2.10",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",

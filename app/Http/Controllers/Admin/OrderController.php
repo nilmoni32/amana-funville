@@ -12,6 +12,7 @@ use DateTime;
 use App\Models\Cart;
 use App\Models\Recipe;
 use App\Models\Unit;
+use Auth;
 
 class OrderController extends BaseController
 {
@@ -29,6 +30,22 @@ class OrderController extends BaseController
     }
 
     public function update(Request $request){
+        //before placement an order status to delivered we need to check if the food recipe is added of the same food product or not.
+        if($request->status == 'delivered'){
+        foreach(Cart::where('order_id', $request->id)->get() as $cart){
+            if(!Recipe::where('product_id', $cart->product_id)->first()){
+                 // setting flash message using trait
+                $this->setFlashMessage(" You might forget to add '". $cart->product->name ."' food recipe which you want to sale", 'error');    
+                $this->showFlashMessages(); 
+                return redirect()->back();             
+                }elseif(!Recipe::where('product_id', $cart->product_id)->first()->recipeingredients->count()){
+                     // setting flash message using trait
+                $this->setFlashMessage(" You might forget to add '". $cart->product->name ."' food recipe ingredients which you want to sale", 'error');    
+                $this->showFlashMessages(); 
+                return redirect()->back(); 
+                }
+            }
+        }
         
         $order = Order::where('id', $request->id)->first(); 
         if($request->status == 'cancel')

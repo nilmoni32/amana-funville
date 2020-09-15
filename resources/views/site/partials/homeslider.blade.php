@@ -53,7 +53,8 @@
                                 @else
                                 <p>{{ config('settings.currency_symbol') }}-{{ round($product->price,0) }}</p>
                                 @endif
-                                <span class="text-left px-1 py-1 d-block">{{ $product->description}}</span>
+                                <span
+                                    class="text-center px-1 py-1 d-block">{{ substr($product->description,0, 35)}}</span>
                             </div>
                             {{-- <div class="cart-overlay" onclick="addToCart({{ $product->id }}, 0)">
                             <h5>Add to Cart</h5>
@@ -109,7 +110,7 @@
                             @else
                             <p>{{ config('settings.currency_symbol') }}-{{ round($attribute->price,0) }}</p>
                             @endif
-                            <span class="text-left px-1 py-1 d-block">{{ $product->description}}</span>
+                            <span class="text-center px-1 py-1 d-block">{{ substr($product->description,0, 35)}}</span>
 
                         </div>
                         {{-- <div class="cart-overlay" onclick="addToCart({{ $product->id }}, {{ $attribute->id }})">

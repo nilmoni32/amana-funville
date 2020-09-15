@@ -82,8 +82,13 @@ class VerificationTokenController extends Controller
             ]);
             // for security issue data is encrypted
             $token = Crypt::encryptString($user->verify_token);
+            if($user->email){
+                $email_or_phone = $user->email;
+            }else{
+                $email_or_phone = $user->phone_number;
+            }
             
-            return redirect()->route('password.reset',[ 'token' => $token, 'email' => $user->email])->with('success','Please update your password.');
+            return redirect()->route('password.reset',[ 'token' => $token, 'email' => $email_or_phone])->with('success','Please update your password.');
         }       
 
     }

@@ -25,7 +25,7 @@ class CreateOrdersTable extends Migration
             $table->unsignedInteger('item_count');   
             // user details         
             $table->string('name');   
-            $table->string('email');      
+            $table->string('email')->nullable();      
             $table->string('phone_no');
             $table->string('address');            
             $table->string('district');
