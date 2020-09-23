@@ -12,7 +12,7 @@ use Auth;
 use App\Traits\FlashMessages; 
 use App\Models\Recipe;
 use App\Models\Unit;
-use charlieuki\ReceiptPrinter\ReceiptPrinter as ReceiptPrinter;
+
 
 class SalesController extends Controller
 {
@@ -183,7 +183,10 @@ class SalesController extends Controller
         $order->discount_reference = $request->order_discount_reference;
         $order->grand_total = $order_grand_total;  
         $order->order_date = \Carbon\Carbon::now()->toDateTimeString(); 
-        $order->payment_method = 'cash';
+        $order->payment_method = implode(',', $request->payment_method); // making array to string before saving to database.
+        $order->cash_pay = $request->cash_pay;
+        $order->card_pay = $request->card_pay;
+        $order->mobile_banking_pay = $request->mobile_banking_pay;
         $order->order_tableNo = $request->order_tableNo;      
         $order->customer_name = $request->customer_name;        
         $order->customer_mobile = $request->customer_mobile;

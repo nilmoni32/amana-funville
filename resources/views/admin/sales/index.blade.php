@@ -103,16 +103,18 @@
                                                 class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
                                         </h5>
                                         <h5 class="text-right pb-2 pt-1 border-bottom" id="discount-blk">
-                                            <label style="padding-right:3.9em" id="discount-lbl"><input type="checkbox"
-                                                    class="radio-inline" name="dicount" id="discount_check"
-                                                    onclick="discountCheck()"> Discount :
+                                            <label id="discount-lbl" style="margin-right:-15px; cursor:pointer;"><input
+                                                    type="checkbox" class="radio-inline" name="dicount"
+                                                    id="discount_check" onclick="discountCheck()">
+                                                Discount :
                                             </label>
-                                            <div class="form-check form-check-inline">
+                                            <div class="form-check form-check-inline cash-discount">
                                                 <input type="text" class="form-control" id="discount_reference"
-                                                    placeholder="Reference Name (Required)" name="discount_reference"
+                                                    placeholder="Reference (Required)" name="discount_reference"
                                                     style="display:none;">
                                             </div>
-                                            <div class="form-check form-check-inline">
+                                            <div class="form-check form-check-inline cash-discount"
+                                                style="margin-right:6em">
                                                 <input type="text" class="form-control" id="discount"
                                                     placeholder="Amount (Required)" name="discount"
                                                     style="display:none;">
@@ -123,19 +125,68 @@
                                                 id="due-tk">{{ $total_taka + $total_taka * (config('settings.tax_percentage')/100)  }}</span><span
                                                 class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
                                         </h5>
-                                        <div class="text-right pb-2 border-bottom font-weight-normal"
-                                            style="padding-right:6.8em;">
-                                            <select name="payment-method" id="payment-method"
-                                                class="form-check-inline pr-5 discount-w" dir="rtl">
-                                                <option></option>
-                                                <option value="cash">Cash</option>
-                                                <option value="card">Card</option>
-                                                <option value="mobile_banking">Mobile Banking</option>
-                                            </select>
-                                        </div>
-                                        <h5 class="text-right pb-2 border-bottom font-weight-normal">
-
+                                        <h5 class="text-right pb-2 pt-1 border-bottom" id="cash_blk">
+                                            <label style="cursor:pointer;"><input type="checkbox"
+                                                    class="radio-inline payments" name="cash_check" id="cash_check"
+                                                    onclick="cashCheck()"> Cash
+                                                Payment :
+                                            </label>
+                                            <div class="form-check form-check-inline cash-payment"
+                                                style="margin-right:6.1em">
+                                                <input type="text" class="form-control" id="cash_pay"
+                                                    placeholder="Amount (Required)" name="cash_pay"
+                                                    style="display:none;">
+                                            </div>
                                         </h5>
+                                        <h5 class="text-right pb-2 pt-1 border-bottom" id="card_blk">
+                                            <label style="cursor:pointer;"><input type="checkbox"
+                                                    class="radio-inline payments" name="card_check" id="card_check"
+                                                    onclick="cardCheck()"> Card
+                                                Payment :
+                                            </label>
+                                            <div class="form-check form-check-inline card-payment"
+                                                style="margin-right:6.1em">
+                                                <input type="text" class="form-control" id="card_pay"
+                                                    placeholder="Amount (Required)" name="card_pay"
+                                                    style="display:none;">
+                                            </div>
+                                        </h5>
+                                        <h5 class="text-right pb-2 pt-1 border-bottom" id="mobileBank_blk">
+                                            <label style="cursor:pointer;"><input type="checkbox"
+                                                    class="radio-inline payments" name="mobileBank_check"
+                                                    id="mobileBank_check" onclick="mobileBankCheck()"> Mobile Banking
+                                                Payment :
+                                            </label>
+                                            <div class="form-check form-check-inline mobileBank-payment"
+                                                style="margin-right:6.1em">
+                                                <input type="text" class="form-control" id="mobile_banking_pay"
+                                                    placeholder="Amount (Required)" name="mobile_banking_pay"
+                                                    style="display:none;">
+                                            </div>
+                                        </h5>
+                                        <h4 class="text-right py-4 pr-5 d-none text-danger" id="pay-more-block">Customer
+                                            need to pay
+                                            more
+                                            <span id="pay-more"></span><span
+                                                class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
+                                        </h4>
+                                        <h4 class="text-right py-4 pr-5 d-none text-danger" id="pay-change-block">You
+                                            need to pay
+                                            change
+                                            <span id="pay-change"></span><span
+                                                class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
+                                        </h4>
+                                        <h4 class="text-right py-4 pr-5 d-none text-danger" id="donot-change-block">
+                                            Don't
+                                            pay much as you can't change
+                                            <span id="donot-change"></span><span
+                                                class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
+                                        </h4>
+                                        <h5 class="text-right py-4 pr-5 d-none text-danger" id="total-pay-block">Payment
+                                            Details:&nbsp;
+                                            <span id="pay-details"></span>
+                                        </h5>
+
                                     </div>
                                 </div>
                             </div>
@@ -173,8 +224,11 @@
                             @csrf
                             <input type="hidden" id="order_discount" name="order_discount" value="">
                             <input type="hidden" id="order_discount_reference" name="order_discount_reference" value="">
-                            <input type="hidden" id="payment_method" name="payment_method" value="">
-                            {{-- <input type="hidden" class="reference" name="discount_reference"> --}}
+                            <input type="hidden" id="payment_method" name="payment_method[]" value="">
+                            <input type="hidden" id="pay_cash" name="cash_pay" value="">
+                            <input type="hidden" id="pay_card" name="card_pay" value="">
+                            <input type="hidden" id="pay_mobile" name="mobile_banking_pay" value="">
+
                             <div class="border px-4 rounded" style="border-color:rgb(182, 182, 182);">
                                 <h4 class="text-center mt-3 mb-4">Customer Details</h4>
                                 <div class="form-group my-2">
@@ -241,9 +295,16 @@
 <script src="{{ asset('backend') }}/js/pos/JSPrintManager.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.3.5/bluebird.min.js"></script>
 <script type="text/javascript">
+    var duePay = 0; //global declaration  
+    var paymentMethod = 'notDefined';
+    var moreDue = 0;
+    var moreDueMethod = 'notDefined';  
+    var methods = [];     
+
+
     // getting CSRF Token from meta tag
-var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-    $(document).ready(function(){  
+    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+    $(document).ready(function(){
         
      // POS system starts here
      // Initialize jQuery UI autocomplete on #product_search field.
@@ -359,8 +420,9 @@ var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
         });
         }
 
-        // pos system discount deduct from salescart order total.       
+        // pos system discount       
        $('#discount').on('input', function() {
+           if($.isNumeric( $.trim($('#discount').val() ))){
             orderTotal = $('#total-tk').text();
             discount = $.trim($('#discount').val()); 
             dueAmount = orderTotal - discount;
@@ -368,6 +430,18 @@ var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
             $('#due-tk').text(dueAmount); 
             // setting discount data to order_discount form hidden input field
             $('#order_discount').val(discount);
+            // if the entered data is digit, we just clear the focus
+            $('#discount').css({
+                        "border": "",
+                        "background": ""
+            });
+           }else{
+               // if the entered data is not digit, we just focus on it
+                    $('#discount').css({
+                        "border": "2px solid #007065",
+                        "background": "#e4f5f3"                    
+                    }); 
+           }
         });
 
         // setting reference name for discount to order_discount_reference form hidden input field
@@ -375,68 +449,428 @@ var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
             $('#order_discount_reference').val($('#discount_reference').val());
         });
 
-        // POS payment methods
-        $('#payment-method').select2({
-                placeholder: "Payment Methods",              
-                multiple: false, 
-                minimumResultsForSearch: -1,                        
-        }); 
+        // if discount checkbox anychange is made during the payment calculation, we will reset everything.
+        // so in that case we need to do the calculation again.
+        $("#discount_check").change(function(){
+            resetPayment();
+        });
+
+        $("#product_search").on('input', function() {
+            resetPayment();
+        });
+
+              
+        // POS System: Cash payment:
+        // note: duePay and paymentMethod are globally declared.
+        $('#cash_pay').on('input', function() { 
+            
+            if($.isNumeric( $.trim($('#cash_pay').val() ))){
+                // avoiding alphanumeric input and make input text normal.
+                $('#cash_pay').css({
+                        "border": "",
+                        "background": ""
+                });
+
+                dueTotal = 0;
+                cashPay = $.trim($('#cash_pay').val());
+                // avoiding for cash payment 0 tk.
+                if(cashPay != ''){
+                    // when no moreDue exists, dueTotal would be duePay. 
+                    // [ Note: after 1st payment if due exists, it is duePay, after 2nd payment if due exist. it is moreDue]               
+                    dueTotal = (moreDueMethod == 'card' || moreDueMethod == 'mobile')  ? moreDue : $('#due-tk').text();  
+                    if(dueTotal == moreDue){
+                        dueTotal -= cashPay;
+                            if(dueTotal == 0){ 
+                                // when no dues after the payment, we will show the payment details               
+                                noDueTotal();
+                            }else if(dueTotal < 0){ // 200 - 300 = -100
+                                $('#pay-more-block').addClass('d-none');
+                                $('#total-pay-block').addClass('d-none');
+                                $('#donot-change-block').addClass('d-none');
+                                $('#pay-change-block').removeClass('d-none');
+                                $('#pay-change').html(~dueTotal+1);
+                                // setting cash payment to form hidden input field
+                                var afterChangePayCash =  cashPay - (~dueTotal+1);
+                                $('#pay_cash').val( afterChangePayCash );
+                            }
+                    }else{                    
+                        // when no payment is done, dueTotal will be DueAmount (#due-tk)
+                        dueTotal = (paymentMethod == 'card' || paymentMethod == 'mobile')  ? duePay : $('#due-tk').text();                         
+                        if(dueTotal == duePay){ // for due payment
+                            dueTotal -= cashPay;
+                            if(dueTotal == 0){ 
+                                // when no dues after the payment, we will show the payment details               
+                                noDueTotal();
+                            }else if(dueTotal < 0){ // 200 - 300 = -100
+                                $('#pay-more-block').addClass('d-none');
+                                $('#total-pay-block').addClass('d-none');
+                                $('#donot-change-block').addClass('d-none');
+                                $('#pay-change-block').removeClass('d-none');
+                                $('#pay-change').html(~dueTotal+1);
+                                // setting cash payment to form hidden input field
+                                var afterChangePayCash =  cashPay - (~dueTotal+1);
+                                $('#pay_cash').val( afterChangePayCash );
+                            }else if(dueTotal > 0){ 
+                                $('#pay-change-block').addClass('d-none');
+                                $('#total-pay-block').addClass('d-none');
+                                $('#donot-change-block').addClass('d-none');
+                                $('#pay-more-block').removeClass('d-none');
+                                $('#pay-more').html(dueTotal);
+                                moreDue = dueTotal;
+                                moreDueMethod = "cash";                             
+                            }               
+                        }else{
+                                dueTotal -= cashPay; // 500-300 = 200
+                                paymentMethod = 'cash';                
+                            if(dueTotal == 0){ 
+                                // when no dues after the payment, we will show the payment details               
+                                noDueTotal();
+                            }else if(dueTotal > 0){ 
+                                $('#pay-change-block').addClass('d-none');
+                                $('#total-pay-block').addClass('d-none');
+                                $('#donot-change-block').addClass('d-none');
+                                $('#pay-more-block').removeClass('d-none');
+                                $('#pay-more').html(dueTotal);  
+                                duePay = dueTotal;  // total due after cash payment.
+                            }else if(dueTotal < 0){ // 200 - 300 = -100
+                                $('#pay-more-block').addClass('d-none'); 
+                                $('#total-pay-block').addClass('d-none');  
+                                $('#donot-change-block').addClass('d-none');
+                                $('#pay-change-block').removeClass('d-none');
+                                $('#pay-change').html(~dueTotal+1);  
+                                // setting cash payment to form hidden input field
+                                var afterChangePayCash =  cashPay - (~dueTotal+1);
+                                $('#pay_cash').val( afterChangePayCash );                                 
+                            }
+
+                        } //end of if
+
+                    }  
+
+                    // setting cash payment to form hidden input field
+                    if(dueTotal >= 0){
+                        $('#pay_cash').val($.trim($('#cash_pay').val()));
+                    }
+                    //setting payment method to form hidden input field
+                    methods.push('cash');
+                    //filtering only unique values
+                    var uniqueMethods = methods.filter( onlyUnique );
+                    $('#payment_method').val(uniqueMethods);
+                    
+                }else{ // if user does not any input or null on cash payment
+                    
+                $('#pay-more-block').addClass('d-none');
+                $('#pay-change-block').addClass('d-none'); 
+                $('#donot-change-block').addClass('d-none');
+                $('#total-pay-block').addClass('d-none');                 
+                }
+
+            }else{
+               // if the entered data is not digit, we just focus on it
+                    $('#cash_pay').css({
+                        "border": "2px solid #007065",
+                        "background": "#e4f5f3"                    
+                    }); 
+                    resetPayment();
+             }
+            
+        });
+
+        // POS System: Card payment 
+        $('#card_pay').on('input', function() {    
+
+            if($.isNumeric( $.trim($('#card_pay').val() ))){
+                // avoiding alphanumeric input and make input text normal.
+                $('#card_pay').css({
+                        "border": "",
+                        "background": ""
+                });                   
+                dueTotal = 0;          
+                cardPay = $.trim($('#card_pay').val());            
+                // avoiding for card payment 0 tk.
+                if(cardPay != ''){ 
+                // [ Note: after 1st payment if due exists, it is duePay, after 2nd payment if due exist. it is moreDue]               
+                dueTotal = (moreDueMethod == 'cash' || moreDueMethod == 'mobile')  ? moreDue : $('#due-tk').text(); 
+                    
+                    if(dueTotal == moreDue){
+                        dueTotal -= cardPay;
+                            if(dueTotal == 0){   
+                                // when no dues after the payment, we will show the payment details             
+                                noDueTotal();
+                            }
+                    }else{
+                    // when no payment is done, dueTotal will be Due Amount (#due-tk)
+                        dueTotal = (paymentMethod == 'cash' || paymentMethod == 'mobile')  ? duePay : $('#due-tk').text();             
+                        if(dueTotal == duePay){ // for due payment
+                            dueTotal -= cardPay;
+                            if(dueTotal == 0){  
+                                // when no dues after the payment, we will show the payment details              
+                                noDueTotal();
+                            }else if(dueTotal > 0){ 
+                                $('#pay-change-block').addClass('d-none');
+                                $('#total-pay-block').addClass('d-none');
+                                $('#pay-more-block').removeClass('d-none');
+                                $('#donot-change-block').addClass('d-none');
+                                $('#pay-more').html(dueTotal); 
+                                moreDue = dueTotal;
+                                moreDueMethod = "card";  
+                            }else if(dueTotal < 0){ // 200 - 300 = -100
+                                $('#pay-more-block').addClass('d-none');
+                                $('#pay-change-block').addClass('d-none');
+                                $('#total-pay-block').addClass('d-none');
+                                $('#donot-change-block').removeClass('d-none');
+                                $('#donot-change').html(~dueTotal+1);                                
+                            }
+                        }else{  
+                            dueTotal -= cardPay;          
+                            if(dueTotal == 0){ 
+                                // when no dues after the payment, we will show the payment details               
+                                noDueTotal();
+                            }else if(dueTotal > 0){ // 500-300 = 200                            
+                                $('#pay-change-block').addClass('d-none'); 
+                                $('#total-pay-block').addClass('d-none');
+                                $('#pay-more-block').removeClass('d-none');
+                                $('#donot-change-block').addClass('d-none');
+                                $('#pay-more').html(dueTotal);                              
+                                duePay = dueTotal; 
+                                paymentMethod = 'card';            
+                            }else if(dueTotal < 0){ // 200 - 300 = -100
+                                $('#pay-more-block').addClass('d-none');                                   
+                                $('#pay-change-block').addClass('d-none');
+                                $('#total-pay-block').addClass('d-none');
+                                $('#donot-change-block').removeClass('d-none');
+                                $('#donot-change').html(~dueTotal+1);                                
+                            }
+                        } //end of if            
+                    }
+
+                    //setting payment method to form hidden input field
+                    methods.push('card');                    
+                    //filtering only unique values
+                    var uniqueMethods = methods.filter( onlyUnique );
+                    $('#payment_method').val(uniqueMethods);
+                    // setting cash payment to form hidden input field
+                    $('#pay_card').val($.trim($('#card_pay').val()));
+
+                }else{                  
+                    $('#pay-more-block').addClass('d-none');
+                    $('#pay-change-block').addClass('d-none'); 
+                    $('#donot-change-block').addClass('d-none');
+                    $('#total-pay-block').addClass('d-none'); 
+                }
+            }else{
+               // if the entered data is not digit, we just focus on it
+                    $('#card_pay').css({
+                        "border": "2px solid #007065",
+                        "background": "#e4f5f3"                    
+                    }); 
+                    resetPayment();
+             }
+            
+        });
+
+        // mobile banking payment 
+        $('#mobile_banking_pay').on('input', function() { 
+
+            if($.isNumeric( $.trim($('#mobile_banking_pay').val() ))){
+                // avoiding alphanumeric input and make input text normal.
+                $('#mobile_banking_pay').css({
+                        "border": "",
+                        "background": ""
+                });
+                dueTotal = 0;
+                mobilePay = $.trim($('#mobile_banking_pay').val());             
+                //  avoiding for mobile banking payment 0 tk.
+                if(mobilePay != ''){
+                    // [ Note: after 1st payment if due exists, it is duePay, after 2nd payment if due exist. it is moreDue]               
+                dueTotal = (moreDueMethod == 'cash' || moreDueMethod == 'card')  ? moreDue : $('#due-tk').text();  
+                    if(dueTotal == moreDue){
+                        dueTotal -= mobilePay;
+                            if(dueTotal == 0){  
+                                // when no dues after the payment, we will show the payment details              
+                                noDueTotal();
+                            }
+                    }else{
+                    // when no payment is done, dueTotal will be Due Amount (#due-tk)
+                        dueTotal = (paymentMethod == 'cash' || paymentMethod == 'card')  ? duePay : $('#due-tk').text();
+                        if(dueTotal == duePay){ // for due payment
+                            dueTotal -= mobilePay;
+                            if(dueTotal == 0){  
+                                // when no dues after the payment, we will show the payment details              
+                                noDueTotal();
+                            }else if(dueTotal > 0){ 
+                                $('#pay-change-block').addClass('d-none');
+                                $('#total-pay-block').addClass('d-none');
+                                $('#pay-more-block').removeClass('d-none');
+                                $('#donot-change-block').addClass('d-none');
+                                $('#pay-more').html(dueTotal); 
+                                moreDue = dueTotal;
+                                moreDueMethod = "mobile";  
+                            }else if(dueTotal < 0){ // 200 - 300 = -100
+                                $('#pay-more-block').addClass('d-none');   
+                                $('#pay-change-block').addClass('d-none');
+                                $('#total-pay-block').addClass('d-none');
+                                $('#donot-change-block').removeClass('d-none');
+                                $('#donot-change').html(~dueTotal+1);                                
+                            }
+                        }else{  
+                            dueTotal -= mobilePay;          
+                            if(dueTotal == 0){ 
+                                // when no dues after the payment, we will show the payment details               
+                                noDueTotal();
+                            }else if(dueTotal > 0){ // 500-300 = 200  
+                                $('#pay-change-block').addClass('d-none'); 
+                                $('#total-pay-block').addClass('d-none');
+                                $('#pay-more-block').removeClass('d-none');
+                                $('#donot-change-block').addClass('d-none');
+                                $('#pay-more').html(dueTotal);                              
+                                duePay = dueTotal;  // total due after cash payment.
+                                paymentMethod = 'mobile';            
+                            }else if(dueTotal < 0){ // 200 - 300 = -100
+                                $('#pay-more-block').addClass('d-none');   
+                                $('#pay-change-block').addClass('d-none');
+                                $('#total-pay-block').addClass('d-none');
+                                $('#donot-change-block').removeClass('d-none');
+                                $('#donot-change').html(~dueTotal+1);                                
+                            }
+                        } //end of if
+                    }
+
+                    //setting payment method to form hidden input field
+                    methods.push('mobile banking');                    
+                    //filtering : to get only unique values
+                    var uniqueMethods = methods.filter( onlyUnique );
+                    $('#payment_method').val(uniqueMethods);
+                    
+                    // setting cash payment to form hidden input field
+                    $('#pay_mobile').val($.trim($('#mobile_banking_pay').val()));
+
+
+                }else{              
+                    $('#pay-more-block').addClass('d-none');
+                    $('#pay-change-block').addClass('d-none'); 
+                    $('#donot-change-block').addClass('d-none');
+                    $('#total-pay-block').addClass('d-none'); 
+                }
+            }else{
+               // if the entered data is not digit, we just focus on it
+                    $('#mobile_banking_pay').css({
+                        "border": "2px solid #007065",
+                        "background": "#e4f5f3"                    
+                    }); 
+                    resetPayment();
+             }
+            
+        });
+        // when no dues after the payment, we will show the payment details
+        function noDueTotal(){
+            cash = $.trim($('#cash_pay').val());                
+            card = $.trim($('#card_pay').val());
+            mobile = $.trim($('#mobile_banking_pay').val()); 
+            Tk = " {{ config('settings.currency_symbol') }}, "; // money symbol
+
+            cashPay = cash ? 'Cash = ' + cash + Tk : '';
+            cardPay = card ? 'Card = ' + card + Tk : '';
+            mobilePay = mobile ? 'Mobile Banking = ' + mobile + Tk : '';             
+            totalPay = cashPay + cardPay + mobilePay;
+
+            $('#pay-more-block').addClass('d-none');
+            $('#pay-change-block').addClass('d-none'); 
+            $('#donot-change-block').addClass('d-none');
+            $('#total-pay-block').removeClass('d-none'); 
+            $('#pay-details').html(totalPay);
+        }
+        
         // while submit cilck, validating the discount_reference field.
         // this discount and discount reference fields are not inside form    
         $('#submit').click(function(e){
             var isValid = true;
+            //when discount checkbox is true
+            if($("#discount_check").prop("checked") == true) { 
 
-            //when discount field is not numeric.
-            if(!$.isNumeric( $.trim( $('#discount').val() ) ) ){
-                isValid = false;
-                $('#discount').css({
-                "border": "2px solid #007065",
-                "background": "#e4f5f3"
-                });                 
-
-            }else{
-                $('#discount').css({
-                    "border": "",
-                    "background": ""
-                });
-            }
-            //when discount reference field is empty.
-            if ($.trim($('#discount_reference').val()) == '' && $.trim($('#discount').val()) != '') {
-                isValid = false;
-                $('#discount_reference').css({
+                //when both field is empty.
+                if($.trim($('#discount_reference').val()) == '' && $.trim($('#discount').val()) == ''){
+                    isValid = false;
+                    $('#discount_reference').css({
+                        "border": "2px solid #007065",
+                        "background": "#e4f5f3"
+                    });  
+                    $('#discount').css({
                     "border": "2px solid #007065",
                     "background": "#e4f5f3"
-                });               
-               
-            }else{
-                $('#discount_reference').css({
-                    "border": "",
-                    "background": ""
-                });
-            }
-            //when both field is empty.
-            if($.trim($('#discount_reference').val()) == '' && $.trim($('#discount').val()) == ''){
-                isValid = false;
-                $('#discount_reference').css({
+                    });   
+                }else{
+
+                    $('#discount_reference').css({
+                        "border": "",
+                        "background": ""
+                    });
+                    $('#discount').css({
+                        "border": "",
+                        "background": ""
+                    });
+
+                } 
+
+                //when discount field is not numeric.
+                if(!$.isNumeric( $.trim( $('#discount').val() ) ) ){
+                    isValid = false;
+                    $('#discount').css({
                     "border": "2px solid #007065",
                     "background": "#e4f5f3"
-                });  
-                $('#discount').css({
-                "border": "2px solid #007065",
-                "background": "#e4f5f3"
-                });   
+                    });                 
+
+                }else{
+                    $('#discount').css({
+                        "border": "",
+                        "background": ""
+                    });
+                }
+                //when discount reference field is empty.
+                if ($.trim($('#discount_reference').val()) == '' && $.trim($('#discount').val()) != '') {
+                    isValid = false;
+                    $('#discount_reference').css({
+                        "border": "2px solid #007065",
+                        "background": "#e4f5f3"
+                    });               
+                
+                }else{
+                    $('#discount_reference').css({
+                        "border": "",
+                        "background": ""
+                    });
+                }
+                    
+            } 
+
+            // if no payments checkbox is checked
+            if($('.payments:checkbox:checked').length == 0){
+                isValid = false;
+                $('.payments').css({
+                    "outline": "1px solid #ff0000"                 
+                });
             }else{
 
-                $('#discount_reference').css({
-                    "border": "",
-                    "background": ""
+                $('.payments').css({
+                    "outline": "none"                  
                 });
-                $('#discount').css({
-                    "border": "",
-                    "background": ""
-                });
-
-            }      
+                
+            }
+            // if payments checkbox is checked but all of them payments textbox are empty.
+            if($('.payments:checkbox:checked').length != 0 && ( $.trim($('#cash_pay').val()) == '' &&            
+            $.trim($('#card_pay').val()) == '' && $.trim($('#mobile_banking_pay').val()) == '')){
+                isValid = false;
+                    $('#cash_pay').css({
+                        "border": "2px solid #007065",
+                        "background": "#e4f5f3"
+                    });   
+            }else{
+                $('#cash_pay').css({
+                        "border": "",
+                        "background": ""
+                 });   
+            }
+            
 
             if (isValid == false)
                 e.preventDefault();
@@ -479,6 +913,8 @@ var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                     $("#total-tk").html(data.sub_total + (data.sub_total * "{{ config('settings.tax_percentage')/100 }}") ); 
                     $('#due-tk').html((data.sub_total + (data.sub_total * "{{ config('settings.tax_percentage')/100 }}")) - $('#discount').val());
                     // location.reload();
+                     //resetting the payment.
+                     resetPayment();
                 }
             });
         }
@@ -505,30 +941,119 @@ var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                     if(!data.sub_total){
                         $('#total').css('visibility', 'hidden');
                     }
+                    //resetting the payment.
+                    resetPayment();
                 }
             });
         }
         //pos system discount option is showing or hiding.
         function discountCheck(){             
             if($("#discount_check").prop("checked") == true) { 
-                $('#discount-lbl').css('padding-right','0');
-                $('.form-check-inline').addClass('discount-w');
+                $('#discount-lbl').css('margin-right','5px');
+                $('.cash-discount').addClass('discount-w');
                 $('#discount_reference').show();
                 $('#discount').show();  
                 $('#discount-blk').removeClass('pt-1');
             }else{
                 //when unchecked chkbox we set discount to null and due amount to order total.
-                $('#discount-lbl').css('padding-right','3.9em');
+                $('#discount-lbl').css('margin-right','-15px');               
                 $('#discount_reference').removeAttr("style").hide();
                 $('#discount').removeAttr("style").hide(); 
-                $('.form-check-inline').removeClass('discount-w');                 
+                $('.cash-discount').removeClass('discount-w');                 
                 $('#discount').val("");
                 $('#due-tk').html($("#total-tk").html());  
                 $('#discount-blk').addClass('pt-1');           
             }           
         }
 
+        
 
+         function cashCheck(){             
+            if($("#cash_check").prop("checked") == true) {                               
+                $('.cash-payment').addClass('discount-w pl-1');               
+                $('#cash_pay').show();  
+                $('#cash_blk').removeClass('pt-1');               
+            }else{
+                // //when unchecked chkbox we set discount to null and due amount to order total.              
+                $('#cash_pay').removeAttr("style").hide(); 
+                $('.cash-payment').removeClass('discount-w pl-1');                 
+                $('#cash_pay').val("");                
+                $('#cash_blk').addClass('pt-1');                
+            }           
+        }
+
+        function cardCheck(){             
+            if($("#card_check").prop("checked") == true) {                               
+                $('.card-payment').addClass('discount-w pl-1');               
+                $('#card_pay').show();  
+                $('#card_blk').removeClass('pt-1');               
+            }else{
+                // //when unchecked chkbox we set discount to null and due amount to order total.              
+                $('#card_pay').removeAttr("style").hide(); 
+                $('.card-payment').removeClass('discount-w pl-1');                 
+                $('#card_pay').val("");                
+                $('#card_blk').addClass('pt-1');                
+            }           
+        }
+
+        function mobileBankCheck(){             
+            if($("#mobileBank_check").prop("checked") == true) {                               
+                $('.mobileBank-payment').addClass('discount-w pl-1');               
+                $('#mobile_banking_pay').show();  
+                $('#mobileBank_blk').removeClass('pt-1');               
+            }else{
+                // //when unchecked chkbox we set discount to null and due amount to order total.              
+                $('#mobile_banking_pay').removeAttr("style").hide(); 
+                $('.mobileBank-payment').removeClass('discount-w pl-1');                 
+                $('#mobile_banking_pay').val("");                  
+                $('#mobileBank_blk').addClass('pt-1'); 
+
+            }           
+        }
+
+        // whenever any change is made on product search or discount we use this function.
+        function resetPayment(){
+            // resetting all the global variables which are needed to calculate.
+            duePay = 0; 
+            paymentMethod = 'notDefined';
+            moreDue = 0;
+            moreDueMethod = 'notDefined';
+            methods = [];
+            // now resetting cashpay, cardpay, mobilePay amounts and the dues after the payemnts
+            $('#pay-more').html('');
+            $('#pay-change').html('');
+            $('#pay-details').text('');  
+            $('#pay-change-block').addClass('d-none'); 
+            $('#pay-more-block').addClass('d-none');
+            $('#total-pay-block').addClass('d-none');
+            // hiding the cashPayment checbox and cashpay to null
+            // $("#cash_check").prop("checked", false);
+            // $('#cash_pay').removeAttr("style").hide(); 
+            // $('.cash-payment').removeClass('discount-w pl-1');                 
+            $('#cash_pay').val("");                
+            //$('#cash_blk').addClass('pt-1'); 
+            // hiding the cardPayment checbox and cardPay to null 
+            // $("#card_check").prop("checked", false);
+            // $('#card_pay').removeAttr("style").hide(); 
+            // $('.card-payment').removeClass('discount-w pl-1');                 
+            $('#card_pay').val("");                
+           // $('#card_blk').addClass('pt-1'); 
+            // hiding the mobileBankPayment checbox and mobilePay to null 
+            // $("#mobileBank_check").prop("checked", false);
+            // $('#mobile_banking_pay').removeAttr("style").hide(); 
+            // $('.mobileBank-payment').removeClass('discount-w pl-1');                 
+            $('#mobile_banking_pay').val("");                  
+            //$('#mobileBank_blk').addClass('pt-1');
+
+
+        }
+
+        // Get all unique values in a JavaScript array (remove duplicates)
+        function onlyUnique(value, index, self) { 
+            return self.indexOf(value) === index;
+        }
+
+      
     
 
   //POS PRINT RECEIPT : https://www.neodynamic.com/articles/How-to-print-raw-ESC-POS-commands-from-Javascript/

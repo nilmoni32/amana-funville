@@ -82,7 +82,8 @@
     @endcan
 
     @can('manage-orders')
-    @php if(Route::currentRouteName() == 'admin.sales.index'){
+    @php if(Route::currentRouteName() == 'admin.sales.index' ||
+    Route::currentRouteName() == 'admin.pos.orders.index'){
     $temp1 = 1;
     }else{
     $temp1 = 0;
@@ -95,9 +96,10 @@
       </a>
       <ul class="treeview-menu">
         <li>
-          <a class="treeview-item" href="#">
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.pos.orders.index' ? 'active' : '' }}"
+            href="{{ route('admin.pos.orders.index') }}">
             <i class="app-menu__icon fa fa-database"></i>
-            <span class="app-menu__label">POS Sales Report</span>
+            <span class="app-menu__label">POS Orders</span>
           </a>
         </li>
         <li>

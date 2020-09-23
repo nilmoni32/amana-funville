@@ -2865,6 +2865,7 @@ footer .powered .social li a:hover i {
 .login {
     background: #ffffff url(../images/background/team-right.png) no-repeat
         scroll right center;
+    background-attachment: fixed;
 }
 .loginnow p {
     font-size: 16px;

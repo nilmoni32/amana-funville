@@ -22,6 +22,7 @@ class CreateSalesTable extends Migration
             $table->string('product_name')->nullable();         
             $table->integer('product_quantity')->default(1);
             $table->decimal('unit_price', 8, 2)->nullable();
+            $table->decimal('production_food_cost', 8, 2)->nullable();
             
             $table->timestamps();
 

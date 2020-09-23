@@ -15,29 +15,30 @@
 </div>
 <!-- Breadcrumb End -->
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="offset-md-1"></div>
-        <div class="col-md-10 col-12 my-5 text-center">
-            @if (session('error'))
-            <div class="alert alert-error alert-block bg-danger text-white">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>{{ session('error') }}</strong>
-            </div>
-            @endif
-            @if (session('success'))
-            <div class="alert alert-success alert-block bg-success text-white">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>{{ session('success') }}</strong>
-            </div>
-            @endif
 
-        </div>
-        <div class="offset-md-1"></div>
-    </div>
 </div>
 <!-- Login Start -->
 <div class="login">
     <div class="container">
+        <div class="row justify-content-center">
+            <div class="offset-md-1"></div>
+            <div class="col-md-10 col-12 my-5 text-center">
+                @if (session('error'))
+                <div class="alert alert-error alert-block bg-danger text-white">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong>{{ session('error') }}</strong>
+                </div>
+                @endif
+                @if (session('success'))
+                <div class="alert alert-success alert-block bg-success text-white">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong>{{ session('success') }}</strong>
+                </div>
+                @endif
+
+            </div>
+            <div class="offset-md-1"></div>
+        </div>
         <div class="row justify-content-center">
             <div class="col-sm-12 commontop text-center">
                 <h4>Login to Your Account</h4>

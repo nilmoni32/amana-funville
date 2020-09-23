@@ -16,30 +16,31 @@
 <!-- Breadcrumb End -->
 <!-- adding session messages -->
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="offset-md-1"></div>
-        <div class="col-md-10 col-12 my-5 text-center">
-            @if (session('error'))
-            <div class="alert alert-error alert-block bg-danger text-white">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>{{ session('error') }}</strong>
-            </div>
-            @endif
-            @if (session('success'))
-            <div class="alert alert-success alert-block bg-success text-white">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>{{ session('success') }}</strong>
-            </div>
-            @endif
 
-        </div>
-        <div class="offset-md-1"></div>
-    </div>
 </div>
 
 <!-- Login Start -->
 <div class="login">
     <div class="container">
+        <div class="row justify-content-center">
+            <div class="offset-md-1"></div>
+            <div class="col-md-10 col-12 my-5 text-center">
+                @if (session('error'))
+                <div class="alert alert-error alert-block bg-danger text-white">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong>{{ session('error') }}</strong>
+                </div>
+                @endif
+                @if (session('success'))
+                <div class="alert alert-success alert-block bg-success text-white">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong>{{ session('success') }}</strong>
+                </div>
+                @endif
+
+            </div>
+            <div class="offset-md-1"></div>
+        </div>
         <div class="row justify-content-center">
             <div class="col-sm-12 commontop text-center">
                 <h4>Create an Account</h4>
@@ -68,18 +69,7 @@
                                     </span>
                                     @enderror
                                 </div>
-                                <div class="form-group">
-                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                        name="email" value="{{ old('email') }}" placeholder="E-Mail Address" id="email"
-                                        autocomplete="email" />
-                                    @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-
-                                <div class="input-group mb-4 pb-1">
+                                <div class="input-group mb-3 pb-1">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id="phone_number">+880</span>
                                     </div>
@@ -115,14 +105,27 @@
                                     </span>
                                     @enderror
                                 </div>
-                                <div class="form-group">
+                                {{-- <div class="form-group">
                                     <textarea placeholder="Contact Address" id="current-address"
                                         class="form-control mt-1" rows="4" name="address" autocomplete="address"
                                         style="height:100px; align-items:center;"></textarea>
+                                </div> --}}
+                                <label style="cursor:pointer; color:#757575; margin-top:-30px;"><input type="checkbox"
+                                        class="radio-inline" name="check_email" id="check_email" onclick="mailCheck()">
+                                    Do you have an email account? (optional)
+                                </label>
+                                <div class="form-group">
+                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                        name="email" value="{{ old('email') }}" placeholder="E-Mail Address" id="email"
+                                        autocomplete="email" style="display:none;" />
+                                    @error('email')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
                                 </div>
                                 <div class="form-group">
-                                    <input type="submit" value="SIGN UP"
-                                        class="btn btn-theme btn-md btn-block mt-5 mb-5" />
+                                    <input type="submit" value="SIGN UP" class="btn btn-theme btn-md btn-block my-4" />
                                 </div>
                             </form>
                         </div>
@@ -134,3 +137,15 @@
 </div>
 <!-- Register End -->
 @stop
+@push('scripts')
+<script type="text/javascript">
+    //pos system discount option is showing or hiding.
+    function mailCheck(){             
+            if($("#check_email").prop("checked") == true) { 
+                 $('#email').show();
+            }else{          
+                $('#email').removeAttr("style").hide();
+            }           
+        }
+</script>
+@endpush

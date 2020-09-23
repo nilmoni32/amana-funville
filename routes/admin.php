@@ -57,8 +57,8 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::get('/invoice/{id}', 'OrderController@generateInvoice')->name('orders.invoice');
             });
             //pos route
-            Route::group(['prefix' => 'sales'], function(){
-                Route::get('/index/{id}', 'SalesController@index')->name('sales.index'); 
+            Route::group(['prefix' => 'pos'], function(){
+                Route::get('/sales/{id}', 'SalesController@index')->name('sales.index'); 
                 //pos order place
                 Route::post('/orderplace', 'SalesController@orderplace')->name('sales.orderplace');
                 
@@ -72,6 +72,14 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::post('/customer/info','SalesController@addCustomerInfo')->name('sales.customerInfo');
                 //end of ajax route for pos sales.
             
+            });
+
+            //POS Orders Management
+            Route::group(['prefix' => 'pos/orders'], function () {
+                Route::get('/', 'PosOrderController@index')->name('pos.orders.index');
+                Route::get('/edit/{id}', 'PosOrderController@edit')->name('pos.orders.edit');
+                Route::post('/update', 'PosOrderController@update')->name('pos.orders.update');
+                Route::get('/search', 'PosOrderController@search')->name('pos.orders.search');
             });
 
         });
