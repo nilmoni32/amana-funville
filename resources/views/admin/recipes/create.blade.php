@@ -20,11 +20,13 @@
                             <div class="form-group">
                                 <label class="control-label" for="name">Recipe Name</label>
                                 <select name="recipe" id="recipe_id"
-                                    class="form-control @error('recipe') is-invalid @enderror"">
+                                    class="form-control @error('recipe') is-invalid @enderror">
                                     <option></option>
                                     @foreach($products as $product)
+                                    @if($product->status)
                                     <option value={{ $product->id }}>
                                         {{ $product->name }}</option>
+                                    @endif
                                     @endforeach
                                 </select>
                                 @error('recipe') {{ $message }}@enderror
@@ -33,15 +35,15 @@
                     </div>
                 </div>
                 <div class=" tile-footer">
-                                    <div class="row d-print-none mt-2">
-                                        <div class="col-12 text-right">
-                                            <button class="btn btn-success" type="submit"><i
-                                                    class="fa fa-fw fa-lg fa-check-circle"></i>Save Recipe</button>
-                                            <a class="btn btn-danger" href="{{ route('admin.recipe.index') }}"><i
-                                                    class="fa fa-fw fa-lg fa-arrow-left"></i>Go Back</a>
-                                        </div>
-                                    </div>
-                            </div>
+                    <div class="row d-print-none mt-2">
+                        <div class="col-12 text-right">
+                            <button class="btn btn-success" type="submit"><i
+                                    class="fa fa-fw fa-lg fa-check-circle"></i>Save Recipe</button>
+                            <a class="btn btn-danger" href="{{ route('admin.recipe.index') }}"><i
+                                    class="fa fa-fw fa-lg fa-arrow-left"></i>Go Back</a>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
     </div>

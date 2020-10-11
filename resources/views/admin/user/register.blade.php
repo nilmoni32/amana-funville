@@ -88,6 +88,8 @@
                                     <button type="submit" class="btn btn-primary">
                                         {{ __('Register User') }}
                                     </button>
+                                    &nbsp;&nbsp;<a class="btn btn-danger" href="{{ route('admin.users.index') }}"><i
+                                            class="fa fa-fw fa-lg fa-arrow-left"></i>Go Back</a>
                                 </div>
                             </div>
                         </form>

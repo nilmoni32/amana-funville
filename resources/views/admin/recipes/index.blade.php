@@ -11,7 +11,7 @@
         <h1><i class="fa fa-modx"></i>&nbsp;{{ $pageTitle }}</h1>
         <p>{{ $subTitle }}</p>
     </div>
-    <a href="{{ route('admin.recipe.create') }}" class="btn btn-primary pull-right">Add Recipe</a>
+    <a href="{{ route('admin.recipe.create') }}" class="btn btn-primary pull-right">Add Food Recipe</a>
 </div>
 @include('admin.partials.flash')
 <div class="row">

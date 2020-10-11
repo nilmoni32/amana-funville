@@ -20,14 +20,25 @@
                 <form action="{{ route('admin.orders.search') }}" method="get">
                     @csrf
                     <div class="row mb-3 mr-4">
-                        <div class="app-search offset-xl-10 col-xl-2 offset-md-6 col-md-3 col-7">
+
+                        <div class="col-4 mx-auto">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="Search..." name="search">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="submit"><i class="fa fa-search"
+                                            aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- <div class="app-search offset-xl-10 col-xl-2 offset-md-6 col-md-3 col-7">
                             <input class="app-search__input"
-                                style="background:rgb(230, 230, 230); border: 1px solid rgb(201, 201, 201);"
+                                style="background:rgb(230, 230, 230); border: 1px solid rgb(201, 201, 201); margin-right:-50px; width:112%;"
                                 type="search" placeholder="Search" name="search" />
                             <button type="submit" class="app-search__button" style="margin-right:-18px;">
                                 <i class="fa fa-search"></i>
                             </button>
-                        </div>
+                        </div> --}}
                     </div>
                 </form>
                 <table class="table table-hover table-bordered" id="sampleTable">

@@ -102,9 +102,9 @@
                         <div class="col-sm-12 text-right">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fa fa-fw fa-lg fa-check-circle"></i>{{ __('Save Service') }}
-                            </button>
-                            <a class="btn btn-secondary" href=""><i
-                                    class="fa fa-fw fa-lg fa-times-circle"></i>{{ __('Cancel') }}</a>
+                            </button>&nbsp;
+                            <a class="btn btn-danger" href="{{ route('admin.services.index') }}"><i
+                                    class="fa fa-fw fa-lg fa-arrow-left"></i>{{ __('Go Back') }}</a>
                         </div>
                     </div>
                 </form>

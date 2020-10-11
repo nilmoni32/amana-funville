@@ -23,27 +23,14 @@
 
                 <div class="row">
                     <div class="col-md-8 text-center">
-                        <form action="{{ route('admin.sales.search') }}" method="get" autocomplete="off">
-                            @csrf
-                            <div class="row mt-2">
-                                <div class="col-md-4 text-right">
-                                    <label class="col-form-label font-weight-bold text-uppercase">Order
-                                        No:</label>
-                                </div>
-                                <div class="col-md-5 ml-0">
-                                    <div class="input-group mb-3">
-                                        <input type="text" class="form-control" placeholder="Search Order No"
-                                            name="search"
-                                            value="{{ $order_id ? App\Models\Ordersale::where('id', $order_id)->first()->order_number : '' }}">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-primary" type="submit"><i class="fa fa-search"
-                                                    aria-hidden="true"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="form-group row mt-2">
+                            <label class="col-md-4 col-form-label font-weight-bold text-right text-uppercase">Search
+                                Product</label>
+                            <div class="col-md-6 text-left">
+                                <input type="text" class="form-control" id="product_search" name="product_search"
+                                    placeholder="Find Foods">
                             </div>
-                        </form>
-
+                        </div>
                         {{-- to display cart message --}}
                         <div class="form-group row mt-2">
                             <div class="col-md-12 text-center" style="margin-bottom:-10px;" id="message">
@@ -54,57 +41,63 @@
                                 <table class="table table-bordered" id="tbl-sale-cart">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">#</th>
-                                            <th class="text-center"> Food Name </th>
+                                            <th class="text-left pl-3"> Food Name </th>
                                             <th class="text-center"> Price </th>
                                             <th class="text-center"> Qty </th>
                                             <th class="text-center"> Subtotal </th>
+                                            <th style="min-width:50px;" class="text-center text-danger"><i
+                                                    class="fa fa-bolt"> </i></th>
                                         </tr>
                                     </thead>
-                                    @php $i=1; $total_taka = 0; @endphp
-
-                                    @if($order_id && App\Models\Ordersale::where('id',
-                                    $order_id)->first()->status == 'receive')
                                     <tbody>
-                                        @foreach( App\Models\Sale::where('ordersale_id',
-                                        $order_id)->get() as $sale)
+                                        @php $i=1; $total_taka = 0; @endphp
+                                        @foreach(App\Models\Sale::where('admin_id', Auth::id())->where('ordersale_id',
+                                        NULL)->get() as $sale)
                                         <tr>
-                                            <td>{{ $loop->index + 1 }}</td>
-                                            <td class="text-center" style="text-transform:capitalize; max-width:120px;">
-                                                {{-- <img src="{{ asset('storage/'.$sale->product->images->first()->full) }}"
-                                                title="{{ $sale->product->name }}"
-                                                class="img-responsive pr-2 rounded" width="70px" /> --}}
-                                                {{ $sale->product->name }}
+                                            <td class="text-left pl-3">{{ $sale->product_name }}</td>
+                                            <td class="text-center">{{ round($sale->unit_price,0) }}</td>
+                                            {{-- <td class="text-center">{{ $sale->product_quantity }}</td> --}}
+                                            <td>
+                                                <p class="qtypara">
+                                                    <span id="minus{{$i}}" class="minus"
+                                                        onclick="updateAddtoSale({{ $sale->id }}, 'minus{{$i}}' )"><i
+                                                            class="fa fa-minus" aria-hidden="true"></i></span>
+                                                    <input type="text" name="product_quantity" id="input-quantity{{$i}}"
+                                                        value="{{ $sale->product_quantity  }}" size="2"
+                                                        class="form-control qty" readonly />
+                                                    <span id="add{{$i}}" class="add"
+                                                        onclick="updateAddtoSale({{ $sale->id }}, 'add{{$i}}' )"><i
+                                                            class="fa fa-plus" aria-hidden="true"></i></span>
+                                                </p>
                                             </td>
-                                            <td class="text-center">{{ round($sale->unit_price,2) }}
-                                                {{ config('settings.currency_symbol') }}</td>
-                                            <td class="text-center">{{ $sale->product_quantity }}</td>
                                             <td class="text-center" id="price{{$i}}">
-                                                {{ round($sale->product_quantity * $sale->unit_price,2) }}
-                                                {{ config('settings.currency_symbol') }}</td>
+                                                {{ round($sale->product_quantity * $sale->unit_price,0) }}</td>
                                             @php $total_taka += $sale->product_quantity * $sale->unit_price @endphp
+                                            <td class="text-center">
+                                                <button class="btn btn-sm btn-danger" id="cart-close{{$i}}"
+                                                    onclick="cartClose({{ $sale->id }}, 'cart-close{{$i}}')"><i
+                                                        class="fa fa-trash"></i></button>
+                                            </td>
                                         </tr>
                                         @php $i++; @endphp
                                         @endforeach
                                     </tbody>
-                                    @endif
                                 </table>
                                 <div class="row">
-                                    <div class="col-sm-12" style="visibility:{{ $order_id && App\Models\Ordersale::where('id',
-                                    $order_id)->first()->status == 'receive' ? 'visible': 'hidden' }};" id="total">
-                                        <h5 class="text-right pb-3 border-bottom">Subtotal :
+                                    <div class="col-sm-12" style="visibility:{{ $total_taka ? 'visible': 'hidden' }};"
+                                        id="total">
+                                        @if(config('settings.tax_percentage'))
+                                        <h5 class="text-right pb-3  pr-5 border-bottom">Subtotal :
                                             <span id="sub-total-tk">{{ $total_taka }}</span><span
                                                 class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
                                         </h5>
-                                        @if(config('settings.tax_percentage'))
-                                        <h5 class="text-right pb-3 pt-1 border-bottom">Vat
-                                            ({{ config('settings.tax_percentage')}}%):
+                                        <h5 class="text-right pb-3 pt-1 pr-5 border-bottom">Vat :
                                             <span
                                                 id="vat-percent">{{ $total_taka * (config('settings.tax_percentage')/100) }}</span><span
                                                 class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
                                         </h5>
                                         @endif
-                                        <h5 class="text-right pb-3 pt-1 border-bottom">Order Total :
+                                        <h5 class="text-right pb-3 pt-1 pr-5 border-bottom">Order Total :
                                             <span
                                                 id="total-tk">{{ $total_taka + ($total_taka * (config('settings.tax_percentage')/100))}}</span><span
                                                 class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
@@ -116,44 +109,18 @@
                                                 Discount :
                                             </label>
                                             <div class="form-check form-check-inline cash-discount">
-                                                {{-- <input type="text" class="form-control" id="discount_reference"
+                                                <input type="text" class="form-control" id="discount_reference"
                                                     placeholder="Reference (Required)" name="discount_reference"
-                                                   > --}}
-                                                <select name="director_id" id="discount_reference"
-                                                    class="form-control font-weight-normal" style="display:none;">
-                                                    <option value="" disabled selected>Select Discount Reference
-                                                    </option>
-                                                    @foreach( App\Models\Director::orderBy('name', 'asc')->get() as
-                                                    $director)
-                                                    <option value="{{ $director->id }}">{{ $director->name }}</option>
-                                                    @endforeach
-                                                </select>
+                                                    style="display:none;">
                                             </div>
-
                                             <div class="form-check form-check-inline cash-discount"
-                                                style="margin-right:3em">
+                                                style="margin-right:6em">
                                                 <input type="text" class="form-control" id="discount"
                                                     placeholder="Amount (Required)" name="discount"
                                                     style="display:none;">
                                             </div>
-                                            <br>
-                                            <div class="text-right mt-1 mr-5 d-none" id="discount-limit">
-                                                <span class="font-weight-normal text-danger w-25">
-                                                    {{_('** The given amount exceeds the discount limit. **')}}
-                                                </span>
-                                            </div>
                                         </h5>
-                                        <h5 class="text-right pb-2 pt-1 border-bottom d-none" id="reward-point-blk">
-                                            <label id="discount-point-lbl"
-                                                style="margin-right:-15px; cursor:pointer; margin-right:3em;"><input
-                                                    type="checkbox" class="radio-inline" name="reward_discount"
-                                                    id="reward_point_check" onclick="rewardPoint()"> Use Reward
-                                                points:
-                                                <span class="ml-1" id="reward-discount"></span>
-                                                {{ config('settings.currency_symbol') }}
-                                            </label>
-                                        </h5>
-                                        <h5 class="text-right pb-3 pt-1 border-bottom">Due Amount:
+                                        <h5 class="text-right pb-3 pt-1 pr-5 border-bottom">Due Amount:
                                             <span
                                                 id="due-tk">{{ $total_taka + $total_taka * (config('settings.tax_percentage')/100)  }}</span><span
                                                 class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
@@ -165,7 +132,7 @@
                                                 Payment :
                                             </label>
                                             <div class="form-check form-check-inline cash-payment"
-                                                style="margin-right:3em">
+                                                style="margin-right:6.1em">
                                                 <input type="text" class="form-control" id="cash_pay"
                                                     placeholder="Amount (Required)" name="cash_pay"
                                                     style="display:none;">
@@ -178,7 +145,7 @@
                                                 Payment :
                                             </label>
                                             <div class="form-check form-check-inline card-payment"
-                                                style="margin-right:3em">
+                                                style="margin-right:6.1em">
                                                 <input type="text" class="form-control" id="card_pay"
                                                     placeholder="Amount (Required)" name="card_pay"
                                                     style="display:none;">
@@ -191,25 +158,25 @@
                                                 Payment :
                                             </label>
                                             <div class="form-check form-check-inline mobileBank-payment"
-                                                style="margin-right:3em">
+                                                style="margin-right:6.1em">
                                                 <input type="text" class="form-control" id="mobile_banking_pay"
                                                     placeholder="Amount (Required)" name="mobile_banking_pay"
                                                     style="display:none;">
                                             </div>
                                         </h5>
-                                        <h4 class="text-right py-4 d-none text-danger" id="pay-more-block">Customer
+                                        <h4 class="text-right py-4 pr-5 d-none text-danger" id="pay-more-block">Customer
                                             need to pay
                                             more
                                             <span id="pay-more"></span><span
                                                 class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
                                         </h4>
-                                        <h4 class="text-right py-4 d-none text-danger" id="pay-change-block">You
+                                        <h4 class="text-right py-4 pr-5 d-none text-danger" id="pay-change-block">You
                                             need to pay
                                             change
                                             <span id="pay-change"></span><span
                                                 class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
                                         </h4>
-                                        <h4 class="text-right py-4 d-none text-danger" id="donot-change-block">
+                                        <h4 class="text-right py-4 pr-5 d-none text-danger" id="donot-change-block">
                                             Don't
                                             pay much as you can't change
                                             <span id="donot-change"></span><span
@@ -247,21 +214,16 @@
 
                                 <button type="button" onclick="print();"
                                     class="btn btn-primary text-center text-uppercase"
-                                    style="display:block; width:100%;"
-                                    {{$order_id && App\Models\Ordersale::where('id', $order_id)->first()->status == 'delivered' ? '' : 'disabled' }}>Print
+                                    style="display:block; width:100%;" {{ $order_id ? '' : 'disabled' }}>Print
                                     Receipt</button>
                             </div>
                         </div>
 
                         <!--end of pos print using javascript-->
-                        <form method="POST" action="{{ route('admin.sales.orderupdate') }}">
+                        <form method="POST" action="{{ route('admin.sales.orderplace') }}">
                             @csrf
-                            <input type="hidden" id="order_id" name="order_id" value="{{ $order_id ? $order_id : '' }}">
-                            <input type="hidden" id="sub-total" name="subtotal"
-                                value="{{ $order_id ? $total_taka : '' }}">
                             <input type="hidden" id="order_discount" name="order_discount" value="">
                             <input type="hidden" id="order_discount_reference" name="order_discount_reference" value="">
-                            <input type="hidden" id="reward_point_discount" name="reward_discount" value="">
                             <input type="hidden" id="payment_method" name="payment_method[]" value="">
                             <input type="hidden" id="pay_cash" name="cash_pay" value="">
                             <input type="hidden" id="pay_card" name="card_pay" value="">
@@ -269,27 +231,11 @@
 
                             <div class="border px-4 rounded" style="border-color:rgb(182, 182, 182);">
                                 <h4 class="text-center mt-3 mb-4">Customer Details</h4>
-                                <div class="input-group my-2">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="phone_number">Order Table No</span>
-                                    </div>
+                                <div class="form-group my-2">
                                     <input type="text" class="form-control @error('order_tableNo') is-invalid @enderror"
-                                        id="order_tableNo" placeholder="" name="order_tableNo"
-                                        value="{{ $order_id && App\Models\Ordersale::where('id', $order_id)->first()->status == 'receive' ? App\Models\Ordersale::where('id', $order_id)->first()->order_tableNo : '' }}"
-                                        required>
+                                        id="order_tableNo" placeholder="Enter Order Table No (required)"
+                                        name="order_tableNo" required>
                                     @error('order_tableNo')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                                <div class="input-group my-2">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="phone_number">Reward Point</span>
-                                    </div>
-                                    <input type="text" class="form-control @error('total_points') is-invalid @enderror"
-                                        id="total_points" placeholder="" name="total_points" readonly>
-                                    @error('total_points')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -306,15 +252,12 @@
                                     @enderror
 
                                 </div>
-
-                                <div class="input-group my-2">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="phone_number">+880</span>
-                                    </div>
+                                <div class="form-group my-2">
                                     <input type="text"
                                         class="form-control @error('customer_mobile') is-invalid @enderror"
-                                        id="customer_mobile" placeholder="Phone no(e.g 017xxxxxxxx)"
-                                        name="customer_mobile">
+                                        id="customer_mobile" placeholder="Customer Phone No" name="customer_mobile"
+                                        maxlength="13">
+
                                     @error('customer_mobile')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -333,9 +276,7 @@
                                 </div>
                                 <div class="form-group mt-2 mb-4">
                                     <button type="submit" class="btn btn-primary text-uppercase"
-                                        style="display:block; width:100%;"
-                                        {{ $order_id && App\Models\Ordersale::where('id', $order_id)->first()->status == 'receive' ? '' : 'disabled' }}
-                                        id="submit">Update
+                                        style="display:block; width:100%;" id="submit">Place
                                         Order </button>
                                 </div>
                             </div>
@@ -365,7 +306,81 @@
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     $(document).ready(function(){
         
-     // POS system starts here   
+     // POS system starts here
+     // Initialize jQuery UI autocomplete on #product_search field.
+      $("#product_search").autocomplete({
+        //Using source option to send AJAX post request to route('employees.getEmployees') to fetch data
+        source: function( request, response ) {
+          // Fetch data
+          $.ajax({
+            url:"{{ route('admin.sales.getfoods') }}",
+            type: 'post',
+            dataType: "json",
+            // passing CSRF_TOKEN along with search value in the data
+            data: {
+               _token: CSRF_TOKEN,
+               search: request.term
+            },
+            //On successful callback pass response in response() function.
+            success: function( data ) {
+               response( data );
+            }
+          });
+        },
+        // Using select option to display selected option label in the #product_search
+        select: function (event, ui) {
+           // Set selection           
+           $('#product_search').val(ui.item.label); // display the selected text
+        //  calling to add to cart function addToSale  
+           addToSale(ui.item.label, ui.item.value);
+           return false;
+        }
+      });
+
+      function addToSale(foodName, foodId){
+        $.post("{{ route('admin.sales.addtosales') }}", {        
+            _token: CSRF_TOKEN,
+            foodName: foodName,
+            foodId: foodId
+        }).done(function(data) {
+            data = JSON.parse(data);
+            if(data.status == "success") {
+                    var i = document.getElementById("tbl-sale-cart").rows.length;
+                    tableBody = $("table tbody"); 
+                    markup = "<tr><td class='text-left pl-3'>"  + data.foodname + "</td>" + 
+                    "<td class='text-center'>"  + Math.round(data.price) + "</td>" +                   
+                    "<td><p class='qtypara'><span id='minus"+ i +"' class='minus' onclick='updateAddtoSale("+ data.id +", \"minus"+ i +"\")' >" +
+                         "<i class='fa fa-minus' aria-hidden='true'></i></span>"+                                    
+                         "<input type='text' name='product_quantity' id='input-quantity"+i+"' value="+ data.qty +" size= '2' class='form-control qty' readonly />" + "<span id='add"+i+"' class='add'" +
+                                "onclick='updateAddtoSale("+ data.id +", \"add"+ i +"\")' >" +
+                                "<i class='fa fa-plus' aria-hidden='true'></i></span></p></td>" +
+
+                    "<td class='text-center' id='price"+i+"'>"  + data.price*data.qty + "</td>" +
+                    "<td class='text-center'>"+ 
+                        "<button class='btn btn-sm btn-danger' id='close" +i+
+                        "' onclick='cartClose(" + data.id +", \"close"+ i + "\")' >" +
+                                           "<i class='fa fa-trash'></i></button></td>"+ 
+                    "</tr>"; 
+                    tableBody.append(markup);
+                    $('#total').css('visibility', 'visible');
+                    if("{{ config('settings.tax_percentage') }}"){
+                        $("#sub-total-tk").html(data.sub_total);
+                        $("#vat-percent").html( data.sub_total * "{{ config('settings.tax_percentage')/100 }}");
+                    }
+                    $("#total-tk").html(data.sub_total + (data.sub_total * "{{ config('settings.tax_percentage')/100 }}") ); 
+                    $('#due-tk').html((data.sub_total + (data.sub_total * "{{ config('settings.tax_percentage')/100 }}")) - $('#discount').val());
+                }
+                
+            if(data.status == 'info'){
+                message = '<div class="alert alert-warning alert-dismissible fade show" role="alert">' +                
+                            data.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                           '<span aria-hidden="true">&times;</span></button></div>';                
+                $('#message').html(message);
+            }   
+            
+        });
+        }
+
         $("#customer_mobile").autocomplete({
         //Using source option to send AJAX post request to route('employees.getEmployees') to fetch data
         source: function( request, response ) {
@@ -399,16 +414,9 @@
             _token: CSRF_TOKEN,
             mobile: customerMobile            
         }).done(function(data) { 
-            //console.log(data)
-            $('#customer_name').val(data[0].name);
-            $('#customer_address').val(data[0].address);        
-            $('#customer_notes').val(data[0].notes); 
-            $('#total_points').val(data[0].total_points);
-            //reward points breaking rule:
-            if(data[0].total_points >=100){
-                $('#reward-point-blk').removeClass('d-none');
-                $('#reward-discount').text((Math.round(data[0].total_points * '{{ config('settings.point_to_money') }}')).toFixed(2));
-            }
+            $('#customer_name').val(data[0].customer_name);
+            $('#customer_address').val(data[0].customer_address);        
+            $('#customer_notes').val(data[0].customer_notes); 
         });
         }
 
@@ -416,21 +424,8 @@
        $('#discount').on('input', function() {
            if($.isNumeric( $.trim($('#discount').val() ))){
             orderTotal = $('#total-tk').text();
-            discount = $.trim($('#discount').val());
-            //getting reward discount 
-            var rewardDiscount = $("#reward-discount").text(); 
-            //getting the director id value.
-            directorId = $('#discount_reference :selected').val();
-            if(directorId){
-                //checking the discount slab of the corresponding director via ajax call
-                checkDiscountSlab(discount, directorId, orderTotal);
-            } 
-            //calculating due amount  
-            if($("#reward_point_check").prop("checked") == true) {
-                dueAmount = orderTotal - (Number(discount) + Number(rewardDiscount));
-            }else{
-                dueAmount = orderTotal - discount;
-            }
+            discount = $.trim($('#discount').val()); 
+            dueAmount = orderTotal - discount;
             //setting due amount 
             $('#due-tk').text(dueAmount); 
             // setting discount data to order_discount form hidden input field
@@ -449,56 +444,20 @@
            }
         });
 
-
-         // if discount reference is changed, checkDiscountSlab is called 
-         $('#discount_reference').change(function() {            
-            orderTotal = $('#total-tk').text();
-            discount = $.trim($('#discount').val()); 
-            //getting the director id value.
-            directorId = $('#discount_reference :selected').val();
-            // setting discount reference as director id to form hidden input field
-            $('#order_discount_reference').val(directorId);
-            if(directorId){
-                //checking the discount slab of the corresponding director via ajax call
-                checkDiscountSlab(discount, directorId, orderTotal);
-            }
-
+        // setting reference name for discount to order_discount_reference form hidden input field
+        $('#discount_reference').on('input', function() {            
+            $('#order_discount_reference').val($('#discount_reference').val());
         });
-    
-        
-        //checking the discount slab of the corresponding director via ajax call
-        function checkDiscountSlab(discount, directorId, orderTotal){
-            $.post("{{ route('admin.sales.discountSlab') }}", {        
-                _token: CSRF_TOKEN,
-                discount: discount,
-                directorId: directorId,
-                orderTotal: orderTotal       
-            }).done(function(data) { 
-                data = JSON.parse(data);
-                if(data.status == "success") {
-                    if(data.discount > data.discountLimit){
-                        $('#discount-limit').removeClass('d-none');                        
-                    }else{
-                        $('#discount-limit').addClass('d-none');                        
-                    }
-                }                
-            });            
-        }      
 
-
-        // if discount checkbox or reward point checkbox anychange is made during the payment calculation, we will reset everything.
+        // if discount checkbox anychange is made during the payment calculation, we will reset everything.
         // so in that case we need to do the calculation again.
         $("#discount_check").change(function(){
             resetPayment();
         });
 
-        $("#reward_point_check").change(function(){
+        $("#product_search").on('input', function() {
             resetPayment();
         });
-
-        // $("#product_search").on('input', function() {
-        //     resetPayment();
-        // });
 
               
         // POS System: Cash payment:
@@ -917,8 +876,76 @@
                 e.preventDefault();
         });
 
-        
     });
+
+     /*Product Quantity Plus/Minus Start and send to cart */
+        function updateAddtoSale(sale_id, id) {
+            if (id.includes("add")) {
+                var $qty = $("#" + id)
+                    .closest("p")
+                    .find(".qty");
+                var currentVal = parseInt($qty.val());
+                $qty.val(currentVal + 1);
+            } else if (id.includes("minus")) {
+                var $qty = $("#" + id)
+                    .closest("p")
+                    .find(".qty");
+                var currentVal = parseInt($qty.val());
+                if (currentVal > 1) {
+                    $qty.val(currentVal - 1);
+                }
+            }
+
+            $.post("{{ route('admin.sales.saleCartUpdate') }}", {
+                _token: CSRF_TOKEN,
+                sale_id: sale_id,
+                product_quantity: $qty.val()
+            }).done(function(data) {
+                data = JSON.parse(data);
+                if(data.status == "success") { 
+                    // finding the rowno from the id such add1, add2, minus1 etc.
+                    var row = id.substring(id.length - 1); //Displaying the last character                    
+                    $("#price" + row).html(data.total_unit_price);
+                    if("{{ config('settings.tax_percentage') }}"){
+                        $("#sub-total-tk").html(data.sub_total);
+                        $("#vat-percent").html( data.sub_total * "{{ config('settings.tax_percentage')/100 }}");
+                    }
+                    $("#total-tk").html(data.sub_total + (data.sub_total * "{{ config('settings.tax_percentage')/100 }}") ); 
+                    $('#due-tk').html((data.sub_total + (data.sub_total * "{{ config('settings.tax_percentage')/100 }}")) - $('#discount').val());
+                    // location.reload();
+                     //resetting the payment.
+                     resetPayment();
+                }
+            });
+        }
+
+        function cartClose(saleId, delBtnId) {
+            var parent = $("#" + delBtnId).parent(); //getting the td of the del button
+            $.post("{{ route('admin.sales.saleCartDelete') }}", {
+                _token: CSRF_TOKEN,
+                sale_id: saleId
+            }).done(function(data) {
+                data = JSON.parse(data);
+                if (data.status == "success") {                 
+                    // not to reload the page, just removing the row from DOM
+                    if("{{ config('settings.tax_percentage') }}"){
+                        $("#sub-total-tk").html(data.sub_total);
+                        $("#vat-percent").html( data.sub_total * "{{ config('settings.tax_percentage')/100 }}");
+                    }
+                    $("#total-tk").html(data.sub_total + (data.sub_total * "{{ config('settings.tax_percentage')/100 }}") ); 
+                    $('#due-tk').html((data.sub_total + (data.sub_total * "{{ config('settings.tax_percentage')/100 }}")) - $('#discount').val());
+
+                    parent.slideUp(100, function() {
+                        parent.closest("tr").remove();
+                    });
+                    if(!data.sub_total){
+                        $('#total').css('visibility', 'hidden');
+                    }
+                    //resetting the payment.
+                    resetPayment();
+                }
+            });
+        }
         //pos system discount option is showing or hiding.
         function discountCheck(){             
             if($("#discount_check").prop("checked") == true) { 
@@ -926,7 +953,7 @@
                 $('.cash-discount').addClass('discount-w');
                 $('#discount_reference').show();
                 $('#discount').show();  
-                $('#discount-blk').removeClass('pt-1');                
+                $('#discount-blk').removeClass('pt-1');
             }else{
                 //when unchecked chkbox we set discount to null and due amount to order total.
                 $('#discount-lbl').css('margin-right','-15px');               
@@ -934,11 +961,7 @@
                 $('#discount').removeAttr("style").hide(); 
                 $('.cash-discount').removeClass('discount-w');                 
                 $('#discount').val("");
-                if($("#reward_point_check").prop("checked") == true){
-                    $('#due-tk').html($("#total-tk").html() - $("#reward-discount").text());
-                }else{
-                    $('#due-tk').html($("#total-tk").html());
-                } 
+                $('#due-tk').html($("#total-tk").html());  
                 $('#discount-blk').addClass('pt-1');           
             }           
         }
@@ -971,33 +994,6 @@
                 $('#card_pay').val("");                
                 $('#card_blk').addClass('pt-1');                
             }           
-        }
-
-        function rewardPoint(){            
-            var dueAmount = 0;     
-            var discount =  $.trim($('#discount').val());
-            var orderTotal = $("#total-tk").html();
-            var rewardDiscount = $("#reward-discount").text();            
-            if($("#reward_point_check").prop("checked") == true) {                 
-                if(discount){
-                    dueAmount = orderTotal - (Number(discount) + Number(rewardDiscount));
-                }else{
-                    dueAmount = orderTotal - rewardDiscount;
-                }               
-                $('#due-tk').text(dueAmount);
-                // setting reward_point_discount to form hidden input field
-                $('#reward_point_discount').val(rewardDiscount);
-              
-            }else{
-                if(discount){
-                    dueAmount = orderTotal - discount;
-                }else{
-                    dueAmount = orderTotal;
-                }               
-                $('#due-tk').text(dueAmount);
-                // setting reward_point_discount to form hidden input field
-                $('#reward_point_discount').val(0);
-            }
         }
 
         function mobileBankCheck(){             
@@ -1108,7 +1104,7 @@
             var esc = '\x1B'; //ESC byte in hex notation
             var newLine = '\x0A'; //LF byte in hex notation            
             var cmds = esc + "@"; //Initializes the printer (ESC @)
-            cmds += esc + '!' + '\x30'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
+            cmds += esc + '!' + '\x32'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
             cmds += "   {{ config('settings.site_name') }}"; //text to print site name
             cmds += newLine;
             cmds += esc + '!' + '\x08'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex            
@@ -1124,11 +1120,7 @@
             cmds += newLine;
             cmds += "Date: {{ date('d-M-Y h:i:s A') }}";
             cmds += newLine;
-            cmds += "---------------------------------------";
-            cmds += newLine;
-            cmds += esc + '!' + '\x08'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
             cmds += "Customer order Table no: {{ $order_id ? App\Models\Ordersale::find($order_id)->order_tableNo : ''}}"
-            cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
             cmds += newLine;
             cmds += "---------------------------------------";
             cmds += newLine;
@@ -1164,10 +1156,6 @@
             cmds += newLine;
             cmds += '           -Discount:           {{ $order_id ? round(App\Models\Ordersale::find($order_id)->discount,2) : '' }}';
             cmds += newLine;
-            @if($order_id && App\Models\Ordersale::find($order_id)->reward_discount)
-            cmds += '           -Reward Discount:     {{ $order_id ? round(App\Models\Ordersale::find($order_id)->reward_discount,2) : '' }}';
-            cmds += newLine;
-            @endif
             cmds += "                          -------------";
             cmds += '             Amount Due:          {{ $order_id ? round(App\Models\Ordersale::find($order_id)->grand_total,2) : '' }}'; 
             cmds += newLine;           
@@ -1195,18 +1183,12 @@
             cmds += newLine;
             @if($order_id)
             @if(App\Models\Ordersale::find($order_id)->discount)
-            cmds += 'Reference Discount:            {{ $order_id ? round(App\Models\Ordersale::find($order_id)->discount,2) : '' }}';
-            cmds += newLine;
-            cmds += "---------------------------------------";
-            @endif
-            cmds += newLine;
-            @if(App\Models\Ordersale::find($order_id)->reward_discount)
-            cmds += 'Other Discount:                 {{ $order_id ? round(App\Models\Ordersale::find($order_id)->reward_discount,2) : '' }}';
+            cmds += 'Total Discount:                {{ $order_id ? round(App\Models\Ordersale::find($order_id)->discount,2) : '' }}';
             cmds += newLine;
             cmds += "---------------------------------------";
             cmds += newLine;
+            cmds += 'You Have Saved:                {{ $order_id ? round(App\Models\Ordersale::find($order_id)->discount,2) : '' }}';
             @endif
-            cmds += 'You Have Saved:                {{ $order_id ? round((App\Models\Ordersale::find($order_id)->discount + App\Models\Ordersale::find($order_id)->reward_discount),2)  : '' }}';            
             @endif
             cmds += newLine + newLine;
             cmds += 'Note: Sold food items can not be refunded';

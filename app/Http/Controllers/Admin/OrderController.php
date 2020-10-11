@@ -108,7 +108,8 @@ class OrderController extends BaseController
 
        // for other search criteria.
         $orders = Order::orWhere('order_number', 'like', '%'.$search.'%')
-        ->orWhere('order_date', 'like', '%'. ($this->validateDate($search) ? Carbon::createFromFormat('d-m-Y', $search)->format('Y-m-d') : $search).'%')                  
+        ->orWhere('order_date', 'like', '%'. ($this->validateDate($search) ? Carbon::createFromFormat('d-m-Y', $search)->format('Y-m-d') : $search).'%')    
+        ->orWhere('order_date', 'like', '%'. ($this->validateDateTime($search) ? Carbon::createFromFormat('d-m-Y H:i:s', $search)->format('Y-m-d H:i:s') : $search).'%')              
         ->orWhere('grand_total', 'like', '%'.$search.'%')
         ->orWhere('status', 'like', '%'.$search.'%')
         ->orWhere('payment_method', 'like', '%'.$search.'%')->paginate(15);         
@@ -124,8 +125,14 @@ class OrderController extends BaseController
         //return view('admin.orders.invoice', compact('order'));
     }
 
-
     public function validateDate($date, $format = 'd-m-Y')
+    {
+        $d = DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) == $date;
+    }
+
+
+    public function validateDateTime($date, $format = 'd-m-Y H:i:s')
     {
         $d = DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) == $date;

@@ -56,12 +56,14 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::get('/search', 'OrderController@search')->name('orders.search');
                 Route::get('/invoice/{id}', 'OrderController@generateInvoice')->name('orders.invoice');
             });
-            //pos route
+            //pos route Customer print receipt
             Route::group(['prefix' => 'pos'], function(){
                 Route::get('/sales/{id}', 'SalesController@index')->name('sales.index'); 
+                //search to get the order no.
+                Route::get('/search', 'SalesController@search')->name('sales.search');
                 //pos order place
-                Route::post('/orderplace', 'SalesController@orderplace')->name('sales.orderplace');
-                
+                //Route::post('/orderplace', 'SalesController@orderplace')->name('sales.orderplace');
+                Route::post('/orderupdate', 'SalesController@orderupdate')->name('sales.orderupdate');
                 //ajax route for pos sales.           
                 Route::post('/getfoods','SalesController@getFoods')->name('sales.getfoods');
                 Route::post('/foods/addsales','SalesController@addToSales')->name('sales.addtosales');
@@ -70,11 +72,27 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
 
                 Route::post('/customer/mobile','SalesController@getMobileNo')->name('sales.customermobile');
                 Route::post('/customer/info','SalesController@addCustomerInfo')->name('sales.customerInfo');
+                Route::post('/discount/slab','SalesController@discountSlab')->name('sales.discountSlab');
                 //end of ajax route for pos sales.
             
             });
 
-            //POS Orders Management
+            // POS route for restaurant print receipt
+            Route::group(['prefix' => 'pos'], function(){
+                Route::get('/restaurant/{id}', 'PosRestaurantController@index')->name('restaurant.sales.index'); 
+                //pos order place
+                Route::post('/order-place', 'PosRestaurantController@orderplace')->name('restaurant.sales.orderplace');
+                
+                //ajax route for pos sales.           
+                Route::post('/findfoods','PosRestaurantController@getFoods')->name('restaurant.sales.getfoods');
+                Route::post('/findfoods/addsales','PosRestaurantController@addToSales')->name('restaurant.sales.addtosales');
+                Route::post('/sale-cart/update', 'PosRestaurantController@update')->name('restaurant.sales.saleCartUpdate');
+                Route::post('/sale-cart/delete', 'PosRestaurantController@destroy')->name('restaurant.sales.saleCartDelete');
+                //end of ajax route for pos sales.
+            
+            });
+
+            //POS Orders Management [list of all pos orders]
             Route::group(['prefix' => 'pos/orders'], function () {
                 Route::get('/', 'PosOrderController@index')->name('pos.orders.index');
                 Route::get('/edit/{id}', 'PosOrderController@edit')->name('pos.orders.edit');
@@ -265,6 +283,16 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::get('/edit/{id}', 'RecipeIngredientController@edit')->name('recipe.ingredient.edit');
                 Route::post('/update', 'RecipeIngredientController@update')->name('recipe.ingredient.update');
                 Route::get('/delete/{id}', 'RecipeIngredientController@delete')->name('recipe.ingredient.delete');
+            });
+
+            //Board of directors routes
+            Route::group(['prefix' => 'directors'], function(){
+                Route::get('/', 'DirectorController@index')->name('board.directors.index');
+                Route::get('/create', 'DirectorController@create')->name('board.directors.create');
+                Route::post('/store', 'DirectorController@store')->name('board.directors.store');
+                Route::get('/edit/{id}', 'DirectorController@edit')->name('board.directors.edit');
+                Route::post('/update', 'DirectorController@update')->name('board.directors.update');
+                Route::get('/delete/{id}', 'DirectorController@delete')->name('board.directors.delete');
             });
 
 

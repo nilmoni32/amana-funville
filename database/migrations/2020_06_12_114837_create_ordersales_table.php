@@ -16,24 +16,25 @@ class CreateOrdersalesTable extends Migration
         Schema::create('ordersales', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('admin_id');  
+            $table->unsignedBigInteger('client_id')->nullable();
+            $table->unsignedBigInteger('director_id')->nullable(); //discount reference
             $table->string('order_number')->unique();
-            $table->decimal('grand_total', 13, 6); 
+            $table->decimal('grand_total', 13, 6)->nullable();
             $table->string('order_date');
             $table->string('order_tableNo')->nullable();
+            $table->enum('status', ['receive', 'delivered', 'cancel' ])->default('receive');
             $table->decimal('discount', 12, 6)->nullable();
-            $table->string('discount_reference')->nullable();
-            $table->string('payment_method'); // to store multiple values such as cash, card and mobile banking
+            $table->decimal('reward_discount', 12, 6)->nullable();             
+            $table->string('payment_method')->nullable(); // to store multiple values such as cash, card and mobile banking
             $table->decimal('cash_pay', 13, 6)->nullable();
             $table->decimal('card_pay', 13, 6)->nullable();
             $table->decimal('mobile_banking_pay', 13, 6)->nullable();
-            $table->string('customer_name')->nullable(); 
-            $table->string('customer_mobile')->nullable(); 
-            $table->text('customer_address')->nullable();            
-            $table->text('customer_notes')->nullable();
 
             $table->timestamps();
 
-            $table->foreign('admin_id')->references('id')->on('admins');   
+            $table->foreign('admin_id')->references('id')->on('admins'); 
+            $table->foreign('client_id')->references('id')->on('clients');
+            $table->foreign('director_id')->references('id')->on('directors');  
         });
     }
 

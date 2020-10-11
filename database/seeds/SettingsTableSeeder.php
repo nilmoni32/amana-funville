@@ -134,8 +134,14 @@ class SettingsTableSeeder extends Seeder
             'key'   => 'scheduler_timings',
             'value' => '',
         ],
-
-
+        [
+            'key'   => 'money_to_point',
+            'value' => '',
+        ],
+        [
+            'key'   => 'point_to_money',
+            'value' => '',
+        ],
 
     ];
 

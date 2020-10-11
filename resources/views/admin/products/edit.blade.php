@@ -17,7 +17,7 @@
             <ul class="nav flex-column nav-tabs user-tabs" id="tabMenu">
                 <li class="nav-item"><a class="nav-link active" href="#general" data-toggle="tab">General</a></li>
                 <li class="nav-item"><a class="nav-link" href="#images" data-toggle="tab">Images</a></li>
-                <li class="treeview">
+                {{-- <li class="treeview">
                     <a class="app-menu__item bg-white text-primary" href="#" data-toggle="treeview">
                         <span class="app-menu__label">Attributes</span>
                         <i class="treeview-indicator fa fa-angle-right"></i>
@@ -26,14 +26,14 @@
                         <li>
                             <a class="treeview-item bg-white text-dark"
                                 href="{{ route('admin.products.attribute.index', $product->id)}}">List all
-                                Attributes</a>
-                        </li>
-                        <li>
-                            <a class="treeview-item bg-white text-dark"
-                                href="{{ route('admin.products.attribute.create', $product->id)}}">Add Attribute</a>
-                        </li>
-                    </ul>
+                Attributes</a>
                 </li>
+                <li>
+                    <a class="treeview-item bg-white text-dark"
+                        href="{{ route('admin.products.attribute.create', $product->id)}}">Add Attribute</a>
+                </li>
+            </ul>
+            </li> --}}
             </ul>
         </div>
     </div>

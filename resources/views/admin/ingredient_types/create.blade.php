@@ -45,8 +45,8 @@
                 <div class="tile-footer">
                     <button class="btn btn-primary" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Save
                         Category</button>
-                    &nbsp;&nbsp;&nbsp;<a class="btn btn-secondary" href="{{ route('admin.ingredienttypes.index') }}"><i
-                            class="fa fa-fw fa-lg fa-times-circle"></i>Cancel</a>
+                    &nbsp;&nbsp;&nbsp;<a class="btn btn-danger" href="{{ route('admin.ingredienttypes.index') }}"><i
+                            class="fa fa-fw fa-lg fa-arrow-left"></i>Go Back</a>
                 </div>
             </form>
         </div>

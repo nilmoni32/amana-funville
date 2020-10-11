@@ -23,14 +23,13 @@
                             <th class="text-center"> Price </th>
                             <th class="text-center"> Special Price </th>
                             <th class="text-center"> Status </th>
-                            <th style="width:100px; min-width:100px;" class="text-center text-danger"><i
-                                    class="fa fa-bolt"> </i></th>
+                            <th style="min-width:70px;" class="text-center text-danger"><i class="fa fa-bolt"> </i></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($products as $product)
                         <tr>
-                            <td>{{ $product->id }}</td>
+                            <td>{{ $loop->index + 1 }}</td>
                             <td>{{ $product->name }}</td>
                             <td>{{ $product->slug }}</td>
                             <td>@foreach($product->categories as $category)

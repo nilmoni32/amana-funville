@@ -28,8 +28,7 @@ class CreateSalesTable extends Migration
 
             $table->foreign('admin_id')
             ->references('id')
-            ->on('admins')
-            ->onDelete('cascade');
+            ->on('admins');            
 
             $table->foreign('product_id')
             ->references('id')
