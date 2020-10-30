@@ -7,6 +7,7 @@ use App\Models\Ingredient;
 use App\Mail\IngredientUpdate;
 use PDF;
 
+// cron-job-task-scheduling 
 class DailyIngredient extends Command
 {
     /**
@@ -42,7 +43,7 @@ class DailyIngredient extends Command
     {
         // we will implement the logic here
         // when comparing two columns we will use whereColumn
-        $ingredients = Ingredient::whereColumn('total_quantity', '<=', 'alert_quantity')->get();
+        $ingredients = Ingredient::whereColumn('total_quantity', '<', 'alert_quantity')->get();
         //getting backend email recipients
         $cc = explode(',', str_replace(' ', '', config('settings.email_recipient')));  
        

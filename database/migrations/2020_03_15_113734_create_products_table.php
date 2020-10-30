@@ -21,7 +21,7 @@ class CreateProductsTable extends Migration
             $table->decimal('price', 8, 2)->nullable();
             $table->decimal('discount_price', 8, 2)->nullable();                        
             $table->boolean('status')->default(1);  // checking product availability
-            $table->boolean('featured')->default(0);
+            $table->boolean('featured')->default(0); // for tiny foods such as half chicken
             $table->timestamps();
         });
     }

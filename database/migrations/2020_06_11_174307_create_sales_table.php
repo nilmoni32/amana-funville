@@ -19,10 +19,12 @@ class CreateSalesTable extends Migration
             $table->unsignedBigInteger('product_id'); 
             $table->unsignedBigInteger('admin_id')->nullable();
             $table->unsignedBigInteger('ordersale_id')->nullable(); 
-            $table->string('product_name')->nullable();         
-            $table->integer('product_quantity')->default(1);
+            $table->string('product_name')->nullable();
+            $table->decimal('product_quantity', 8, 2)->default(1.00);
             $table->decimal('unit_price', 8, 2)->nullable();
             $table->decimal('production_food_cost', 8, 2)->nullable();
+            $table->integer('order_cancel')->default(0);
+            $table->string('order_tbl_no')->nullable();
             
             $table->timestamps();
 

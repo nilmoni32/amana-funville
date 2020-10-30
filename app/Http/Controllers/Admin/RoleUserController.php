@@ -49,7 +49,7 @@ class RoleUserController extends BaseController
     {           
         // finding the admin user 
         $admin = Admin::where('id', $request->id)->first();
-        // news roles are updated at pivot table using sync that accepts an array roles[]
+        // new roles are updated at pivot table using sync that accepts an array roles[]
         $admin->roles()->sync($request->roles);
 
         $admin->name = $request->name;

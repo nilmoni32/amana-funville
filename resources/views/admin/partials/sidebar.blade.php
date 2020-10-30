@@ -6,8 +6,12 @@
       <p class="app-sidebar__user-name">{{ Auth::guard('admin')->user()->name  }}</p>
       @if(Auth::user()->roles()->first()->name == 'admin')
       <p class="app-sidebar__user-designation"> {{ __('Administrator') }} </p>
-      @elseif(Auth::user()->roles()->first()->name == 'order_controller')
+      @elseif(Auth::user()->hasRole('order-control') && Auth::user()->hasRole('stock-control'))
+      <p class="app-sidebar__user-designation"> {{ __('Controller') }} </p>
+      @elseif(Auth::user()->hasRole('order-control'))
       <p class="app-sidebar__user-designation"> {{ __('Order Controller') }} </p>
+      @elseif(Auth::user()->hasRole('stock-control'))
+      <p class="app-sidebar__user-designation"> {{ __('Inventory Controller') }} </p>
       @else
       <p class="app-sidebar__user-designation"> {{ __('Generic User') }} </p>
       @endif
@@ -41,7 +45,7 @@
     @endphp
     <li class="{{ $temp ? 'treeview is-expanded' : 'treeview' }}">
       <a class="app-menu__item" href="#" data-toggle="treeview">
-        <i class="app-menu__icon fa fa fa-braille"></i><span class="app-menu__label">Reports</span>
+        <i class="app-menu__icon fa fa fa-braille"></i><span class="app-menu__label">Ecommerce Reports</span>
         <i class="treeview-indicator fa fa-angle-right"></i>
       </a>
       <ul class="treeview-menu">
@@ -92,7 +96,7 @@
     @endphp
     <li class="{{ $temp1 ? 'treeview is-expanded' : 'treeview' }}">
       <a class="app-menu__item" href="#" data-toggle="treeview">
-        <i class="app-menu__icon fa fa-product-hunt"></i><span class="app-menu__label">POS</span>
+        <i class="app-menu__icon fa fa-delicious"></i><span class="app-menu__label">KOT</span>
         <i class="treeview-indicator fa fa-angle-right"></i>
       </a>
       <ul class="treeview-menu">
@@ -100,31 +104,42 @@
           <a class="treeview-item {{ Route::currentRouteName() == 'admin.restaurant.sales.index' ? 'active' : '' }}"
             href="{{ route('admin.restaurant.sales.index', 0) }}">
             <i class="app-menu__icon fa fa-calculator"></i>
-            <span class="app-menu__label">POS Sales (Restaurant) </span>
-          </a>
-        </li>
-        <li>
-          <a class="treeview-item {{ Route::currentRouteName() == 'admin.sales.index' ? 'active' : '' }}"
-            href="{{ route('admin.sales.index', 0) }}">
-            <i class="app-menu__icon fa fa-calculator"></i>
-            <span class="app-menu__label">POS Sales (Customer) </span>
+            <span class="app-menu__label">KOT Management</span>
           </a>
         </li>
         <li>
           <a class="treeview-item {{ Route::currentRouteName() == 'admin.pos.orders.index' ? 'active' : '' }}"
             href="{{ route('admin.pos.orders.index') }}">
             <i class="app-menu__icon fa fa-database"></i>
-            <span class="app-menu__label">POS Order Lists</span>
+            <span class="app-menu__label">KOT Lists</span>
           </a>
         </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.sales.index' ? 'active' : '' }}"
+            href="{{ route('admin.sales.index', 0) }}">
+            <i class="app-menu__icon fa fa-calculator"></i>
+            <span class="app-menu__label">KOT Checkout & Payment </span>
+          </a>
+        </li>
+
       </ul>
     </li>
     <li>
       <a class="app-menu__item {{ Route::currentRouteName() == 'admin.orders.index' ? 'active' : '' }}"
         href="{{ route('admin.orders.index') }}">
         <i class="app-menu__icon fa fa-bar-chart"></i>
-        <span class="app-menu__label">Manage Orders</span>
+        <span class="app-menu__label">Ecommerce Orders</span>
       </a>
+    </li>
+    @endcan
+
+    @can('manage-stock')
+    <li>
+      {{-- if current route name is admin.settings we will set active class here --}}
+      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.ingredient.index' ? 'active' : '' }}"
+        href="{{ route('admin.ingredient.index')}}">
+        <i class="app-menu__icon fa fa-th"></i>
+        <span class="app-menu__label">Ingredients Lists</span></a>
     </li>
     @endcan
 
@@ -142,13 +157,6 @@
         href="{{ route('admin.ingredienttypes.index')}}">
         <i class="app-menu__icon fa fa-ils"></i>
         <span class="app-menu__label">Ingredients Types</span></a>
-    </li>
-    <li>
-      {{-- if current route name is admin.settings we will set active class here --}}
-      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.ingredient.index' ? 'active' : '' }}"
-        href="{{ route('admin.ingredient.index')}}">
-        <i class="app-menu__icon fa fa-th"></i>
-        <span class="app-menu__label">Ingredients Lists</span></a>
     </li>
     <li>
       {{-- if current route name is admin.settings we will set active class here --}}

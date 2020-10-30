@@ -24,6 +24,7 @@ class CreateCartsTable extends Migration
             $table->integer('has_attribute')->default(0);
             $table->decimal('unit_price', 8, 2)->nullable();
             $table->integer('order_cancel')->default(0);
+            $table->decimal('production_food_cost', 8, 2)->nullable();
 
             $table->timestamps();
 

@@ -31,7 +31,8 @@
                     {{-- checking the foriegn key value exists in products attributes table --}}
                     @php $attributeCheck = in_array($product->id, $product->attributes->pluck('product_id')->toArray())
                     @endphp
-                    @if(!($attributeCheck) && $product->status)
+                    {{-- here product featured is half, quater food items --}}
+                    @if(!($attributeCheck) && $product->status && !($product->featured))
                     <div class="item">
                         <div class="box">
                             @foreach($product->images as $image)
@@ -86,7 +87,7 @@
                             Food is added to Cart</p>
                     </div>
                 </div>
-                @elseif($attributeCheck && $product->status)
+                @elseif($attributeCheck && $product->status && !($product->featured) )
                 {{-- if product has attribute value then we display them all--}}
                 @foreach($product->attributes as $attribute)
                 <div class="item">

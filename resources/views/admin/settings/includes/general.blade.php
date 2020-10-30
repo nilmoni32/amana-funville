@@ -65,6 +65,11 @@
                 <input class="form-control" type="text" placeholder="Tax Percentage" name="tax_percentage"
                     id="tax_percentage" value="{{ config('settings.tax_percentage') }}">
             </div>
+            <div class="form-group">
+                <label class="control-label" for="tax_percentage">Total Number of Tables in Restaurant</label>
+                <input class="form-control" type="text" placeholder="Total no of tables" name="total_tbls"
+                    id="total_tbls" value="{{ config('settings.total_tbls') }}">
+            </div>
         </div>
         <div class="tile-footer">
             <div class="row d-print-none mt-2">

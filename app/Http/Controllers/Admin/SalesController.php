@@ -273,12 +273,13 @@ class SalesController extends BaseController
     public function search(Request $request){
         $search = trim($request->search); // getting the search key        
        // search criteria.      
-        $order = Ordersale::orWhere('order_number', 'like', '%'.$search.'%')->first();
+        $order = Ordersale::orWhere('order_number', 'like', '%'.$search.'%')
+                ->orWhere('order_tableNo', 'like', '%'.$search.'%')->first();
         if($order){
             return redirect()->route('admin.sales.index', $order->id); 
         }
         else{
-            return $this->responseRedirectBack(' Sorry, The order no is not found!' ,'error', false, false); 
+            return $this->responseRedirectBack(' Sorry, the order table no is not found!' ,'error', false, false); 
         }
     }
 
@@ -295,7 +296,7 @@ class SalesController extends BaseController
     public function orderupdate(Request $request){                      
       
         $this->validate($request,[  
-            'order_tableNo'    => 'required|string|max:10',
+            // 'order_tableNo'    => 'nullable|string|max:10',
             'customer_name'     => 'nullable|string|max:40',             
             'customer_mobile'   => 'nullable|regex:/(01)[3-9]{1}(\d){8}/|max:11',
             'customer_address'  => 'nullable|string|max:191',       
@@ -314,7 +315,7 @@ class SalesController extends BaseController
         $order->cash_pay = $request->cash_pay;
         $order->card_pay = $request->card_pay;
         $order->mobile_banking_pay = $request->mobile_banking_pay;
-        $order->order_tableNo = $request->order_tableNo;    
+        $order->order_tableNo = NULL;//$request->order_tableNo;    
         $order->status = 'delivered';
         //calculating order total + tax, if exists
         $order_total = $request->subtotal + ($request->subtotal * (config('settings.tax_percentage')/100));

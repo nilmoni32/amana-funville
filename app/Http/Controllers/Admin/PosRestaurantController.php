@@ -19,7 +19,7 @@ class PosRestaurantController extends Controller
 
     public function index($id){
         // Attaching pagetitle and subtitle to view.
-        view()->share(['pageTitle' => 'POS Sales Restaurant Receipt', 'subTitle' => 'Select products for sales and make order placement' ]);
+        view()->share(['pageTitle' => 'Kitchen Order Ticketing System', 'subTitle' => 'Select Foods for a particular table' ]);
         return view('admin.sales.restaurant.index')->with('order_id', $id);
     }
 
@@ -61,6 +61,15 @@ class PosRestaurantController extends Controller
         }else{
             $sale_price = $product->price;
         }
+
+        // checking the food is added to the recipe
+        if(!Recipe::where('product_id', $request->foodId)->first()){
+            return json_encode([ 'status' => 'info', 'message' => "Please add '". $request->foodName ."' food recipe before you sale." ]);           
+         }// redipe is added but recipe ingredients is not added for the food
+         elseif(!Recipe::where('product_id', $request->foodId)->first()->recipeingredients->count()){          
+             return json_encode([ 'status' => 'info', 'message' => "Please add '". $request->foodName ."' food recipe ingredients before you  sale." ]);
+         }
+
         //checking the product whether it is already added to the sale cart, if so we sent the message this product is already added to the cart.
         $sale = Sale::where('admin_id', Auth::id())
                     ->where('product_id', $request->foodId)
@@ -135,26 +144,33 @@ class PosRestaurantController extends Controller
            return redirect()->back();
         }
 
-        //before placement an order we need to check if the food recipe is added of the same food product or not.
-        foreach(Sale::where('admin_id', Auth::id())->where('ordersale_id',NULL)->get() as $sale){
-            // if recipe is added for the food 
-            if(!Recipe::where('product_id', $sale->product_id)->first()){
-                 // setting flash message using trait
-                $this->setFlashMessage(" You might forget to add '".$sale->product_name."' food recipe that you want to sale", 'error');    
-                $this->showFlashMessages(); 
-                return redirect()->back();             
-            }// redipe is added but recipe ingredients is not added for the food
-            elseif(!Recipe::where('product_id', $sale->product_id)->first()->recipeingredients->count()){
-                // setting flash message using trait
-                $this->setFlashMessage(" You might forget to add '".$sale->product_name."' food recipe ingredients which you want to sale", 'error');    
-                $this->showFlashMessages(); 
-                return redirect()->back(); 
-            }
-        }             
+        // //before placement an order we need to check if the food recipe is added of the same food product or not.
+        // foreach(Sale::where('admin_id', Auth::id())->where('ordersale_id',NULL)->get() as $sale){
+        //     // if recipe is added for the food 
+        //     if(!Recipe::where('product_id', $sale->product_id)->first()){
+        //          // setting flash message using trait
+        //         $this->setFlashMessage(" You might forget to add '".$sale->product_name."' food recipe that you want to sale", 'error');    
+        //         $this->showFlashMessages(); 
+        //         return redirect()->back();             
+        //     }// redipe is added but recipe ingredients is not added for the food
+        //     elseif(!Recipe::where('product_id', $sale->product_id)->first()->recipeingredients->count()){
+        //         // setting flash message using trait
+        //         $this->setFlashMessage(" You might forget to add '".$sale->product_name."' food recipe ingredients which you want to sale", 'error');    
+        //         $this->showFlashMessages(); 
+        //         return redirect()->back(); 
+        //     }
+        // }             
       
         $this->validate($request,[  
             'order_tableNo'    => 'required|string|max:10',
         ]);
+        //checking the table no for usability   
+        if(Ordersale::where('order_tableNo', $request->order_tableNo)->first()){
+            // setting flash message using trait
+            $this->setFlashMessage(" Your selected table '".$request->order_tableNo."' is currently in use, please select another table", 'error');    
+            $this->showFlashMessages(); 
+            return redirect()->back();
+        }
 
         // finding last order id: we use it for customer order id (customized) for billing purpose
         // it will be false only for the first record.
@@ -172,9 +188,10 @@ class PosRestaurantController extends Controller
         $order->order_date = \Carbon\Carbon::now()->toDateTimeString();         
         $order->order_tableNo = $request->order_tableNo;
         $order->save();
-        // when order is placed we set ordersale_id to Sale cart 
+        // when order is placed we set ordersale_id and order_tbl_no to Sale cart 
         foreach(Sale::where('admin_id', Auth::id())->where('ordersale_id',NULL)->get() as $sale){
-            $sale->ordersale_id = $order->id;           
+            $sale->ordersale_id = $order->id;
+            $sale->order_tbl_no = $order->order_tableNo;
             $sale->save();
         }
         // setting flash message using trait

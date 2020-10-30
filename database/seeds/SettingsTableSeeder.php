@@ -142,6 +142,10 @@ class SettingsTableSeeder extends Seeder
             'key'   => 'point_to_money',
             'value' => '',
         ],
+        [
+            'key'   => 'total_tbls',
+            'value' => '',
+        ],
 
     ];
 

@@ -25,7 +25,7 @@
                     <div class="col-md-8 text-center">
                         <div class="form-group row mt-2">
                             <label class="col-md-4 col-form-label font-weight-bold text-right text-uppercase">Search
-                                Product</label>
+                                Food</label>
                             <div class="col-md-6 text-left">
                                 <input type="text" class="form-control" id="product_search" name="product_search"
                                     placeholder="Find Foods">
@@ -59,12 +59,14 @@
                                             {{-- <td class="text-center">{{ $sale->product_quantity }}</td> --}}
                                             <td>
                                                 <p class="qtypara">
+                                                    <span class="cart-id d-none">{{ $sale->id }}</span>
                                                     <span id="minus{{$i}}" class="minus"
                                                         onclick="updateAddtoSale({{ $sale->id }}, 'minus{{$i}}' )"><i
                                                             class="fa fa-minus" aria-hidden="true"></i></span>
                                                     <input type="text" name="product_quantity" id="input-quantity{{$i}}"
                                                         value="{{ $sale->product_quantity  }}" size="2"
-                                                        class="form-control qty" readonly />
+                                                        class="form-control qty" readonly="true"
+                                                        ondblclick="this.readOnly='';" />
                                                     <span id="add{{$i}}" class="add"
                                                         onclick="updateAddtoSale({{ $sale->id }}, 'add{{$i}}' )"><i
                                                             class="fa fa-plus" aria-hidden="true"></i></span>
@@ -86,9 +88,9 @@
                                 <div class="row">
                                     <div class="col-sm-12" style="visibility:{{ $total_taka ? 'visible': 'hidden' }};"
                                         id="total">
-                                        <h5 class="text-right pb-3  pr-5">Subtotal :
-                                            <span id="sub-total-tk">{{ $total_taka }}</span><span
-                                                class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
+                                        <h5 class="text-right pb-3" style="margin-right:13%">Subtotal :
+                                            <span
+                                                id="sub-total-tk">{{ $total_taka }}</span>&nbsp;<span>{{ config('settings.currency_symbol') }}</span>
                                         </h5>
                                     </div>
                                 </div>
@@ -126,29 +128,38 @@
                             @csrf
                             <div class="border px-4 rounded" style="border-color:rgb(182, 182, 182);">
                                 <h4 class="text-center mt-3 mb-4">Customer Order Table No</h4>
-                                <div class="form-group my-2">
+                                {{-- <div class="form-group my-2">
                                     <input type="text" class="form-control @error('order_tableNo') is-invalid @enderror"
                                         id="order_tableNo" placeholder="Enter Order Table No (required)"
                                         name="order_tableNo" required>
                                     @error('order_tableNo')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                                <div class="form-group mt-2 mb-4">
-                                    <button type="submit" class="btn btn-primary text-uppercase"
-                                        style="display:block; width:100%;" id="submit"
-                                        {{ $order_id && App\Models\Ordersale::where('id', $order_id)->first()->status == 'receive' ? 'disabled' : '' }}>Place
-                                        Order </button>
-                                </div>
+                                </span>
+                                @enderror
+                            </div> --}}
+                            <div class="form-group">
+                                <select name="order_tableNo" id="order_tableNo" class="form-control" required>
+                                    <option></option>
+                                    @for($i=1; $i<= config('settings.total_tbls'); $i++) <option value="T-{{ $i }}">
+                                        Table
+                                        No: {{ $i }}</option>
+                                        @endfor
+                                </select>
                             </div>
-                        </form>
+                            <div class="form-group mt-2 mb-4">
+                                <button type="submit" class="btn btn-primary text-uppercase"
+                                    style="display:block; width:100%;" id="submit"
+                                    {{ $order_id && App\Models\Ordersale::where('id', $order_id)->first()->status == 'receive' ? 'disabled' : '' }}>Place
+                                    Order </button>
+                            </div>
                     </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection
 @push('scripts')
@@ -162,6 +173,11 @@
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     $(document).ready(function(){
         
+        $('#order_tableNo').select2({
+                placeholder: "Select Order Table No",
+               // allowClear: true,
+                multiple: false,                          
+             });
      // POS system starts here
      // Initialize jQuery UI autocomplete on #product_search field.
       $("#product_search").autocomplete({
@@ -205,9 +221,11 @@
                     tableBody = $("table tbody"); 
                     markup = "<tr><td class='text-left pl-3'>"  + data.foodname + "</td>" + 
                     "<td class='text-center'>"  + Math.round(data.price) + "</td>" +                   
-                    "<td><p class='qtypara'><span id='minus"+ i +"' class='minus' onclick='updateAddtoSale("+ data.id +", \"minus"+ i +"\")' >" +
+                    "<td><p class='qtypara'>"+
+                        "<span class='cart-id d-none'>"+ data.id +"</span>"
+                    +"<span id='minus"+ i +"' class='minus' onclick='updateAddtoSale("+ data.id +", \"minus"+ i +"\")' >" +
                          "<i class='fa fa-minus' aria-hidden='true'></i></span>"+                                    
-                         "<input type='text' name='product_quantity' id='input-quantity"+i+"' value="+ data.qty +" size= '2' class='form-control qty' readonly />" + "<span id='add"+i+"' class='add'" +
+                         "<input type='text' name='product_quantity' id='input-quantity"+i+"' value="+ data.qty +" size= '2' class='form-control qty' readonly='true' ondblclick=\"this.readOnly='';\" />" + "<span id='add"+i+"' class='add'" +
                                 "onclick='updateAddtoSale("+ data.id +", \"add"+ i +"\")' >" +
                                 "<i class='fa fa-plus' aria-hidden='true'></i></span></p></td>" +
 
@@ -223,7 +241,7 @@
                 }
                 
             if(data.status == 'info'){
-                message = '<div class="alert alert-warning alert-dismissible fade show" role="alert">' +                
+                message = '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +                
                             data.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
                            '<span aria-hidden="true">&times;</span></button></div>';                
                 $('#message').html(message);
@@ -232,7 +250,35 @@
         });
         }   
 
+        
+        //when cart quantity text is editable and an text input event is take place.
+        // delegated binding by using on().
+        $(document).on('input', '.qty', function() {
+           if($.isNumeric( $.trim($(this).val()) )){
+               var sale_id = $(this).closest("p").find(".cart-id").text();
+               var product_quantity = $.trim($(this).val());
+               var id = $(this).attr("id"); // getting the id of input product_qty
+               
+            $.post("{{ route('admin.restaurant.sales.saleCartUpdate') }}", {
+            _token: CSRF_TOKEN,
+            sale_id: sale_id,
+            product_quantity: product_quantity
+            }).done(function(data) {
+                data = JSON.parse(data);
+                if(data.status == "success") { 
+                    // finding the rowno from the id such add1, add2, minus1 etc.
+                    var row = id.substring(id.length - 1); //Displaying the last character                    
+                    $("#price" + row).html(data.total_unit_price);                    
+                    $("#sub-total-tk").html(data.sub_total);
+                }
+            });
+               
+           }
+        });
+
     });
+
+
 
      /*Product Quantity Plus/Minus Start and send to cart */
         function updateAddtoSale(sale_id, id) {
@@ -240,15 +286,15 @@
                 var $qty = $("#" + id)
                     .closest("p")
                     .find(".qty");
-                var currentVal = parseInt($qty.val());
-                $qty.val(currentVal + 1);
+                var currentVal = parseFloat($qty.val());
+                $qty.val(currentVal + 0.25);
             } else if (id.includes("minus")) {
                 var $qty = $("#" + id)
                     .closest("p")
                     .find(".qty");
-                var currentVal = parseInt($qty.val());
-                if (currentVal > 1) {
-                    $qty.val(currentVal - 1);
+                var currentVal = parseFloat($qty.val());
+                if (currentVal > 0.25) {
+                    $qty.val(currentVal - 0.25);
                 }
             }
 

@@ -16,7 +16,7 @@ class Sale extends Model
     * @var array
     */
     protected $fillable = [
-        'product_id', 'admin_id', 'ordersale_id', 'product_name','product_quantity', 'unit_price', 
+        'product_id', 'admin_id', 'ordersale_id', 'product_name','product_quantity', 'unit_price', 'production_food_cost', 'order_cancel', 'order_tbl_no'
     ];
 
     public function admin(){

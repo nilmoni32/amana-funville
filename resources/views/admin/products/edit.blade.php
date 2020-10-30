@@ -119,7 +119,7 @@
                                 <div class="form-check">
                                     <label class="form-check-label">
                                         <input class="form-check-input" type="checkbox" id="featured" name="featured"
-                                            {{ $product->featured == 1 ? 'checked' : '' }} />Featured
+                                            {{ $product->featured == 1 ? 'checked' : '' }} />Tiny Food Item
                                     </label>
                                 </div>
                             </div>
@@ -128,7 +128,7 @@
                             <div class="row d-print-none mt-2">
                                 <div class="col-12 text-right">
                                     <button class="btn btn-success" type="submit"><i
-                                            class="fa fa-fw fa-lg fa-check-circle"></i>Update Item Food</button>
+                                            class="fa fa-fw fa-lg fa-check-circle"></i>Update Item Food</button>&nbsp;
                                     <a class="btn btn-danger" href="{{ route('admin.products.index') }}"><i
                                             class="fa fa-fw fa-lg fa-arrow-left"></i>Go Back</a>
                                 </div>

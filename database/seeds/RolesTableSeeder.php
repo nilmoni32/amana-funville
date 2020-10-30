@@ -15,7 +15,8 @@ class RolesTableSeeder extends Seeder
         //Role::truncate();
         // define roles as seeds data for roles table.
         Role::create(['name' => 'admin']);
-        Role::create(['name' => 'order_controller']);
+        Role::create(['name' => 'order-control']);
+        Role::create(['name' => 'stock-control']);
         Role::create(['name' => 'user']);  // generic user for reporting only.
     }
 }

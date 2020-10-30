@@ -5,7 +5,7 @@
     @php $attributeCheck = in_array($product->id, $product->attributes->pluck('product_id')->toArray())
     @endphp
     {{-- $attributeCheck false means this is product table data --}}
-    @if(!($attributeCheck) && $product->status)
+    @if(!($attributeCheck) && $product->status && !($product->featured))
     <div class="col-md-4 col-sm-6 col-xs-12 mb-3">
         <div class="dish-menu">
             <div class="item">
@@ -63,7 +63,7 @@
         </div>
     </div>
 </div>
-@elseif($attributeCheck && $product->status)
+@elseif($attributeCheck && $product->status && !($product->featured))
 {{-- if product has attribute value then we display them all--}}
 @foreach($product->attributes as $attribute)
 <div class="col-md-4 col-sm-6 col-xs-12 mb-3">

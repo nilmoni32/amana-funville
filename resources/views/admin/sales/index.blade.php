@@ -27,14 +27,14 @@
                             @csrf
                             <div class="row mt-2">
                                 <div class="col-md-4 text-right">
-                                    <label class="col-form-label font-weight-bold text-uppercase">Order
+                                    <label class="col-form-label font-weight-bold text-uppercase">Order Table
                                         No:</label>
                                 </div>
                                 <div class="col-md-5 ml-0">
                                     <div class="input-group mb-3">
-                                        <input type="text" class="form-control" placeholder="Search Order No"
+                                        <input type="text" class="form-control" placeholder="Search by Table No"
                                             name="search"
-                                            value="{{ $order_id ? App\Models\Ordersale::where('id', $order_id)->first()->order_number : '' }}">
+                                            value="{{ $order_id ? App\Models\Ordersale::where('id', $order_id)->first()->order_tableNo : '' }}">
                                         <div class="input-group-append">
                                             <button class="btn btn-primary" type="submit"><i class="fa fa-search"
                                                     aria-hidden="true"></i></button>
@@ -269,82 +269,77 @@
 
                             <div class="border px-4 rounded" style="border-color:rgb(182, 182, 182);">
                                 <h4 class="text-center mt-3 mb-4">Customer Details</h4>
-                                <div class="input-group my-2">
+                                {{-- <div class="input-group my-2">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id="phone_number">Order Table No</span>
                                     </div>
                                     <input type="text" class="form-control @error('order_tableNo') is-invalid @enderror"
                                         id="order_tableNo" placeholder="" name="order_tableNo"
                                         value="{{ $order_id && App\Models\Ordersale::where('id', $order_id)->first()->status == 'receive' ? App\Models\Ordersale::where('id', $order_id)->first()->order_tableNo : '' }}"
-                                        required>
-                                    @error('order_tableNo')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
+                                readonly>
+                                @error('order_tableNo')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div> --}}
+                            <div class="input-group my-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="phone_number">Points</span>
                                 </div>
-                                <div class="input-group my-2">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="phone_number">Reward Point</span>
-                                    </div>
-                                    <input type="text" class="form-control @error('total_points') is-invalid @enderror"
-                                        id="total_points" placeholder="" name="total_points" readonly>
-                                    @error('total_points')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-                                <div class="form-group my-2">
-                                    <input type="text" class="form-control @error('customer_name') is-invalid @enderror"
-                                        id="customer_name" placeholder="Customer Name" name="customer_name">
-
-                                    @error('customer_name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-
-                                </div>
-
-                                <div class="input-group my-2">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="phone_number">+880</span>
-                                    </div>
-                                    <input type="text"
-                                        class="form-control @error('customer_mobile') is-invalid @enderror"
-                                        id="customer_mobile" placeholder="Phone no(e.g 017xxxxxxxx)"
-                                        name="customer_mobile">
-                                    @error('customer_mobile')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group my-2">
-                                    <textarea class="form-control" id="customer_address" rows="3"
-                                        name="customer_address" placeholder="Customer Address"></textarea>
-                                </div>
-
-                                <div class="form-group my-2">
-                                    <textarea class="form-control" id="customer_notes" rows="3" name="customer_notes"
-                                        placeholder="Customer Notes"></textarea>
-                                </div>
-                                <div class="form-group mt-2 mb-4">
-                                    <button type="submit" class="btn btn-primary text-uppercase"
-                                        style="display:block; width:100%;"
-                                        {{ $order_id && App\Models\Ordersale::where('id', $order_id)->first()->status == 'receive' ? '' : 'disabled' }}
-                                        id="submit">Update
-                                        Order </button>
-                                </div>
+                                <input type="text" class="form-control @error('total_points') is-invalid @enderror"
+                                    id="total_points" placeholder="" name="total_points" readonly>
+                                @error('total_points')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
-                        </form>
+                            <div class="input-group my-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="phone_number">+880</span>
+                                </div>
+                                <input type="text" class="form-control @error('customer_mobile') is-invalid @enderror"
+                                    id="customer_mobile" placeholder="Phone no(e.g 017xxxxxxxx)" name="customer_mobile">
+                                @error('customer_mobile')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                            <div class="form-group my-2">
+                                <input type="text" class="form-control @error('customer_name') is-invalid @enderror"
+                                    id="customer_name" placeholder="Customer Name" name="customer_name">
+
+                                @error('customer_name')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                            <div class="form-group my-2">
+                                <textarea class="form-control" id="customer_address" rows="3" name="customer_address"
+                                    placeholder="Customer Address"></textarea>
+                            </div>
+
+                            <div class="form-group my-2">
+                                <textarea class="form-control" id="customer_notes" rows="3" name="customer_notes"
+                                    placeholder="Customer Notes"></textarea>
+                            </div>
+                            <div class="form-group mt-2 mb-4">
+                                <button type="submit" class="btn btn-primary text-uppercase"
+                                    style="display:block; width:100%;"
+                                    {{ $order_id && App\Models\Ordersale::where('id', $order_id)->first()->status == 'receive' ? '' : 'disabled' }}
+                                    id="submit">Update
+                                    Order </button>
+                            </div>
                     </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection
 @push('scripts')
@@ -1127,7 +1122,7 @@
             cmds += "---------------------------------------";
             cmds += newLine;
             cmds += esc + '!' + '\x08'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
-            cmds += "Customer order Table no: {{ $order_id ? App\Models\Ordersale::find($order_id)->order_tableNo : ''}}"
+            cmds += "Customer Order Table No: {{ $order_id ? App\Models\Sale::where('ordersale_id', $order_id)->first()->order_tbl_no : ''}}"
             cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
             cmds += newLine;
             cmds += "---------------------------------------";

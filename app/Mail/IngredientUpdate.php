@@ -8,6 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use PDF;
 
+// cron-job-task-scheduling 
 class IngredientUpdate extends Mailable
 {
     use Queueable, SerializesModels;

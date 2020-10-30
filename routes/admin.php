@@ -47,7 +47,7 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
 
 
         Route::group(['middleware' => ['can:manage-orders']], function () { 
-            // Order Management
+            // Ecommerce Order Management
             Route::group(['prefix' => 'orders'], function () {
                 Route::get('/', 'OrderController@index')->name('orders.index');
                 Route::get('/edit/{id}', 'OrderController@edit')->name('orders.edit');
@@ -92,12 +92,59 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             
             });
 
-            //POS Orders Management [list of all pos orders]
+
+            //POS Orders Management [list of all pos orders]-- here POS=KOT
             Route::group(['prefix' => 'pos/orders'], function () {
                 Route::get('/', 'PosOrderController@index')->name('pos.orders.index');
                 Route::get('/edit/{id}', 'PosOrderController@edit')->name('pos.orders.edit');
-                Route::post('/update', 'PosOrderController@update')->name('pos.orders.update');
+                // Route::post('/update', 'PosOrderController@update')->name('pos.orders.update');
                 Route::get('/search', 'PosOrderController@search')->name('pos.orders.search');
+                //ajax method for update order status
+                Route::post('/status', 'PosOrderController@orderStatusUpdate');                                          
+                Route::post('/searchfoods','PosOrderController@getFoods')->name('pos.sales.getfoods');
+                Route::post('/searchfoods/addsales','PosOrderController@addToSales')->name('pos.sales.addtosales');
+                Route::post('/sale-cart/update', 'PosOrderController@update')->name('pos.sales.saleCartUpdate');
+                Route::post('/sale-cart/delete', 'PosOrderController@destroy')->name('pos.sales.saleCartDelete');
+                //end of ajax route for pos sales.
+            });
+
+        });
+
+        // inventory controller rule
+        Route::group(['middleware' => ['can:manage-stock']], function () { 
+
+            //all Ingredient stock
+            Route::group(['prefix' => 'ingredients'], function(){
+                Route::get('/', 'IngredientController@index')->name('ingredient.index');
+                Route::get('/create', 'IngredientController@create')->name('ingredient.create');
+                Route::post('/store', 'IngredientController@store')->name('ingredient.store');
+                Route::get('/edit/{id}', 'IngredientController@edit')->name('ingredient.edit');
+                Route::post('/update', 'IngredientController@update')->name('ingredient.update');
+                Route::get('/delete/{id}', 'IngredientController@delete')->name('ingredient.delete');
+            });
+
+            // ingredient purchase or damage ajax route to autocomplete ingredient name.
+            Route::post('/getingredients','IngredientController@getIngredients')->name('ingredient.getingredients');
+
+            // ingredient purchase
+            Route::group(['prefix' => 'ingredients/purchase'], function(){
+                Route::get('/{id}', 'IngredientPurchaseController@index')->name('ingredient.purchase.index');
+                Route::get('/{id}/create', 'IngredientPurchaseController@create')->name('ingredient.purchase.create');
+                Route::post('/store', 'IngredientPurchaseController@store')->name('ingredient.purchase.store');
+                Route::get('/{id}/edit', 'IngredientPurchaseController@edit')->name('ingredient.purchase.edit');
+                Route::post('/update', 'IngredientPurchaseController@update')->name('ingredient.purchase.update');
+                Route::get('/{id}/delete', 'IngredientPurchaseController@delete')->name('ingredient.purchase.delete');
+            });
+            
+
+            // ingredient Damage
+            Route::group(['prefix' => 'ingredients/damage'], function(){
+                Route::get('/{id}', 'IngredientDamageController@index')->name('ingredient.damage.index');
+                Route::get('/{id}/create', 'IngredientDamageController@create')->name('ingredient.damage.create');
+                Route::post('/store', 'IngredientDamageController@store')->name('ingredient.damage.store');
+                Route::get('/{id}/edit', 'IngredientDamageController@edit')->name('ingredient.damage.edit');
+                Route::post('/update', 'IngredientDamageController@update')->name('ingredient.damage.update');
+                Route::get('/{id}/delete', 'IngredientDamageController@delete')->name('ingredient.damage.delete');
             });
 
         });
@@ -230,41 +277,7 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::post('/update', 'IngredientTypesController@update')->name('ingredienttypes.update');
                 Route::get('/delete/{id}', 'IngredientTypesController@delete')->name('ingredienttypes.delete');
             });
-
-            //all Ingredient stock
-            Route::group(['prefix' => 'ingredients'], function(){
-                Route::get('/', 'IngredientController@index')->name('ingredient.index');
-                Route::get('/create', 'IngredientController@create')->name('ingredient.create');
-                Route::post('/store', 'IngredientController@store')->name('ingredient.store');
-                Route::get('/edit/{id}', 'IngredientController@edit')->name('ingredient.edit');
-                Route::post('/update', 'IngredientController@update')->name('ingredient.update');
-                Route::get('/delete/{id}', 'IngredientController@delete')->name('ingredient.delete');
-            });
-
-            // ingredient purchase or damage ajax route to autocomplete ingredient name.
-            Route::post('/getingredients','IngredientController@getIngredients')->name('ingredient.getingredients');
-
-            // ingredient purchase
-            Route::group(['prefix' => 'ingredients/purchase'], function(){
-                Route::get('/{id}', 'IngredientPurchaseController@index')->name('ingredient.purchase.index');
-                Route::get('/{id}/create', 'IngredientPurchaseController@create')->name('ingredient.purchase.create');
-                Route::post('/store', 'IngredientPurchaseController@store')->name('ingredient.purchase.store');
-                Route::get('/{id}/edit', 'IngredientPurchaseController@edit')->name('ingredient.purchase.edit');
-                Route::post('/update', 'IngredientPurchaseController@update')->name('ingredient.purchase.update');
-                Route::get('/{id}/delete', 'IngredientPurchaseController@delete')->name('ingredient.purchase.delete');
-            });
             
-
-            // ingredient Damage
-            Route::group(['prefix' => 'ingredients/damage'], function(){
-                Route::get('/{id}', 'IngredientDamageController@index')->name('ingredient.damage.index');
-                Route::get('/{id}/create', 'IngredientDamageController@create')->name('ingredient.damage.create');
-                Route::post('/store', 'IngredientDamageController@store')->name('ingredient.damage.store');
-                Route::get('/{id}/edit', 'IngredientDamageController@edit')->name('ingredient.damage.edit');
-                Route::post('/update', 'IngredientDamageController@update')->name('ingredient.damage.update');
-                Route::get('/{id}/delete', 'IngredientDamageController@delete')->name('ingredient.damage.delete');
-            });
-
             //Recipe
             Route::group(['prefix' => 'recipe'], function(){
                 Route::get('/', 'RecipeController@index')->name('recipe.index');
