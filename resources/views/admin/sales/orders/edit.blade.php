@@ -51,7 +51,7 @@
                                 <table class="table table-bordered" id="tbl-sale-cart">
                                     <thead>
                                         <tr>
-                                            <th class="text-left pl-3"> Food Name </th>
+                                            <th style="min-width:190px;" class="text-left pl-3"> Food Name </th>
                                             <th class="text-center"> Price </th>
                                             <th class="text-center"> Qty </th>
                                             <th class="text-center"> Subtotal </th>
@@ -124,8 +124,7 @@
                         </div>
                         <div class="text-left mt-4 pb-4 pl-2">
                             <a class="btn btn-primary mt-2" style="display:block; width:130px"
-                                href="{{ route('admin.pos.orders.index') }}"><i
-                                    class="fa fa-fw fa-lg fa-arrow-left"></i>Go Back</a>
+                                href="{{ route('admin.pos.orders.index') }}">Okay</a>
                         </div>
                         <div class="row border-top"></div>
                     </div>
@@ -288,14 +287,14 @@
                     .closest("p")
                     .find(".qty");
                 var currentVal = parseFloat($qty.val());
-                $qty.val(currentVal + 0.25);
+                $qty.val(currentVal + 1);
             } else if (id.includes("minus")) {
                 var $qty = $("#" + id)
                     .closest("p")
                     .find(".qty");
                 var currentVal = parseFloat($qty.val());
-                if (currentVal > 0.25) {
-                    $qty.val(currentVal - 0.25);
+                if (currentVal > 1) {
+                    $qty.val(currentVal - 1);
                 }
             }
 

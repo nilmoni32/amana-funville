@@ -19,7 +19,7 @@ class PosRestaurantController extends Controller
 
     public function index($id){
         // Attaching pagetitle and subtitle to view.
-        view()->share(['pageTitle' => 'Kitchen Order Ticketing System', 'subTitle' => 'Select Foods for a particular table' ]);
+        view()->share(['pageTitle' => 'Kitchen Order Ticketing System', 'subTitle' => 'Add Foods to a particular table' ]);
         return view('admin.sales.restaurant.index')->with('order_id', $id);
     }
 

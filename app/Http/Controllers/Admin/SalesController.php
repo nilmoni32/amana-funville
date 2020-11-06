@@ -16,6 +16,8 @@ use App\Models\Director;
 use App\Models\Client;
 use App\Http\Controllers\BaseController;
 use App\Sms\SendCode;
+use App\Models\Salebackup;
+
 
 class SalesController extends BaseController
 {
@@ -24,7 +26,7 @@ class SalesController extends BaseController
 
     public function index($id){
         // Attaching pagetitle and subtitle to view.
-        view()->share(['pageTitle' => 'POS Sales', 'subTitle' => 'Select products for sales and make order placement' ]);
+        view()->share(['pageTitle' => 'Kitchen Order Ticketing System', 'subTitle' => 'Select products for sales and make order placement' ]);
         return view('admin.sales.index')->with('order_id', $id);
     }
 
@@ -338,7 +340,30 @@ class SalesController extends BaseController
         //saving client id to order table
         $order->client_id = $client->id;
         $order->save();
-        
+
+        //BACKUP of POS sales: Making pos sale backup to Salebackup table 
+        $saleCartBackup = [];
+        foreach(Sale::where('ordersale_id',
+        $order->id)->get() as $saleCart){
+            $cart_backup = [
+                'product_id' => $saleCart->product_id,
+                'admin_id' => $saleCart->admin_id,
+                'ordersale_id' => $saleCart->ordersale_id,
+                'product_name' => $saleCart->product_name,
+                'product_quantity' => $saleCart->product_quantity,
+                'unit_price' => $saleCart->unit_price,
+                'production_food_cost' => $saleCart->production_food_cost,
+                'order_cancel' => $saleCart->order_cancel,
+                'order_tbl_no' => $saleCart->order_tbl_no,
+            ];            
+            $saleCartBackup[] = $cart_backup;
+        } 
+        \DB::table('salebackups')->insert($saleCartBackup);
+        //Now Deleting record from pos sale table in order to free up space to pos sale table
+        foreach(Sale::where('ordersale_id',
+        $order->id)->get() as $saleCart){
+            $saleCart->delete();
+        }        
 
         //Inventory Management: We will deduct product quantity and product total cost using product id from ingredient stock. 
 
@@ -366,6 +391,7 @@ class SalesController extends BaseController
             }
 
         }
+        
         //sending sms discount notification to reference director.
         if($order->director_id){
             $reference_discount = $order->discount;

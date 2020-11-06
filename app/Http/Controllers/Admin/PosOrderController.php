@@ -22,7 +22,7 @@ class PosOrderController extends Controller
     public function index(){
         // Attaching pagetitle and subtitle to view.
         view()->share(['pageTitle' => 'KOT Lists', 'subTitle' => 'List of all KOT Orders' ]);
-        $orders = Ordersale::orderBy('created_at', 'desc')->paginate(15);
+        $orders = Ordersale::orderBy('created_at', 'desc')->paginate(28);
         return view('admin.sales.orders.index', compact('orders'));
     }
 
@@ -62,7 +62,7 @@ class PosOrderController extends Controller
         ->orWhere('order_date', 'like', '%'. ($this->validateDate($search) ? Carbon::createFromFormat('d-m-Y', $search)->format('Y-m-d') : $search).'%')   
         ->orWhere('grand_total', 'like', '%'.$search.'%') 
         ->orWhere('status', 'like', '%'.$search.'%')     
-        ->orWhere('payment_method', 'like', '%'.$search.'%')->paginate(15); 
+        ->orWhere('payment_method', 'like', '%'.$search.'%')->paginate(10); 
          
          // Attaching pagetitle and subtitle to view.
         view()->share(['pageTitle' => 'POS Orders', 'subTitle' => 'List of Search Orders' ]);
@@ -92,6 +92,30 @@ class PosOrderController extends Controller
             $order->order_tableNo = NULL;
         }
         $order->save();
+        //BACKUP of POS sales: Making pos sale backup to Salebackup table 
+        $saleCartBackup = [];
+        foreach(Sale::where('ordersale_id',
+        $order->id)->get() as $saleCart){
+            $cart_backup = [
+                'product_id' => $saleCart->product_id,
+                'admin_id' => $saleCart->admin_id,
+                'ordersale_id' => $saleCart->ordersale_id,
+                'product_name' => $saleCart->product_name,
+                'product_quantity' => $saleCart->product_quantity,
+                'unit_price' => $saleCart->unit_price,
+                'production_food_cost' => $saleCart->production_food_cost,
+                'order_cancel' => 1,
+                'order_tbl_no' => $saleCart->order_tbl_no,
+            ];            
+            $saleCartBackup[] = $cart_backup;
+        } 
+        \DB::table('salebackups')->insert($saleCartBackup);
+        //Now Deleting record from pos sale table in order to free up space to pos sale table
+        foreach(Sale::where('ordersale_id',
+        $order->id)->get() as $saleCart){
+            $saleCart->delete();
+        }
+
         return response()->json(['success' => 'Data is updated successfully']);  
          
     }
@@ -123,6 +147,14 @@ class PosOrderController extends Controller
     } 
 
     public function addToSales(Request $request){
+       
+        // checking the food is added to the recipe
+        if(!Recipe::where('product_id', $request->foodId)->first()){
+           return json_encode([ 'status' => 'info', 'message' => "Please add '". $request->foodName ."' food recipe before you sale." ]);           
+        }// redipe is added but recipe ingredients is not added for the food
+        elseif(!Recipe::where('product_id', $request->foodId)->first()->recipeingredients->count()){          
+            return json_encode([ 'status' => 'info', 'message' => "Please add '". $request->foodName ."' food recipe ingredients before you  sale." ]);
+        }
 
         $product = Product::find($request->foodId);
         //checking discount price is enabled for this product
@@ -130,14 +162,6 @@ class PosOrderController extends Controller
             $sale_price = $product->discount_price;
         }else{
             $sale_price = $product->price;
-        }
-
-        // checking the food is added to the recipe
-        if(!Recipe::where('product_id', $request->foodId)->first()){
-           return json_encode([ 'status' => 'info', 'message' => "Please add '". $request->foodName ."' food recipe before you sale." ]);           
-        }// redipe is added but recipe ingredients is not added for the food
-        elseif(!Recipe::where('product_id', $request->foodId)->first()->recipeingredients->count()){          
-            return json_encode([ 'status' => 'info', 'message' => "Please add '". $request->foodName ."' food recipe ingredients before you  sale." ]);
         }
 
         //checking the product whether it is already added to the sale cart, if so we sent the message this product is already added to the cart.

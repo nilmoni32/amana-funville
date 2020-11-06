@@ -46,7 +46,7 @@
 @if(App\Models\Category::where('slug', 'offer-dishes')->first())
 @php $slug_value = 'offer-dishes'; @endphp
 @include('site.partials.homeslider')
-@else
+@elseif(App\Models\Category::where('slug', 'popular-dishes')->first())
 @php $slug_value = 'popular-dishes'; @endphp
 @include('site.partials.homeslider')
 @endif

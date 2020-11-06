@@ -1122,7 +1122,7 @@
             cmds += "---------------------------------------";
             cmds += newLine;
             cmds += esc + '!' + '\x08'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
-            cmds += "Customer Order Table No: {{ $order_id ? App\Models\Sale::where('ordersale_id', $order_id)->first()->order_tbl_no : ''}}"
+            cmds += "Customer Order Table No: {{ $order_id && App\Models\Ordersale::where('id', $order_id)->first()->status == 'delivered' ? App\Models\Salebackup::where('ordersale_id', $order_id)->first()->order_tbl_no : ''}}"
             cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
             cmds += newLine;
             cmds += "---------------------------------------";
@@ -1134,10 +1134,10 @@
             @php $sub_tot_without_vat = 0.0;
                  $vat_percentage = config('settings.tax_percentage');
             @endphp
-            @if($order_id)
+            @if($order_id && App\Models\Ordersale::where('id', $order_id)->first()->status == 'delivered')
             @php $paid_amount = App\Models\Ordersale::find($order_id)->cash_pay + App\Models\Ordersale::find($order_id)->card_pay +
             App\Models\Ordersale::find($order_id)->mobile_banking_pay; @endphp
-            @foreach(App\Models\Sale::where('ordersale_id', $order_id)->get() as $saleCart)        
+            @foreach(App\Models\Salebackup::where('ordersale_id', $order_id)->get() as $saleCart)        
                 cmds += "{{ $saleCart->product_name }}" ;
                 cmds += newLine;
                 cmds += "           {{ $saleCart->product_quantity}}" + '   X   ' + "{{ $saleCart->unit_price }}" + "      {{ $saleCart->product_quantity *  $saleCart->unit_price }} "
@@ -1166,7 +1166,7 @@
             cmds += "                          -------------";
             cmds += '             Amount Due:          {{ $order_id ? round(App\Models\Ordersale::find($order_id)->grand_total,2) : '' }}'; 
             cmds += newLine;           
-            cmds += '                Paid:          {{ $order_id ? $paid_amount : '' }}';
+            cmds += "                Paid:          {{ $order_id && App\Models\Ordersale::where('id', $order_id)->first()->status == 'delivered' ? $paid_amount : '' }}";
             cmds += newLine; 
             cmds += 'Payment Mode:          ';
             cmds += newLine; 
@@ -1218,6 +1218,9 @@
             
             cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
             cmds += newLine + newLine;
+            cmds += newLine + newLine;
+            cmds += newLine + newLine;
+            cmds += "\x1b" + "\x69"; // cut command for pos print receipt.
             cpj.printerCommands = cmds;
             //Send print job to printer!
             cpj.sendToClient();

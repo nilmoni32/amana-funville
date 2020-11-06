@@ -152,7 +152,6 @@ class CheckoutController extends Controller
         #Start to save these value  in session to pick in success page.
         $_SESSION['tran_id']=$post_data['tran_id'];
         #End to save these value  in session to pick in success page.
-        
 
         $server_name=request()->root()."/";
         $post_data['success_url'] =  $server_name . "checkout/order/success";     
@@ -199,6 +198,7 @@ class CheckoutController extends Controller
         // Auth::user() returns an instance of the authenticated user.     
         $user = Auth::user();
         $sslc = new SSLCommerz();
+       
         $tran_id = $_SESSION['tran_id'];        
         $order = Order::find($tran_id);        
         if($request->status == "VALID"){            

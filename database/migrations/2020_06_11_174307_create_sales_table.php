@@ -23,7 +23,7 @@ class CreateSalesTable extends Migration
             $table->decimal('product_quantity', 8, 2)->default(1.00);
             $table->decimal('unit_price', 8, 2)->nullable();
             $table->decimal('production_food_cost', 8, 2)->nullable();
-            $table->integer('order_cancel')->default(0);
+            $table->integer('order_cancel')->default(0); 
             $table->string('order_tbl_no')->nullable();
             
             $table->timestamps();

@@ -104,14 +104,14 @@
           <a class="treeview-item {{ Route::currentRouteName() == 'admin.restaurant.sales.index' ? 'active' : '' }}"
             href="{{ route('admin.restaurant.sales.index', 0) }}">
             <i class="app-menu__icon fa fa-calculator"></i>
-            <span class="app-menu__label">KOT Management</span>
+            <span class="app-menu__label">KOT Food Management</span>
           </a>
         </li>
         <li>
           <a class="treeview-item {{ Route::currentRouteName() == 'admin.pos.orders.index' ? 'active' : '' }}"
             href="{{ route('admin.pos.orders.index') }}">
             <i class="app-menu__icon fa fa-database"></i>
-            <span class="app-menu__label">KOT Lists</span>
+            <span class="app-menu__label">KOT Order Lists</span>
           </a>
         </li>
         <li>
@@ -121,7 +121,6 @@
             <span class="app-menu__label">KOT Checkout & Payment </span>
           </a>
         </li>
-
       </ul>
     </li>
     <li>

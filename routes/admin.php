@@ -56,10 +56,10 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::get('/search', 'OrderController@search')->name('orders.search');
                 Route::get('/invoice/{id}', 'OrderController@generateInvoice')->name('orders.invoice');
             });
-            //pos route Customer print receipt
+            //KOT route checkout and orderplacement and  customer print receipt
             Route::group(['prefix' => 'pos'], function(){
                 Route::get('/sales/{id}', 'SalesController@index')->name('sales.index'); 
-                //search to get the order no.
+                //search products using table no.
                 Route::get('/search', 'SalesController@search')->name('sales.search');
                 //pos order place
                 //Route::post('/orderplace', 'SalesController@orderplace')->name('sales.orderplace');
@@ -77,8 +77,8 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             
             });
 
-            // POS route for restaurant print receipt
-            Route::group(['prefix' => 'pos'], function(){
+            //POS/KOT route for restaurant print receipt
+            Route::group(['prefix' => 'kot'], function(){
                 Route::get('/restaurant/{id}', 'PosRestaurantController@index')->name('restaurant.sales.index'); 
                 //pos order place
                 Route::post('/order-place', 'PosRestaurantController@orderplace')->name('restaurant.sales.orderplace');
@@ -91,6 +91,20 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 //end of ajax route for pos sales.
             
             });
+
+            // // KOT route for restaurant--- is no more used.
+            // Route::group(['prefix' => 'kot'], function(){
+            //     Route::get('/food/management', 'KotRestaurantController@index')->name('restaurant.sales.index'); 
+               
+            //     //ajax route for KOT [pos sales].    
+            //     Route::get('/table/getfoods/{id}', 'KotRestaurantController@getTableFoods')->name('restaurant.sales.gettablefoods'); 
+            //     //add single food item to a table     
+            //     Route::post('/findfoods','KotRestaurantController@getFoods')->name('restaurant.sales.getfoods');
+            //     Route::post('/findfoods/addsales','KotRestaurantController@addToSales')->name('restaurant.sales.addtosales');
+            //     Route::post('/sale-cart/update', 'KotRestaurantController@update')->name('restaurant.sales.saleCartUpdate');
+            //     Route::post('/sale-cart/delete', 'KotRestaurantController@destroy')->name('restaurant.sales.saleCartDelete');
+            //     //end of ajax route for KOT [ pos sales].
+            // });
 
 
             //POS Orders Management [list of all pos orders]-- here POS=KOT

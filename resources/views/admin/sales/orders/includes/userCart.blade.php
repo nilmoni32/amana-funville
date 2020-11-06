@@ -27,8 +27,11 @@
                         <th>Total</th>
                     </thead>
                     <tbody>
-                        @php $subtotal = 0 ;@endphp
-                        @foreach( App\Models\Sale::where('ordersale_id',
+                        @php $subtotal = 0; $cart_model = 'App\Models\Sale'; @endphp
+                        @if($order->status == 'delivered' || $order->status == 'cancel' )
+                        @php $cart_model = 'App\Models\Salebackup';@endphp
+                        @endif
+                        @foreach( $cart_model::where('ordersale_id',
                         $order->id)->get() as $posCart)
                         <tr>
                             <td>{{ $loop->index + 1 }}</td>

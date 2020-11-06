@@ -41,7 +41,7 @@
                                 <table class="table table-bordered" id="tbl-sale-cart">
                                     <thead>
                                         <tr>
-                                            <th class="text-left pl-3"> Food Name </th>
+                                            <th class="text-left pl-3" style="min-width:190px;"> Food Name </th>
                                             <th class="text-center"> Price </th>
                                             <th class="text-center"> Qty </th>
                                             <th class="text-center"> Subtotal </th>
@@ -287,14 +287,14 @@
                     .closest("p")
                     .find(".qty");
                 var currentVal = parseFloat($qty.val());
-                $qty.val(currentVal + 0.25);
+                $qty.val(currentVal + 1);
             } else if (id.includes("minus")) {
                 var $qty = $("#" + id)
                     .closest("p")
                     .find(".qty");
                 var currentVal = parseFloat($qty.val());
-                if (currentVal > 0.25) {
-                    $qty.val(currentVal - 0.25);
+                if (currentVal > 1) {
+                    $qty.val(currentVal - 1);
                 }
             }
 
