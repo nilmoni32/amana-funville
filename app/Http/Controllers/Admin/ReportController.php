@@ -26,7 +26,7 @@ class ReportController extends BaseController
     public function dailyCarts(){
 
         //Product wise daily sale reports 
-        $daily_carts  = DB::table('carts')
+        $daily_carts  = DB::table('cartbackups')
                 ->select('product_id', 'unit_price', 'product_attribute_id', DB::raw('SUM(product_quantity) as total_qty, unit_price * SUM(product_quantity) as subtotal')) 
                 ->whereRaw('order_id is not NULL and order_cancel = 0 and date(created_at) = CURDATE() - INTERVAL 1 DAY')
                 ->groupBy('product_id', 'unit_price', 'product_attribute_id')
@@ -55,12 +55,12 @@ class ReportController extends BaseController
 
     public function dailyTotal(){  
         //Day wise sale reports 
-        $daily_totals = DB::table('carts')
+        $daily_totals = DB::table('cartbackups')
             ->select( DB::raw('Date(created_at) as date, SUM(product_quantity * unit_price ) as subtotal')) 
             ->whereRaw('order_id is not NULL and order_cancel = 0')
             ->groupByRaw('Date(created_at)')
             ->orderByRaw('Date(created_at) DESC')
-            ->paginate(10);       
+            ->paginate(15);       
         // Attaching pagetitle and subtitle to view.
         view()->share(['pageTitle' => 'Daily Sale', 'subTitle' => 'Per Day Sale Amount' ]);
         return view('admin.report.daytotal', compact('daily_totals'));
@@ -68,12 +68,12 @@ class ReportController extends BaseController
 
     public function pdfDailyTotal(){
         //Day wise sale reports 
-        $daily_totals = DB::table('carts')
+        $daily_totals = DB::table('cartbackups')
         ->select( DB::raw('Date(created_at) as date, SUM(product_quantity * unit_price ) as subtotal')) 
         ->whereRaw('order_id is not NULL and order_cancel = 0')
         ->groupByRaw('Date(created_at)')
         ->orderByRaw('Date(created_at) DESC')
-        ->get();  
+        ->get();  // in pdf we have limited only 20 days
 
         $pdf = PDF::loadView('admin.report.pdf.pdfdaytotal', compact('daily_totals'));
         return $pdf->stream('dailysale.pdf');
@@ -86,7 +86,7 @@ class ReportController extends BaseController
     
     public function monthlytotal(){
         //Month wise sale reports 
-        $monthly_totals = DB::table('carts')
+        $monthly_totals = DB::table('cartbackups')
         ->select( DB::raw('DATE_FORMAT(created_at, "%Y-%m") as yearMonth, SUM(product_quantity * unit_price ) as subTotal')) 
         ->whereRaw('order_id is not NULL and order_cancel = 0')
         ->groupByRaw('DATE_FORMAT(created_at, "%Y-%m")')         
@@ -101,7 +101,7 @@ class ReportController extends BaseController
     public function pdfMonthlyTotal(){
 
          //Month wise sale reports 
-         $monthly_totals = DB::table('carts')
+         $monthly_totals = DB::table('cartbackups')
          ->select( DB::raw('DATE_FORMAT(created_at, "%Y-%m") as yearMonth, SUM(product_quantity * unit_price ) as subtotal')) 
          ->whereRaw('order_id is not NULL and order_cancel = 0')
          ->groupByRaw('DATE_FORMAT(created_at, "%Y-%m")')         
@@ -118,7 +118,7 @@ class ReportController extends BaseController
 
     public function yearlytotal(){
         //Year based sale reports 
-        $yearly_totals = DB::table('carts')
+        $yearly_totals = DB::table('cartbackups')
             ->select( DB::raw('Year(created_at) as year, SUM(product_quantity * unit_price ) as subTotal')) 
             ->whereRaw('order_id is not NULL and order_cancel = 0')
             ->groupByRaw('Year(created_at)')         
@@ -132,7 +132,7 @@ class ReportController extends BaseController
 
     public function pdfYearlyTotal(){
              //Year based sale reports 
-        $yearly_totals = DB::table('carts')
+        $yearly_totals = DB::table('cartbackups')
             ->select( DB::raw('Year(created_at) as year, SUM(product_quantity * unit_price ) as subtotal')) 
             ->whereRaw('order_id is not NULL and order_cancel = 0')
             ->groupByRaw('Year(created_at)')         
@@ -160,7 +160,7 @@ class ReportController extends BaseController
         $end_date = Carbon::createFromFormat('d-m-Y', $request->end_date)->format('Y-m-d');      
     
         //Top20 sale reports 
-        $time_carts = DB::table('carts')
+        $time_carts = DB::table('cartbackups')
                 ->select('product_id', 'unit_price', 'product_attribute_id', DB::raw('SUM(product_quantity) as total_qty, unit_price * SUM(product_quantity) as subtotal')) 
                 ->whereRaw('order_id is not NULL and order_cancel = 0')
                 ->whereBetween('created_at', [$start_date, $end_date])
@@ -181,7 +181,7 @@ class ReportController extends BaseController
 
     public function pdfGetTop20($start_date, $end_date){       
 
-        $time_carts = DB::table('carts')
+        $time_carts = DB::table('cartbackups')
                 ->select('product_id', 'unit_price', 'product_attribute_id', DB::raw('SUM(product_quantity) as total_qty, unit_price * SUM(product_quantity) as subtotal')) 
                 ->whereRaw('order_id is not NULL and order_cancel = 0')
                 ->whereBetween('created_at', [$start_date, $end_date])
@@ -213,7 +213,7 @@ class ReportController extends BaseController
 
         if($product){
         //single item sale reports 
-            $single_carts = DB::table('carts')
+            $single_carts = DB::table('cartbackups')
                     ->select('product_id', 'unit_price', 'product_attribute_id', DB::raw('Date(created_at) as date, SUM(product_quantity) as total_qty, unit_price * SUM(product_quantity) as subtotal')) 
                     ->whereRaw('order_id is not NULL and order_cancel = 0')
                     ->whereBetween('created_at', [$start_date, $end_date])
@@ -239,7 +239,7 @@ class ReportController extends BaseController
 
         $product = Product::where('name', 'like', '%'.$search.'%')->first();
         //single item sale reports 
-        $single_carts = DB::table('carts')
+        $single_carts = DB::table('cartbackups')
                 ->select('product_id', 'unit_price', 'product_attribute_id', DB::raw('Date(created_at) as date, SUM(product_quantity) as total_qty, unit_price * SUM(product_quantity) as subtotal')) 
                 ->whereRaw('order_id is not NULL and order_cancel = 0')
                 ->whereBetween('created_at', [$start_date, $end_date])

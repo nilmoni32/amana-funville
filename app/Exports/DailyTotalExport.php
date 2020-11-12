@@ -12,13 +12,12 @@ class DailyTotalExport implements FromCollection, WithHeadings
     public function collection()
     {
         //Day wise sale reports 
-        return DB::table('carts')
+        return DB::table('cartbackups')
             ->select( DB::raw('Date(created_at) as date, SUM(product_quantity * unit_price ) as subtotal')) 
-            ->whereRaw('order_id is not NULL and order_cancel = 0')
+            ->whereRaw('order_id is not NULL and order_cancel = 0 and YEAR(created_at) = YEAR(CURDATE())')
             ->groupByRaw('Date(created_at)')
             ->orderByRaw('Date(created_at) DESC')
-            ->get(); 
-       
+            ->get();        
     }
 
     public function headings(): array

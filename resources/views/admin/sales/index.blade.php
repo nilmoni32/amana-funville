@@ -1140,7 +1140,7 @@
             @foreach(App\Models\Salebackup::where('ordersale_id', $order_id)->get() as $saleCart)        
                 cmds += "{{ $saleCart->product_name }}" ;
                 cmds += newLine;
-                cmds += "           {{ $saleCart->product_quantity}}" + '   X   ' + "{{ $saleCart->unit_price }}" + "      {{ $saleCart->product_quantity *  $saleCart->unit_price }} "
+                cmds += "           {{$saleCart->product_quantity}}" + '   X   ' + "{{ round($saleCart->unit_price,2) }}" + "      {{ round($saleCart->product_quantity *  $saleCart->unit_price,2) }} "
                 cmds += newLine;                
                 cmds += "---------------------------------------";
                 cmds += newLine;            

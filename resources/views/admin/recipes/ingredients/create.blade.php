@@ -41,15 +41,9 @@
                         <div class="col-md-7 mx-auto">
                             <div class="form-group">
                                 <label class="control-label" for="measurement_unit">Measurement Unit</label>
-                                <select name="measurement_unit" id="measure_unit"
-                                    class="form-control @error('measurement_unit') is-invalid @enderror">
-                                    <option></option>
-                                    @foreach(App\Models\Unit::select('smallest_measurement_unit')->distinct()->get()
-                                    as $unit)
-                                    <option value={{ $unit->smallest_measurement_unit }}>
-                                        {{ $unit->smallest_measurement_unit }}</option>
-                                    @endforeach
-                                </select>
+                                <input name="measurement_unit" id="measure_unit"
+                                    class="form-control @error('measurement_unit') is-invalid @enderror" value=""
+                                    readonly>
                                 @error('measurement_unit') {{ $message }}@enderror
                             </div>
                         </div>
@@ -88,6 +82,8 @@
 @endsection
 @push('scripts')
 <script type="text/javascript">
+    // getting CSRF Token from meta tag
+    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     $(document).ready(function () {
             $('#ingredient_id').select2({
                 placeholder: "Select an ingredient",              
@@ -95,11 +91,29 @@
                 //minimumResultsForSearch: -1,                        
              });
 
-             $('#measure_unit').select2({
-                placeholder: "Select an ingredient",              
-                multiple: false, 
-                minimumResultsForSearch: -1,                        
-             });
+            //  $('#measure_unit').select2({
+            //     placeholder: "Select an ingredient",              
+            //     multiple: false, 
+            //     minimumResultsForSearch: -1,                        
+            //  });
+
+            $('#ingredient_id').on('change',function(){
+                if($(this).val() != "default"){ 
+                    //getting the smallest measurement unit of the corresponding ingredient   
+                    $.post("{{ route('admin.recipe.ingredient.getunit') }}", {
+                        _token: CSRF_TOKEN,
+                        ingredient_id: $(this).val(),                        
+                    }).done(function(data) {
+                        data = JSON.parse(data);
+                        if(data.status == "success") { 
+                            $('#measure_unit').val(data.small_unit); 
+                        }
+                    });             
+                   
+                }else{
+                    $('#measure_unit').val('');
+                }
+            });
 
     });
 

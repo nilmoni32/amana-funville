@@ -203,7 +203,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach( App\Models\Cart::where('order_id',
+                    @php $subtotal=0.0; $cart_model = 'App\Models\Cart'; @endphp
+                    @if($order->status == 'delivered')
+                    @php $cart_model = 'App\Models\Cartbackup';@endphp
+                    @endif
+                    @foreach( $cart_model::where('order_id',
                     $order->id)->get() as $cart)
                     <tr>
                         <td>{{ $loop->index + 1 }}</td>
@@ -247,17 +251,25 @@
                             App\Models\ProductAttribute::find($cart->product_attribute_id)->special_price)
                             {{ round(App\Models\ProductAttribute::find($cart->product_attribute_id)->special_price * $cart->product_quantity,0) }}
                             {{ config('settings.currency_symbol') }}
+                            @php $subtotal +=
+                            App\Models\ProductAttribute::find($cart->product_attribute_id)->special_price *
+                            $cart->product_quantity; @endphp
                             @else
                             {{ round(App\Models\ProductAttribute::find($cart->product_attribute_id)->price * $cart->product_quantity,0) }}
                             {{ config('settings.currency_symbol') }}
+                            @php $subtotal +=
+                            App\Models\ProductAttribute::find($cart->product_attribute_id)->price *
+                            $cart->product_quantity; @endphp
                             @endif
                             @else
                             @if($cart->product->discount_price)
                             {{ round($cart->product->discount_price * $cart->product_quantity,0) }}
                             {{ config('settings.currency_symbol') }}
+                            @php $subtotal += $cart->product->discount_price * $cart->product_quantity;@endphp
                             @else
                             {{ round($cart->product->price * $cart->product_quantity,0) }}
                             {{ config('settings.currency_symbol') }}
+                            @php $subtotal += $cart->product->price * $cart->product_quantity; @endphp
                             @endif
                             @endif
 
@@ -265,9 +277,6 @@
                     </tr>
                     @endforeach
                     <tr>
-                        @php $subtotal = ($order->grand_total - config('settings.delivery_charge'))/(1+
-                        (config('settings.tax_percentage')/100)) @endphp
-
                         <td colspan="5" class="colspantd" style="padding-top:10px;">
                             <span class="font-bold">Subtotal:</span>&nbsp;
                             {{ round($subtotal,0) }}

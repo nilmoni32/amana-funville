@@ -12,7 +12,7 @@ class YearlyTotalExport implements FromCollection, WithHeadings
     public function collection()
     {
         //Month wise sale reports 
-        return DB::table('carts')
+        return DB::table('cartbackups')
             ->select( DB::raw('Year(created_at) as year, SUM(product_quantity * unit_price ) as subtotal')) 
             ->whereRaw('order_id is not NULL and order_cancel = 0')
             ->groupByRaw('Year(created_at)')         

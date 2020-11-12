@@ -310,6 +310,8 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::get('/edit/{id}', 'RecipeIngredientController@edit')->name('recipe.ingredient.edit');
                 Route::post('/update', 'RecipeIngredientController@update')->name('recipe.ingredient.update');
                 Route::get('/delete/{id}', 'RecipeIngredientController@delete')->name('recipe.ingredient.delete');
+                //ajax route for get smallest unit measurement
+                Route::post('/getunit','RecipeIngredientController@getunit')->name('recipe.ingredient.getunit');
             });
 
             //Board of directors routes

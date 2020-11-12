@@ -355,6 +355,8 @@ class SalesController extends BaseController
                 'production_food_cost' => $saleCart->production_food_cost,
                 'order_cancel' => $saleCart->order_cancel,
                 'order_tbl_no' => $saleCart->order_tbl_no,
+                'created_at' => $saleCart->created_at,
+                'updated_at' => $saleCart->updated_at,
             ];            
             $saleCartBackup[] = $cart_backup;
         } 

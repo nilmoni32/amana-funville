@@ -19,7 +19,7 @@ class OrderController extends BaseController
     public function index(){
         // Attaching pagetitle and subtitle to view.
         view()->share(['pageTitle' => 'Orders', 'subTitle' => 'List of all orders' ]);
-        $orders = Order::orderBy('created_at', 'desc')->paginate(15);
+        $orders = Order::orderBy('created_at', 'desc')->paginate(20);
         return view('admin.orders.index', compact('orders'));
     }
     public function edit($id){
@@ -60,8 +60,10 @@ class OrderController extends BaseController
        
         $order->status = $request->status;
         $order->save(); 
-        //Inventory Management: When order status is changed to delivered, we will deduct product quantity and product total cost using product id from ingredient stock. 
+         
         if($order->status == 'delivered'){
+            //Inventory Management: When order status is changed to delivered, we will deduct product quantity and product total cost using product id from ingredient stock.
+
             //finding the cart using order id... it may return many carts
             foreach($order->carts as $cart){
                 //getting product quantity that user has purchased.
@@ -85,9 +87,41 @@ class OrderController extends BaseController
 
                 }
 
+            }            
+
+        }  
+
+        if($request->status == 'cancel' || $order->status == 'delivered'){
+
+            //BACKUP of e-commerce cart: Making ecommerce cart backup to cartbackups
+            $ecommCartBackup = [];
+            foreach(Cart::where('order_id',
+            $order->id)->get() as $cart){
+                $cart_backup = [
+                    'product_id' => $cart->product_id,
+                    'user_id' => $cart->user_id,
+                    'order_id' => $cart->order_id,
+                    'product_attribute_id' => $cart->product_attribute_id,
+                    'ip_address' => $cart->ip_address,
+                    'product_quantity' => $cart->product_quantity,
+                    'has_attribute' => $cart->has_attribute,
+                    'unit_price' => $cart->unit_price,
+                    'order_cancel' => $cart->order_cancel,
+                    'production_food_cost' => $cart->production_food_cost,
+                    'created_at' => $cart->created_at,
+                    'updated_at' => $cart->updated_at,
+                ];            
+                $ecommCartBackup[] = $cart_backup;
+            } 
+            \DB::table('cartbackups')->insert($ecommCartBackup);
+            //Now Deleting record from e-commerce cart table in order to free up space.
+            foreach(Cart::where('order_id',
+            $order->id)->get() as $cart){
+                $cart->delete();
             }
 
-        }     
+        }
+
         return $this->responseRedirectBack(' Order status is updated successfully' ,'success', false, false); 
     }
 

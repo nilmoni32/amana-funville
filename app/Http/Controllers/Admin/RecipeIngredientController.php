@@ -146,5 +146,13 @@ class RecipeIngredientController extends Controller
 
      }
 
+     function getunit(Request $request){
+        //finding smallest measurement unit of the corresponding ingredient
+        $small_measure_unit = Ingredient::where('id', $request->ingredient_id)->first()->smallest_unit;
+        if(!is_null($small_measure_unit)){  
+            return json_encode([ 'status' => 'success', 'small_unit' => $small_measure_unit ]); 
+        }
+     }
+
 
 }
