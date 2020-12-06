@@ -12,8 +12,7 @@ use App\Models\District;
 use Session;
 use Auth;
 use App\Events\OrderPlaced;
-
-session_start();
+use App\Library\SslCommerz\SslCommerzNotification;
 
 class CheckoutController extends Controller
 {
@@ -137,157 +136,9 @@ class CheckoutController extends Controller
         return view('site.pages.paynotify', compact('order'));
     }   
 
-   /**
-    * SSlCommerz integration
-    */
-    public function orderPayment($id){
+   
 
-        $order = Order::find($id);
+    
 
-        $post_data = array();
-        $post_data['total_amount'] = $order->grand_total; # You cant not pay less than 10
-        $post_data['currency'] = "BDT";
-        $post_data['tran_id'] = $order->id; // tran_id must be unique
-
-        #Start to save these value  in session to pick in success page.
-        $_SESSION['tran_id']=$post_data['tran_id'];
-        #End to save these value  in session to pick in success page.
-
-        $server_name=request()->root()."/";
-        $post_data['success_url'] =  $server_name . "checkout/order/success";     
-        $post_data['fail_url'] = $server_name . "checkout/order/fail";
-        $post_data['cancel_url'] = $server_name . "checkout/order/cancel";
-
-        # CUSTOMER INFORMATION
-        $post_data['cus_name'] = $order->name;
-        $post_data['cus_email'] = $order->email;
-        $post_data['cus_add1'] = $order->address;
-        $post_data['cus_add2'] = "";
-        $post_data['cus_city'] = "";
-        $post_data['cus_state'] = "";
-        $post_data['cus_postcode'] = "";
-        $post_data['cus_country'] = "Bangladesh";
-        $post_data['cus_phone'] = $order->phone_no;
-        $post_data['cus_fax'] = "";
-
-        # SHIPMENT INFORMATION
-        $post_data['ship_name'] = "testamanamkhy";
-        $post_data['ship_add1 '] = "";
-        $post_data['ship_add2'] = "";
-        $post_data['ship_city'] = "";
-        $post_data['ship_state'] = "";
-        $post_data['ship_postcode'] = "";
-        $post_data['ship_country'] = "Bangladesh";
-
-        # OPTIONAL PARAMETERS
-        $post_data['value_a'] = "ref001";
-        $post_data['value_b'] = "ref002";
-        $post_data['value_c'] = "ref003";
-        $post_data['value_d'] = "ref004";
-        
-
-        $sslc = new SSLCommerz();
-        $payment_options = $sslc->initiate($post_data, false);
-
-        if (!is_array($payment_options)) {
-            print_r($payment_options);
-            $payment_options = array();
-        }   
-    }
-    public function order_success(Request $request){
-        // Auth::user() returns an instance of the authenticated user.     
-        $user = Auth::user();
-        $sslc = new SSLCommerz();
-       
-        $tran_id = $_SESSION['tran_id'];        
-        $order = Order::find($tran_id);        
-        if($request->status == "VALID"){            
-            $order->payment_status = 1; // payment = 1 means paid.
-            $order->payment_method = $request->card_type; // specify the card
-          
-            $order->tran_date = $request->tran_date;
-            $order->tran_id = $tran_id;
-            $order->amount = $request->amount;
-            $order->store_amount = $request->store_amount; 
-            $order->bank_tran_id = $request->bank_tran_id;
-            $order->currency_type = $request->currency_type;
-            $order->currency_amount = $request->currency_amount;
-            $order->card_no = $request->card_no;
-            $order->card_brand = $request->card_brand;
-            $order->card_issuer = $request->card_issuer;
-
-            $order->save();  
-            //  // An event is triggered to notify backend user for an new order placement
-            // event(new OrderPlaced($order->order_number));          
-        } 
-        if(session()->has('success') && session()->get('success') !== ''){
-            session()->flash('success', '');
-        }
-        session()->flash('success', 'The payment corresponding to the order has received and your shipment is on its way!');       
-        return view('site.pages.paynotify', compact('order'));
-    }
-    public function order_fail(Request $request){              
-        $user = Auth::user();
-        $sslc = new SSLCommerz();
-        $tran_id = $_SESSION['tran_id'];
-        $order = Order::find($tran_id);
-        if($request->status == "FAILED"){
-            $order->status = 'cancel';
-            $order->payment_method = 'Failed';
-            $order->error = $request->error; 
-
-            $order->tran_date = $request->tran_date;
-            $order->tran_id = $tran_id;
-            $order->amount = $request->amount;            
-            $order->bank_tran_id = $request->bank_tran_id;
-            $order->currency_type = $request->currency_type;
-            $order->currency_amount = $request->currency_amount;
-            $order->card_no = $request->card_no;
-            $order->card_brand = $request->card_brand;
-            $order->card_issuer = $request->card_issuer;
-
-            $order->save(); 
-            // // An event is triggered to notify backend user for an new order placement
-            // event(new OrderPlaced($order->order_number));             
-        }
-        if(session()->has('error') && session()->get('error') !== ''){
-            session()->flash('error', '');
-        }
-        session()->flash('error', 'Sorry!! the payment corresponding to the order has failed.');
-        return view('site.pages.paynotify', compact('order'));
-    }
-    public function order_cancel(Request $request){        
-        $user = Auth::user();
-        $sslc = new SSLCommerz();
-        $tran_id = $_SESSION['tran_id'];
-        $order = Order::find($tran_id);
-        if($request->status == "CANCELLED"){
-            $order->status = 'cancel';
-            $order->payment_method = 'None'; 
-            $order->error = $request->error; 
-
-            $order->tran_date = $request->tran_date;
-            $order->tran_id = $tran_id;
-            $order->amount = $request->amount;
-            $order->currency_type = $request->currency_type;
-            $order->currency_amount = $request->currency_amount;
-
-            $order->save();
-            // // An event is triggered to notify backend user for an new order placement
-            // event(new OrderPlaced($order->order_number));
-
-            // when order is canceled by user after checkout, we need to set order_cancel to 1 in the cart table for that cart 
-            // we need this for reporting purpose.       
-            foreach(Cart::where('user_id', Auth::id())->where('order_id', $order->id)->get() as $cart){
-                $cart->order_cancel = 1;
-                $cart->save();
-            }
-           
-        }
-        if(session()->has('error') && session()->get('error') !== ''){
-            session()->flash('error', '');
-        }
-        session()->flash('error', 'The payment corresponding to the order has been canceled.');
-        return view('site.pages.paynotify', compact('order'));        
-    }
+    
 }

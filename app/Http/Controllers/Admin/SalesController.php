@@ -295,8 +295,8 @@ class SalesController extends BaseController
         return json_encode(['status' => 'success', 'discountLimit' => $discount_limit, 'discount' => $discount ]);
     }
 
-    public function orderupdate(Request $request){                      
-      
+    public function orderupdate(Request $request){ 
+       
         $this->validate($request,[  
             // 'order_tableNo'    => 'nullable|string|max:10',
             'customer_name'     => 'nullable|string|max:40',             
@@ -316,6 +316,8 @@ class SalesController extends BaseController
         $order->payment_method = implode(',', $request->payment_method); // making array to string before saving to database.
         $order->cash_pay = $request->cash_pay;
         $order->card_pay = $request->card_pay;
+        $order->card_bank = $request->card_bank;
+        $order->mobile_bank = $request->mobile_bank;
         $order->mobile_banking_pay = $request->mobile_banking_pay;
         $order->order_tableNo = NULL;//$request->order_tableNo;    
         $order->status = 'delivered';

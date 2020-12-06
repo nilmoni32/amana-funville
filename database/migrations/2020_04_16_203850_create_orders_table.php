@@ -17,7 +17,7 @@ class CreateOrdersTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');            
             $table->string('order_number')->unique();           
-            $table->enum('status', ['pending', 'accept', 'cooking','packing', 'delivered', 'cancel' ])->default('pending'); 
+            $table->enum('status', ['pending', 'accept', 'cooking','packing', 'delivered', 'cancel','failed' ])->default('pending'); 
                    
             $table->boolean('payment_status')->default(0);             // 1 means completed
             $table->string('payment_method')->default('cash');         // for sslcommerze card_type 

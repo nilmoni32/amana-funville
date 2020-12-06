@@ -29,6 +29,8 @@ class CreateOrdersalesTable extends Migration
             $table->decimal('cash_pay', 13, 6)->nullable();
             $table->decimal('card_pay', 13, 6)->nullable();
             $table->decimal('mobile_banking_pay', 13, 6)->nullable();
+            $table->string('card_bank')->nullable();
+            $table->string('mobile_bank')->nullable();
 
             $table->timestamps();
 

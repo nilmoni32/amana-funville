@@ -71,12 +71,13 @@ Route::group(['middleware' => ['auth']], function(){
     // ajax route for user area and address
     Route::get('/checkout/zones/{id}', 'Site\CheckoutController@getZones');
     Route::get('/checkout/user/address/', 'Site\CheckoutController@getUserAddress');
-    //SSLCommerz routes
-    Route::get('/checkout/order/payment/{id}', 'Site\CheckoutController@orderPayment')->name('order.payment');
-    Route::post('/checkout/order/success', 'Site\CheckoutController@order_success');
-    Route::post('/checkout/order/fail', 'Site\CheckoutController@order_fail');
-    Route::post('/checkout/order/cancel', 'Site\CheckoutController@order_cancel');  
-    
+    // SSLCOMMERZ Start
+    Route::post('/checkout/order/payment', 'SslCommerzPaymentController@index')->name('order.payment');
+    Route::post('/checkout/order/success', 'SslCommerzPaymentController@success');
+    Route::post('/checkout/order/fail', 'SslCommerzPaymentController@fail');
+    Route::post('/checkout/order/cancel', 'SslCommerzPaymentController@cancel');
+    Route::post('/checkout/order/ipn', 'SslCommerzPaymentController@ipn');
+    // SSLCOMMERZ END
 });
 
 

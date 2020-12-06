@@ -21,7 +21,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach( App\Models\Cart::where('order_id', $order->id)->get() as $cart)
+                                    @php $cart_model = 'App\Models\Cart'; @endphp
+                                    @if($order->status == 'delivered' || $order->status == 'cancel' )
+                                    @php $cart_model = 'App\Models\Cartbackup';@endphp
+                                    @endif
+                                    @foreach( $cart_model::where('order_id', $order->id)->get() as $cart)
                                     <tr>
                                         <td class="text-center">
                                             {{ $loop->index + 1 }}
@@ -83,7 +87,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            @if($order->status != 'cancel')
+                            @if($order->status != 'cancel' && $order->status != 'failed' )
                             <p class="p-0 m-0"><strong class="ml-0">Status:</strong></p>
                             <div class="cart-status d-flex cart-status-direction mt-1">
                                 @if($order->status == 'pending')
@@ -113,10 +117,17 @@
                                 @endif
                             </div>
                             @else
+                            @if($order->status == 'cancel')
                             <p class="p-0 m-0"><strong class="ml-0">Status:</strong></p>
                             <div class="cart-status d-flex cart-status-direction mt-1">
                                 <div class="cart-flex-item-cancel">Cancelled</div>
                             </div>
+                            @else
+                            <p class="p-0 m-0"><strong class="ml-0">Status:</strong></p>
+                            <div class="cart-status d-flex cart-status-direction mt-1">
+                                <div class="cart-flex-item-cancel">Failed</div>
+                            </div>
+                            @endif
                             @endif
 
                         </div>

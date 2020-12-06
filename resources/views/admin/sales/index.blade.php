@@ -172,29 +172,49 @@
                                             </div>
                                         </h5>
                                         <h5 class="text-right pb-2 pt-1 border-bottom" id="card_blk">
-                                            <label style="cursor:pointer;"><input type="checkbox"
+                                            <label style="cursor:pointer; margin-right:-1em" id="card_blk_lbl"><input type="checkbox"
                                                     class="radio-inline payments" name="card_check" id="card_check"
                                                     onclick="cardCheck()"> Card
                                                 Payment :
                                             </label>
-                                            <div class="form-check form-check-inline card-payment"
-                                                style="margin-right:3em">
+                                            <div class="form-check form-check-inline card-payment">
                                                 <input type="text" class="form-control" id="card_pay"
                                                     placeholder="Amount (Required)" name="card_pay"
                                                     style="display:none;">
                                             </div>
+                                            <div class="form-check form-check-inline card-payment"
+                                                style="margin-right:3em">
+                                                <select name="bank_reference" id="bank_reference"
+                                                        class="form-control font-weight-normal" style="display:none;">
+                                                        <option value="" disabled selected>Select a Bank
+                                                        </option>
+                                                        @foreach(explode(',', config('settings.card_bank_list')) as $bank) 
+                                                        <option value="{{$bank}}">{{$bank}}</option>
+                                                        @endforeach
+                                                </select>
+                                            </div>
                                         </h5>
                                         <h5 class="text-right pb-2 pt-1 border-bottom" id="mobileBank_blk">
-                                            <label style="cursor:pointer;"><input type="checkbox"
+                                            <label style="cursor:pointer;margin-right:-1em" id="mobileBank_blk_lbl"><input type="checkbox"
                                                     class="radio-inline payments" name="mobileBank_check"
                                                     id="mobileBank_check" onclick="mobileBankCheck()"> Mobile Banking
                                                 Payment :
                                             </label>
-                                            <div class="form-check form-check-inline mobileBank-payment"
-                                                style="margin-right:3em">
+                                            <div class="form-check form-check-inline mobileBank-payment">
                                                 <input type="text" class="form-control" id="mobile_banking_pay"
                                                     placeholder="Amount (Required)" name="mobile_banking_pay"
                                                     style="display:none;">
+                                            </div>
+                                            <div class="form-check form-check-inline mobileBank-payment"
+                                                style="margin-right:3em">
+                                                <select name="mobibank_reference" id="mobibank_reference"
+                                                        class="form-control font-weight-normal" style="display:none;">
+                                                        <option value="" disabled selected>Select a Mobile Bank
+                                                        </option>
+                                                        @foreach(explode(',', config('settings.mobile_bank_list')) as $bank) 
+                                                        <option value="{{$bank}}">{{$bank}}</option>
+                                                        @endforeach
+                                                </select>
                                             </div>
                                         </h5>
                                         <h4 class="text-right py-4 d-none text-danger" id="pay-more-block">Customer
@@ -265,6 +285,8 @@
                             <input type="hidden" id="payment_method" name="payment_method[]" value="">
                             <input type="hidden" id="pay_cash" name="cash_pay" value="">
                             <input type="hidden" id="pay_card" name="card_pay" value="">
+                            <input type="hidden" id="cardbank" name="card_bank" value="">
+                            <input type="hidden" id="mobibank" name="mobile_bank" value="">
                             <input type="hidden" id="pay_mobile" name="mobile_banking_pay" value="">
 
                             <div class="border px-4 rounded" style="border-color:rgb(182, 182, 182);">
@@ -300,7 +322,7 @@
                                     <span class="input-group-text" id="phone_number">+880</span>
                                 </div>
                                 <input type="text" class="form-control @error('customer_mobile') is-invalid @enderror"
-                                    id="customer_mobile" placeholder="Phone no(e.g 017xxxxxxxx)" name="customer_mobile">
+                                    id="customer_mobile" placeholder="Phone no(e.g 017xxxxxxxx)" name="customer_mobile" required>
                                 @error('customer_mobile')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -309,8 +331,7 @@
                             </div>
                             <div class="form-group my-2">
                                 <input type="text" class="form-control @error('customer_name') is-invalid @enderror"
-                                    id="customer_name" placeholder="Customer Name" name="customer_name">
-
+                                    id="customer_name" placeholder="Customer Name" name="customer_name" required>
                                 @error('customer_name')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -452,13 +473,15 @@
             //getting the director id value.
             directorId = $('#discount_reference :selected').val();
             // setting discount reference as director id to form hidden input field
-            $('#order_discount_reference').val(directorId);
+            $('#order_discount_reference').val(directorId);             
             if(directorId){
                 //checking the discount slab of the corresponding director via ajax call
                 checkDiscountSlab(discount, directorId, orderTotal);
             }
 
         });
+
+        
     
         
         //checking the discount slab of the corresponding director via ajax call
@@ -957,16 +980,32 @@
         function cardCheck(){             
             if($("#card_check").prop("checked") == true) {                               
                 $('.card-payment').addClass('discount-w pl-1');               
-                $('#card_pay').show();  
-                $('#card_blk').removeClass('pt-1');               
+                $('#card_pay').show();
+                $('#bank_reference').show();   
+                $('#card_blk').removeClass('pt-1');  
+                $('#card_blk_lbl').css('margin-right', '');  
+                                                     
             }else{
                 // //when unchecked chkbox we set discount to null and due amount to order total.              
-                $('#card_pay').removeAttr("style").hide(); 
+                $('#card_pay').removeAttr("style").hide();                 
+                $('#bank_reference').removeAttr("style").hide();
                 $('.card-payment').removeClass('discount-w pl-1');                 
                 $('#card_pay').val("");                
-                $('#card_blk').addClass('pt-1');                
+                $('#card_blk').addClass('pt-1');    
+                $('#card_blk_lbl').css('margin-right', '-1em');            
             }           
         }
+
+        // if card bank_reference is changed 
+        $('#bank_reference').change(function() { 
+            cardBank = $('#bank_reference :selected').val();
+            // setting card bank name to form hidden input field
+            if(cardBank){
+                $('#cardbank').val(cardBank);
+            }  
+        });
+
+        
 
         function rewardPoint(){            
             var dueAmount = 0;     
@@ -999,16 +1038,28 @@
             if($("#mobileBank_check").prop("checked") == true) {                               
                 $('.mobileBank-payment').addClass('discount-w pl-1');               
                 $('#mobile_banking_pay').show();  
-                $('#mobileBank_blk').removeClass('pt-1');               
+                $('#mobileBank_blk').removeClass('pt-1'); 
+                $('#mobileBank_blk_lbl').css('margin-right', ''); 
+                $('#mobibank_reference').show();
             }else{
                 // //when unchecked chkbox we set discount to null and due amount to order total.              
                 $('#mobile_banking_pay').removeAttr("style").hide(); 
+                $('#mobibank_reference').removeAttr("style").hide();
                 $('.mobileBank-payment').removeClass('discount-w pl-1');                 
                 $('#mobile_banking_pay').val("");                  
                 $('#mobileBank_blk').addClass('pt-1'); 
-
+                $('#mobileBank_blk_lbl').css('margin-right', '-1em');
             }           
         }
+
+        // if mobile bank_reference is changed 
+        $('#mobibank_reference').change(function() { 
+            mobiBank = $('#mobibank_reference :selected').val();
+            // setting mobile bank name to form hidden input field
+            if(mobiBank){
+                $('#mobibank').val(mobiBank);
+            }  
+        });
 
         // whenever any change is made on product search or discount we use this function.
         function resetPayment(){

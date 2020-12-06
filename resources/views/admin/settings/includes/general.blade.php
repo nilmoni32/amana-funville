@@ -70,6 +70,16 @@
                 <input class="form-control" type="text" placeholder="Total no of tables" name="total_tbls"
                     id="total_tbls" value="{{ config('settings.total_tbls') }}">
             </div>
+            <div class="form-group">
+                <label class="control-label" for="card_bank_list">Card Payment Banks List</label>
+                <input class="form-control" type="text" placeholder="Bank List" name="card_bank_list"
+                    id="card_bank_list" value="{{ config('settings.card_bank_list') }}">
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="mobile_bank_list">Mobile Banking Payment Bank list</label>
+                <input class="form-control" type="text" placeholder="Mobile Bank List" name="mobile_bank_list"
+                    id="mobile_bank_list" value="{{ config('settings.mobile_bank_list') }}">
+            </div>
         </div>
         <div class="tile-footer">
             <div class="row d-print-none mt-2">

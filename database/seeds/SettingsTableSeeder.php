@@ -146,6 +146,14 @@ class SettingsTableSeeder extends Seeder
             'key'   => 'total_tbls',
             'value' => '',
         ],
+        [
+            'key'   => 'card_bank_list',
+            'value' => '',
+        ],
+        [
+            'key'   => 'mobile_bank_list',
+            'value' => '',
+        ],
 
     ];
 

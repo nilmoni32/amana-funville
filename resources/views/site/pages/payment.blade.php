@@ -57,10 +57,14 @@
                         <ul class="list-inline text-center link pb-4">
                             <li class="list-inline-item">
                                 <small>All Bangladeshi credit/debit card</small><br>
-                                <a href="{{ route('order.payment', $order->id) }}" class="btn btn-theme-alt my-2"
-                                    role="button"><img src="{{ asset('frontend')}}/images/payment.png" alt="visa"
-                                        title="Bangladeshi credit/debit card" class="img-fluid" width="150px">
-                                </a>
+                                <form action="{{ url('/checkout/order/payment') }}" method="POST"
+                                    class="needs-validation">
+                                    <input type="hidden" value="{{ csrf_token() }}" name="_token" />
+                                    <input type="hidden" value="{{ $order->id }}" name="id" />
+                                    <button class="btn btn-theme-alt my-2" type="submit"><img
+                                            src="{{ asset('frontend')}}/images/payment.png" alt="visa"
+                                            title="Bangladeshi credit/debit card" class="img-fluid"
+                                            width="150px"></button>
                             </li>
                         </ul>
                     </div>
