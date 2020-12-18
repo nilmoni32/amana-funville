@@ -33,17 +33,27 @@ class RecipeController extends BaseController
         $validated = $request->validate([
             'recipe' => 'required|numeric',                  
         ]);
-        $recipe= Recipe::create([
-            'product_id' => $request->recipe,
-            'production_food_cost'=> 0.0,       
-        ]);
-        if($recipe){  
-            // setting flash message using trait
-            $this->setFlashMessage(' Recipe is added successfully', 'success');    
-            $this->showFlashMessages();            
-            return redirect()->route('admin.recipe.index'); 
+
+        //checking the product whether it is already added to the Recipe.
+        $recipe = Recipe::where('product_id', $request->recipe)->first();
+        if(!is_null($recipe)){
+            //return json_encode([ 'status' => 'info', 'message' => ""  ]);
+            return $this->responseRedirectBack(' This food is already added to the Recipe table.' ,'error', false, false); 
         }else{
-            return $this->responseRedirectBack(' Error occurred while adding recipe .' ,'error', false, false);    
+            // if this product is not added to the recipe table
+            $recipe= Recipe::create([
+                'product_id' => $request->recipe,
+                'production_food_cost'=> 0.0,       
+            ]);
+            if($recipe){  
+                // setting flash message using trait
+                $this->setFlashMessage(' Recipe is added successfully', 'success');    
+                $this->showFlashMessages();            
+                return redirect()->route('admin.recipe.index'); 
+            }else{
+                return $this->responseRedirectBack(' Error occurred while adding recipe .' ,'error', false, false);    
+            }
+
         }
 
     }

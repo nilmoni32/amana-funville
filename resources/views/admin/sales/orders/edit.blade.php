@@ -119,7 +119,7 @@
                                 <input type="checkbox" data-toggle="toggle" data-on="Order Receive"
                                     data-off="Order Cancel" {{ $order->order_tableNo ? 'checked' : 'disabled'}}
                                     data-onstyle="primary" data-offstyle="danger" data-id={{ $order->id }}
-                                    class="orderStatus px-5">
+                                    class="orderStatus px-5" data-height="110%" data-width="132px">
                             </div>
                         </div>
                         <div class="text-left mt-4 pb-4 pl-2">

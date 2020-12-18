@@ -35,7 +35,7 @@
                             <td class="text-center" style="padding: 0.3rem; vertical-align: 0 ;">
                                 <input type="checkbox" data-toggle="toggle" data-on="Active" data-off="Inactive"
                                     {{ $district->status ? 'checked' : ''}} data-onstyle="primary"
-                                    data-offstyle="secondary" data-id={{$district->id}} class="districtStatus">
+                                    data-offstyle="secondary" data-id={{$district->id}} class="districtStatus" data-height="110%">
                             </td>
                         </tr>
                         @endforeach

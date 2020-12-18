@@ -30,15 +30,15 @@
                             @csrf
                             <div class="form-group mb-2">
                                 <label>
-                                    <span class="font-weight-bold pr-1">Start Date :</span>
-                                    <input type="text" name="start_date" class="datetimepicker"
+                                    <span class="font-weight-bold pr-1">From Date :</span>
+                                    <input type="text" name="start_date" class="form-control datetimepicker"
                                         value="{{ \Carbon\Carbon::parse($start_date)->format('d-m-Y') }}" required>
                                 </label>
                             </div>
                             <div class="form-group mx-sm-3 mb-2">
                                 <label class="font-bold">
-                                    <span class="font-weight-bold pr-1">End Date :</span>
-                                    <input type="text" name="end_date" class="datetimepicker"
+                                    <span class="font-weight-bold pr-1">To Date :</span>
+                                    <input type="text" name="end_date" class="form-control datetimepicker"
                                         value="{{ \Carbon\Carbon::parse($end_date)->format('d-m-Y') }}" required>
                                 </label>
                             </div>
@@ -49,12 +49,12 @@
                                 </label> --}}
                                 <label>
                                     <span class="font-weight-bold pr-1">Food Name :</span>
-                                    <input class="mr-3" type="text" name="search_food" value="{{ $search_food }}"
+                                    <input class="mr-3 form-control" type="text" name="search_food" value="{{ $search_food }}"
                                         placeholder="Enter food name" required>
                                 </label>
                             </div>
                             <button type="submit" class="btn btn-primary mb-2" name="top20btn">
-                                Item sale details</button>
+                                Preview</button>
                         </form>
                     </div>
 

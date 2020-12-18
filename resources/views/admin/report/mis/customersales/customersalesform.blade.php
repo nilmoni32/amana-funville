@@ -18,9 +18,17 @@
             <div class="tile-body">
                 <div class="row mb-4">
                     <div class="col-12 pt-3">
-                        <form action="{{ route('admin.reports.getTop20') }}" method="post"
+                        <form action="{{ route('admin.reports.getCustomerSales') }}" method="post"
                             class="form-inline justify-content-center">
                             @csrf
+                            <div class="form-group mb-2 mx-sm-3">
+                                <label for="customer">
+                                    <span class="font-weight-bold pr-1">Customer :</span>
+                                    <select name='customer' style='width: 200px;' id="customer" class="form-control font-weight-normal" required>
+                                        <option value=""></option>                                       
+                                    </select>
+                                </label>
+                            </div>
                             <div class="form-group mb-2">
                                 <label>
                                     <span class="font-weight-bold pr-1">From Date :</span>
@@ -28,15 +36,15 @@
                                         placeholder="choose date (d-m-Y)" required>
                                 </label>
                             </div>
-                            <div class="form-group mx-sm-3 mb-2">
+                            <div class="form-group mb-2 mx-sm-3">
                                 <label class="font-bold">
                                     <span class="font-weight-bold pr-1">To Date :</span>
                                     <input type="text" class="form-control datetimepicker" name="end_date"
                                         placeholder="choose date (d-m-Y)" required>
                                 </label>
                             </div>
-
-                            <button type="submit" class="btn btn-primary mb-2" name="top20btn">
+                            
+                            <button type="submit" class="btn btn-primary mb-2" name="btnProfitLoss">
                                 Preview</button>
                         </form>
                     </div>
@@ -46,26 +54,14 @@
                     <thead>
                         <tr>
                             <th class="text-center"> # </th>
-                            <th class="text-center"> Food Name </th>
-                            <th class="text-center"> Unit Price </th>
-                            <th class="text-center"> Total Qty </th>
-                            <th class="text-center"> Subtotal </th>
+                            <th class="text-center"> ReceiptNo </th>
+                            <th class="text-center"> PaidAmount </th>
+                            <th class="text-center"> DiscountAmount (Reference)</th>
+                            <th class="text-center"> DiscountAmount (Bonus Point)</th> 
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- @foreach($zones as $area)
-                        <tr>
-                            <td class="text-center" style="padding: 0.3rem; vertical-align: 0 ;">{{ $area->id }}
-                        </td>
-                        <td class="text-center" style="padding: 0.3rem; vertical-align: 0 ;">{{ $area->name }}
-                        </td>
-                        <td class="text-center" style="padding: 0.3rem; vertical-align: 0 ;">
-                            <input type="checkbox" data-toggle="toggle" data-on="Active" data-off="Inactive"
-                                {{ $area->status ? 'checked' : ''}} data-onstyle="primary" data-offstyle="secondary"
-                                data-id={{$area->id}} class="districtStatus">
-                        </td>
-                        </tr>
-                        @endforeach --}}
+                      
                     </tbody>
                 </table>
             </div>
@@ -76,13 +72,42 @@
 @push('scripts')
 
 <script>
-    $(document).ready(function () {
+    // CSRF Token
+    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+    $(document).ready(function () {   
+
+      $('#customer').select2({
+        placeholder: "Select Customer",        
+        //select2-ajax
+        ajax: { 
+          url: "{{route('admin.reports.getClients')}}",
+          type: "post",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            return {
+              _token: CSRF_TOKEN,
+              search: params.term // search term
+            };
+          },
+          processResults: function (response) {
+            return {
+              results: response
+            };
+          },
+          cache: true
+        }
+                                
+        });
+
       $('.datetimepicker').datetimepicker({
         timepicker:false,
         datepicker:true,        
         format: 'd-m-Y',              
       });
+
       $(".datetimepicker").attr("autocomplete", "off");
+
     });
 </script>
 

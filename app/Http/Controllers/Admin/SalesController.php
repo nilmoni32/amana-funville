@@ -305,7 +305,7 @@ class SalesController extends BaseController
             'customer_notes'    => 'nullable|string|max:191',             
         ]);
         
-        //Order Update: Discount, reward poit discount, Payment Details, Customer Points
+        //Order Update: Discount, reward points discount, Payment Details, Customer Points
         $order = Ordersale::where('id', $request->order_id)->first();
         $order->admin_id = auth()->user()->id;     
         //$order->order_number = $ord_id; 
@@ -328,19 +328,23 @@ class SalesController extends BaseController
         //substracting reward point discount
         $order_grand_total = $request->reward_discount ? $order_discount_total - $request->reward_discount : $order_discount_total;        
         $order->grand_total = $order_grand_total;
-        //checking if client not exists, we create client here to store client information.        
-        $client = $request->total_points ? Client::where('mobile', $request->customer_mobile)->first() : new Client();        
-        $client->name = $request->customer_name;        
-        $client->mobile = $request->customer_mobile;
-        $client->address = $request->customer_address;
-        $client->notes = $request->customer_notes;
-        // customer points calculation.        
-        $client->total_points += $order_total / (config('settings.money_to_point'));
-        //if reward discount is used, we will set client total_points to zero.
-        $client->total_points = $request->reward_discount ? 0 : $client->total_points;
-        $client->save();
-        //saving client id to order table
-        $order->client_id = $client->id;
+        // if customer data is not available we will not create the customer details.
+        if($request->customer_mobile){    
+            //checking if client not exists, we create client here to store client information. 
+            $client = $request->total_points ? Client::where('mobile', $request->customer_mobile)->first() : new Client();        
+            $client->name = $request->customer_name;        
+            $client->mobile = $request->customer_mobile;
+            $client->address = $request->customer_address;
+            $client->notes = $request->customer_notes;
+            // customer points calculation.        
+            $client->total_points += $order_total / (config('settings.money_to_point'));
+            //if reward discount is used, we will set client total_points to zero.
+            $client->total_points = $request->reward_discount ? 0 : $client->total_points;
+            $client->save();
+            //saving client id to order table
+            $order->client_id = $client->id;
+        }
+        //updating the order
         $order->save();
 
         //BACKUP of POS sales: Making pos sale backup to Salebackup table 
@@ -409,24 +413,27 @@ class SalesController extends BaseController
         }
 
         //sending sms payment notification to the customer.
-        $client = Client::where('id', $order->client_id)->first();
-        $client_mobile = $client->mobile; 
-        $client_points = $client->total_points;
-        if($order->cash_pay && !$order->card_pay && !$order->mobile_banking_pay){
-            SendCode::paymentNotify($client_mobile, $order->cash_pay, $client_points, 'cash');
-        }elseif(!$order->cash_pay && $order->card_pay && !$order->mobile_banking_pay){
-            SendCode::paymentNotify($client_mobile, $order->card_pay, $client_points, 'card');
-        }elseif(!$order->cash_pay && !$order->card_pay && $order->mobile_banking_pay){
-            SendCode::paymentNotify($client_mobile, $order->mobile_banking_pay, $client_points, 'mobile banking');
-        }elseif($order->cash_pay && $order->card_pay && !$order->mobile_banking_pay){
-            SendCode::twoPaymentNotify($client_mobile, $order->cash_pay, $order->card_pay, $client_points, 'cash','card'); 
-        }elseif($order->cash_pay && !$order->card_pay && $order->mobile_banking_pay){
-            SendCode::twoPaymentNotify($client_mobile, $order->cash_pay, $order->mobile_banking_pay, $client_points, 'cash','mobile banking'); 
-        }elseif(!$order->cash_pay && $order->card_pay && $order->mobile_banking_pay){
-            SendCode::twoPaymentNotify($client_mobile, $order->card_pay, $order->mobile_banking_pay, $client_points, 'card','mobile banking'); 
-        }elseif($order->cash_pay && $order->card_pay && $order->mobile_banking_pay){
-            SendCode::allPaymentNotify($client_mobile, $order->cash_pay, $order->card_pay, $order->mobile_banking_pay, $client_points, 'cash','card','mobile banking'); 
+        if($request->customer_mobile){
+            $client = Client::where('id', $order->client_id)->first();
+            $client_mobile = $client->mobile; 
+            $client_points = $client->total_points;
+            if($order->cash_pay && !$order->card_pay && !$order->mobile_banking_pay){
+                SendCode::paymentNotify($client_mobile, $order->cash_pay, $client_points, 'cash');
+            }elseif(!$order->cash_pay && $order->card_pay && !$order->mobile_banking_pay){
+                SendCode::paymentNotify($client_mobile, $order->card_pay, $client_points, 'card');
+            }elseif(!$order->cash_pay && !$order->card_pay && $order->mobile_banking_pay){
+                SendCode::paymentNotify($client_mobile, $order->mobile_banking_pay, $client_points, 'mobile banking');
+            }elseif($order->cash_pay && $order->card_pay && !$order->mobile_banking_pay){
+                SendCode::twoPaymentNotify($client_mobile, $order->cash_pay, $order->card_pay, $client_points, 'cash','card'); 
+            }elseif($order->cash_pay && !$order->card_pay && $order->mobile_banking_pay){
+                SendCode::twoPaymentNotify($client_mobile, $order->cash_pay, $order->mobile_banking_pay, $client_points, 'cash','mobile banking'); 
+            }elseif(!$order->cash_pay && $order->card_pay && $order->mobile_banking_pay){
+                SendCode::twoPaymentNotify($client_mobile, $order->card_pay, $order->mobile_banking_pay, $client_points, 'card','mobile banking'); 
+            }elseif($order->cash_pay && $order->card_pay && $order->mobile_banking_pay){
+                SendCode::allPaymentNotify($client_mobile, $order->cash_pay, $order->card_pay, $order->mobile_banking_pay, $client_points, 'cash','card','mobile banking'); 
+            }
         }
+        
 
         // setting flash message using trait
         $this->setFlashMessage(' Order is updated successfully', 'success');    

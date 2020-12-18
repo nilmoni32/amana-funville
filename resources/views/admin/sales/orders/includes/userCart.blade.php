@@ -12,11 +12,11 @@
                     {{ $order->order_number }} ]</p>
                 <p class="text-center h6 py-2">[ Payment Details:&nbsp;
                     @if($order->cash_pay)<span>Cash:
-                        {{ round($order->cash_pay,0)  }} {{ config('settings.currency_symbol') }}</span>@endif
+                        {{ round($order->cash_pay,2)  }} {{ config('settings.currency_symbol') }}</span>@endif
                     @if($order->card_pay)<span>, Card:
-                        {{ round($order->card_pay,0)  }} {{ config('settings.currency_symbol') }}</span>@endif
+                        {{ round($order->card_pay,2)  }} {{ config('settings.currency_symbol') }}</span>@endif
                     @if($order->mobile_banking_pay)<span>, Mobile Banking:
-                        {{ round($order->mobile_banking_pay,0) }} {{ config('settings.currency_symbol') }}</span>@endif
+                        {{ round($order->mobile_banking_pay,2) }} {{ config('settings.currency_symbol') }}</span>@endif
                     ]</p>
                 <table class="table table-hover table-bordered" id="sampleTable">
                     <thead>
@@ -46,18 +46,18 @@
                             </td>
                             <td class="text-center" style="text-transform:capitalize">
                                 @if($posCart->product->discount_price)
-                                {{ round($posCart->product->discount_price,0) }}
+                                {{ round($posCart->product->discount_price,2) }}
                                 @else
-                                {{ round($posCart->product->price,0) }}
+                                {{ round($posCart->product->price,2) }}
                                 @endif
                             </td>
                             <td class="text-center" style="text-transform:capitalize">
                                 @if($posCart->product->discount_price)
-                                {{ round( ($posCart->product->discount_price * $posCart->product_quantity), 0) }}
+                                {{ round( ($posCart->product->discount_price * $posCart->product_quantity), 2) }}
                                 @php $subtotal += $posCart->product->discount_price * $posCart->product_quantity;
                                 @endphp
                                 @else
-                                {{ round( ($posCart->product->price * $posCart->product_quantity),0) }}
+                                {{ round( ($posCart->product->price * $posCart->product_quantity),2) }}
                                 @php $subtotal += $posCart->product->price * $posCart->product_quantity; @endphp
                                 @endif
                             </td>
@@ -66,35 +66,35 @@
                         <tr>
                             <td colspan="5">
                                 <p class="text-right my-2 ">Subtotal:
-                                    {{ round($subtotal,0) }} {{ config('settings.currency_symbol') }}
+                                    {{ round($subtotal,2) }} {{ config('settings.currency_symbol') }}
                                 </p>
                                 @if(config('settings.tax_percentage'))
                                 <p class="text-right my-2 ">Vat ({{ config('settings.tax_percentage')}}%):
-                                    {{ round($subtotal* (config('settings.tax_percentage')/100),0)  }}
+                                    {{ round($subtotal* (config('settings.tax_percentage')/100),2)  }}
                                     {{ config('settings.currency_symbol') }}
                                 </p>
                                 @endif
                                 <p class="text-right my-2 ">Order Total:
-                                    {{ round( ($subtotal + $subtotal * (config('settings.tax_percentage')/100)), 0)}}
+                                    {{ round( ($subtotal + $subtotal * (config('settings.tax_percentage')/100)), 2)}}
                                     {{ config('settings.currency_symbol') }}
                                 </p>
                                 <p class="text-right my-2 ">Discount:
                                     @if($order->discount)
-                                    {{ round($order->discount,0) }} {{ config('settings.currency_symbol') }}
+                                    {{ round($order->discount,2) }} {{ config('settings.currency_symbol') }}
                                     @else
-                                    0 {{ config('settings.currency_symbol') }}
+                                    {{ config('settings.currency_symbol') }}
                                     @endif
                                 </p>
                                 <p class="text-right my-2 ">Reward Point Discount:
                                     @if($order->reward_discount)
-                                    {{ round($order->reward_discount,0) }} {{ config('settings.currency_symbol') }}
+                                    {{ round($order->reward_discount,2) }} {{ config('settings.currency_symbol') }}
                                     @else
-                                    0 {{ config('settings.currency_symbol') }}
+                                    {{ config('settings.currency_symbol') }}
                                     @endif
                                 </p>
                                 <p class="text-right mb-0 h6 mt-2">
                                     Due Amount:
-                                    {{ round($order->grand_total,0) }}
+                                    {{ round($order->grand_total,2) }}
                                     {{ config('settings.currency_symbol') }}
                                 </p>
                             </td>

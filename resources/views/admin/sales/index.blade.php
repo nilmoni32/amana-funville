@@ -197,8 +197,7 @@
                                         <h5 class="text-right pb-2 pt-1 border-bottom" id="mobileBank_blk">
                                             <label style="cursor:pointer;margin-right:-1em" id="mobileBank_blk_lbl"><input type="checkbox"
                                                     class="radio-inline payments" name="mobileBank_check"
-                                                    id="mobileBank_check" onclick="mobileBankCheck()"> Mobile Banking
-                                                Payment :
+                                                    id="mobileBank_check" onclick="mobileBankCheck()"> Mobile Payment :
                                             </label>
                                             <div class="form-check form-check-inline mobileBank-payment">
                                                 <input type="text" class="form-control" id="mobile_banking_pay"
@@ -322,7 +321,7 @@
                                     <span class="input-group-text" id="phone_number">+880</span>
                                 </div>
                                 <input type="text" class="form-control @error('customer_mobile') is-invalid @enderror"
-                                    id="customer_mobile" placeholder="Phone no(e.g 017xxxxxxxx)" name="customer_mobile" required>
+                                    id="customer_mobile" placeholder="Phone no(e.g 017xxxxxxxx)" name="customer_mobile">
                                 @error('customer_mobile')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -331,7 +330,7 @@
                             </div>
                             <div class="form-group my-2">
                                 <input type="text" class="form-control @error('customer_name') is-invalid @enderror"
-                                    id="customer_name" placeholder="Customer Name" name="customer_name" required>
+                                    id="customer_name" placeholder="Customer Name" name="customer_name">
                                 @error('customer_name')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>

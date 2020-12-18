@@ -164,13 +164,13 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
         });
 
         Route::group(['middleware' => ['can:manage-reports']], function () { 
-            //reports
+            //start ecommerce reports
             Route::get('/reports/daily', 'ReportController@daily')->name('reports.daily');
             Route::get('/reports/daily/total', 'ReportController@dailyTotal')->name('reports.dailytotal');
             Route::get('/reports/monthly/total', 'ReportController@monthlytotal')->name('reports.monthlytotal');
             Route::get('/reports/yearly/total', 'ReportController@yearlytotal')->name('reports.yearlytotal');
             Route::get('/reports/top20', 'ReportController@top20')->name('reports.top20');
-            Route::post('/reports/top20/', 'ReportController@getTop20')->name('reports.getTop20');                
+            Route::post('/reports/top20', 'ReportController@getTop20')->name('reports.getTop20');                
             Route::get('/reports/single', 'ReportController@single')->name('reports.single');
             Route::post('/reports/single', 'ReportController@singleSale')->name('reports.singleSale');
 
@@ -189,6 +189,27 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             Route::get('/reports/yearly/total/excel', 'ReportController@excelYearlyTotal')->name('reports.excelyearlytotal');
             Route::get('/reports/top20/excel/{date1}/{date2}', 'ReportController@excelGetTop20')->name('reports.excelgetTop20');
             Route::get('/reports/single/excel/{date1}/{date2}/{search}', 'ReportController@excelSingleSale')->name('reports.excelSingleSale');
+            //end of ecommerce reports
+
+            //MIS Reports
+            Route::get('/reports/profit-loss', 'MISReportController@profitLoss')->name('reports.profitLoss');
+            Route::post('/reports/profit-loss', 'MISReportController@getprofitloss')->name('reports.getprofitloss');             
+            Route::get('/reports/cash-register', 'MISReportController@cashRegister')->name('reports.cashRegister');
+            Route::post('/reports/cash-register', 'MISReportController@getCashRegister')->name('reports.getCashRegister');
+            Route::get('/reports/customer-sales', 'MISReportController@customerSales')->name('reports.customerSales');
+            Route::post('/reports/customer-sales', 'MISReportController@getCustomerSales')->name('reports.getCustomerSales'); 
+            Route::get('/reports/sales-complimentary', 'MISReportController@complimentarySales')->name('reports.complimentarySales');
+            Route::post('/reports/sales-complimentary', 'MISReportController@getcomplimentarySales')->name('reports.getcomplimentarySales'); 
+            Route::get('/reports/bonus-point', 'MISReportController@bonusPoint')->name('reports.bonusPoint');
+            Route::get('/reports/stock', 'MISReportController@stock')->name('reports.stock');
+            //ajax call to search customer via select2.
+            Route::post('/reports/getclients/', 'MISReportController@getClients')->name('reports.getClients');
+            //MIS PDF reports
+            Route::get('/reports/pdf/cash-register/{date1}/{date2}', 'MISReportController@pdfgetCashRegister')->name('reports.pdfgetCashRegister');
+            Route::get('/report/pdf/customer-points/', 'MISReportController@pdfgetBonusPoints')->name('reports.pdfgetBonusPoints');
+            Route::get('/report/pdf/customer-sales/{date1}/{date2}/{id}', 'MISReportController@pdfgetCustomerSales')->name('reports.pdfgetCustomerSales');
+            Route::get('/reports/pdf/profit-loss/{date1}/{date2}/{op}', 'MISReportController@pdfgetprofitloss')->name('reports.pdfgetprofitloss');
+            Route::get('/reports/pdf/sales-complimentary/{date1}/{date2}', 'MISReportController@pdfcomplimentarySales')->name('reports.pdfcomplimentarySales');
         });
 
 
@@ -322,6 +343,22 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::get('/edit/{id}', 'DirectorController@edit')->name('board.directors.edit');
                 Route::post('/update', 'DirectorController@update')->name('board.directors.update');
                 Route::get('/delete/{id}', 'DirectorController@delete')->name('board.directors.delete');
+            });
+
+
+            //Complimentary sales route for restaurant.
+            
+            Route::group(['prefix' => 'complimentary'], function(){
+                Route::get('/sales', 'ComplimentarySaleController@index')->name('complimentary.sales.index'); 
+                //order place
+                Route::post('/order-place', 'ComplimentarySaleController@orderplace')->name('complimentary.sales.orderplace');
+                
+                //ajax route.           
+                Route::post('/findfoods','ComplimentarySaleController@getFoods')->name('complimentary.sales.getfoods');
+                Route::post('/findfoods/addsales','ComplimentarySaleController@addToSales')->name('complimentary.sales.addtosales');
+                Route::post('/sales/update', 'ComplimentarySaleController@update')->name('complimentary.sales.saleCartUpdate');
+                Route::post('/sales/delete', 'ComplimentarySaleController@destroy')->name('complimentary.sales.saleCartDelete');
+                //end of ajax route.
             });
 
 

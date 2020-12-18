@@ -119,7 +119,7 @@
                                 <div class="form-check">
                                     <label class="form-check-label">
                                         <input class="form-check-input" type="checkbox" id="featured" name="featured"
-                                            {{ $product->featured == 1 ? 'checked' : '' }} />Tiny Food Item
+                                            {{ $product->featured == 1 ? 'checked' : '' }} />Visible only for backend orders
                                     </label>
                                 </div>
                             </div>

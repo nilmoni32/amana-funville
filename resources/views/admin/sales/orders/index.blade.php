@@ -67,7 +67,7 @@
                                 {{ $order->order_tableNo }}
                             </td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
-                                {{ round($order->grand_total,0) }}
+                                {{ round($order->grand_total,2) }}
                             </td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                 {{ str_replace(',', ', ', $order->payment_method) }}

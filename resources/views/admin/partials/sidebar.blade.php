@@ -83,6 +83,63 @@
         </li>
       </ul>
     </li>
+    @php if(Route::currentRouteName() == 'admin.reports.profitLoss' || 
+            Route::currentRouteName() == 'admin.reports.getprofitloss' ||
+            Route::currentRouteName() == 'admin.reports.cashRegister' ||
+            Route::currentRouteName() == 'admin.reports.getCashRegister' ||
+            Route::currentRouteName() == 'admin.reports.customerSales' ||
+            Route::currentRouteName() == 'admin.reports.getCustomerSales' ||
+            Route::currentRouteName() == 'admin.reports.complimentarySales' ||
+            Route::currentRouteName() == 'admin.reports.getcomplimentarySales' ||
+            Route::currentRouteName() == 'admin.reports.bonusPoint' ||
+            Route::currentRouteName() == 'admin.reports.stock'){
+    $flag = 1;
+    }else{
+    $flag = 0;
+    }
+    @endphp
+    <li class="{{ $flag ? 'treeview is-expanded' : 'treeview' }}">
+      <a class="app-menu__item" href="#" data-toggle="treeview">
+        <i class="app-menu__icon fa fa-registered"></i><span class="app-menu__label">MIS Reports</span>
+        <i class="treeview-indicator fa fa-angle-right"></i>
+      </a>
+      <ul class="treeview-menu">
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.reports.profitLoss' ||
+          Route::currentRouteName() == 'admin.reports.getprofitloss' ? 'active' : '' }}"
+            href="{{ route('admin.reports.profitLoss') }}">
+            <i class="icon fa fa-dot-circle-o"></i>Profit and Loss</a>
+        </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.reports.cashRegister' ||
+          Route::currentRouteName() == 'admin.reports.getCashRegister' ? 'active' : '' }}"
+            href="{{ route('admin.reports.cashRegister') }}">
+            <i class="icon fa fa-dot-circle-o"></i>Cash Register Wise Sales</a>
+        </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.reports.customerSales' ||
+          Route::currentRouteName() == 'admin.reports.getCustomerSales' ? 'active' : '' }}"
+            href="{{ route('admin.reports.customerSales') }}">
+            <i class="icon fa fa-dot-circle-o"></i>Customer Wise Sales</a>
+        </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.reports.bonusPoint' ? 'active' : '' }}"
+            href="{{ route('admin.reports.bonusPoint') }}">
+            <i class="icon fa fa-dot-circle-o"></i>Customer Bonus Point</a>
+        </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.reports.complimentarySales' || 
+            Route::currentRouteName() == 'admin.reports.getcomplimentarySales' ? 'active' : '' }}" 
+            href="{{ route('admin.reports.complimentarySales') }}">
+            <i class="icon fa fa-dot-circle-o"></i>Complimentary Sales</a>
+        </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.reports.stock' ? 'active' : '' }}"
+            href="{{ route('admin.reports.stock') }}">
+            <i class="icon fa fa-dot-circle-o"></i>Stock Report</a>
+        </li>              
+      </ul>
+    </li>
     @endcan
 
     @can('manage-orders')
@@ -138,18 +195,11 @@
       <a class="app-menu__item {{ Route::currentRouteName() == 'admin.ingredient.index' ? 'active' : '' }}"
         href="{{ route('admin.ingredient.index')}}">
         <i class="app-menu__icon fa fa-th"></i>
-        <span class="app-menu__label">Ingredients Lists</span></a>
+        <span class="app-menu__label">Stock Ingredients</span></a>
     </li>
     @endcan
 
     @can('all-admin-features')
-    <li>
-      {{-- if current route name is admin.settings we will set active class here --}}
-      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.ingredientunit.index' ? 'active' : '' }}"
-        href="{{ route('admin.ingredientunit.index')}}">
-        <i class="app-menu__icon fa fa-object-ungroup"></i>
-        <span class="app-menu__label">Unit Measurement</span></a>
-    </li>
     <li>
       {{-- if current route name is admin.settings we will set active class here --}}
       <a class="app-menu__item {{ Route::currentRouteName() == 'admin.ingredienttypes.index' ? 'active' : '' }}"
@@ -157,6 +207,20 @@
         <i class="app-menu__icon fa fa-ils"></i>
         <span class="app-menu__label">Ingredients Types</span></a>
     </li>
+    <li>
+      {{-- if current route name is admin.settings we will set active class here --}}
+      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.ingredientunit.index' ? 'active' : '' }}"
+        href="{{ route('admin.ingredientunit.index')}}">
+        <i class="app-menu__icon fa fa-object-ungroup"></i>
+        <span class="app-menu__label">Unit Measurement</span></a>
+    </li>  
+    <li>
+      <a class="treeview-item {{ Route::currentRouteName() == 'admin.complimentary.sales.index' ? 'active' : '' }}"
+        href="{{ route('admin.complimentary.sales.index') }}">
+        <i class="app-menu__icon fa fa-leaf"></i>
+        <span class="app-menu__label">Complimentary POS</span>
+      </a>
+    </li>      
     <li>
       {{-- if current route name is admin.settings we will set active class here --}}
       <a class="app-menu__item {{ Route::currentRouteName() == 'admin.recipe.index' ? 'active' : '' }}"

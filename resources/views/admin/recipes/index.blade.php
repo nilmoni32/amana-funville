@@ -33,9 +33,11 @@
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">{{ $loop->index + 1  }}
                             </td>
                             <td style="padding: 0.5rem; vertical-align: 0 ;">
-                                <img src="{{ asset('storage/'.$recipe->product->images->first()->full) }}"
+                                @if($recipe->product->images->first())
+                                <img src="{!! asset('storage/'.$recipe->product->images->first()->full)  !!}"
                                     title="{{ $recipe->product->name }}" class="img-responsive pr-2 rounded"
-                                    width="70px" />
+                                    width="70px" height="45px" />
+                                @endif
                                 {{ $recipe->product->name }}</td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                 {{ $recipe->production_food_cost }}</td>

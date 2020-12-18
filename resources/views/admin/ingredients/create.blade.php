@@ -33,7 +33,7 @@
                                 <label class="control-label" for="ingredienttypes">Ingredient Types</label>
                                 <select name="typeingredient_id" id="ingredienttypes" class="form-control">
                                     @foreach($ingredienttypes as $ingredienttype)
-                                    <option></option>
+                                    <option value=""></option>
                                     <option value="{{ $ingredienttype->id }}">{{ $ingredienttype->name }}</option>
                                     @endforeach
                                 </select>

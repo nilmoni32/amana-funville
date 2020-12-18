@@ -155,7 +155,7 @@ class ReportController extends BaseController
     }
 
     public function getTop20(Request $request){
-        //coverting date format from m-d-Y to Y-m-d as database stroes date in 'Y-m-d' format
+        //coverting date format from m-d-Y to Y-m-d as database stores date in 'Y-m-d' format
         $start_date = Carbon::createFromFormat('d-m-Y', $request->start_date)->format('Y-m-d');
         $end_date = Carbon::createFromFormat('d-m-Y', $request->end_date)->format('Y-m-d');      
     

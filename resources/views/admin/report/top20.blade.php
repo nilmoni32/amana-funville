@@ -29,21 +29,21 @@
                             @csrf
                             <div class="form-group mb-2">
                                 <label>
-                                    <span class="font-weight-bold pr-1">Choose Start Date :</span>
-                                    <input type="text" name="start_date" class="datetimepicker"
+                                    <span class="font-weight-bold pr-1">From Date :</span>
+                                    <input type="text" name="start_date" class="form-control datetimepicker"
                                         value="{{ \Carbon\Carbon::parse($start_date)->format('d-m-Y') }}" required>
                                 </label>
                             </div>
                             <div class="form-group mx-sm-3 mb-2">
                                 <label class="font-bold">
-                                    <span class="font-weight-bold pr-1">Choose End Date :</span>
-                                    <input type="text" name="end_date" class="datetimepicker"
+                                    <span class="font-weight-bold pr-1">To Date :</span>
+                                    <input type="text" name="end_date" class="form-control datetimepicker"
                                         value="{{ \Carbon\Carbon::parse($end_date)->format('d-m-Y') }}" required>
                                 </label>
                             </div>
 
                             <button type="submit" class="btn btn-primary mb-2" name="top20btn">
-                                Get Item List</button>
+                                Preview</button>
                         </form>
                     </div>
                 </div>

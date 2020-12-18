@@ -20,7 +20,6 @@
             <div class="tile-body">
                 {{-- <h3 class="tile-title">{{ __('Sales') }}</h3> --}}
                 <!-- For defining autocomplete -->
-
                 <div class="row">
                     <div class="col-md-8 text-center">
                         <div class="form-group row mt-2">
@@ -51,7 +50,7 @@
                                     </thead>
                                     <tbody>
                                         @php $i=1; $total_taka = 0; @endphp
-                                        @foreach(App\Models\Sale::where('admin_id', Auth::id())->where('ordersale_id',
+                                        @foreach(App\Models\Complimentarysale::where('admin_id', Auth::id())->where('complimentary_ordersales_id',
                                         NULL)->get() as $sale)
                                         <tr>
                                             <td class="text-left pl-3">{{ $sale->product_name }}</td>
@@ -98,33 +97,8 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4 mt-2">
-                        <!--pos printing-->
-
-                        <div class="border px-4 rounded pb-4 mb-4" style="border-color:rgb(182, 182, 182);">
-                            <h4 class="text-center mt-3 mb-4">Restaurant Print Receipt</h4>
-                            <div class="text-center">
-                                <label class="checkbox">
-                                    <input type="checkbox" id="useDefaultPrinter" /> <strong>Print to
-                                        Default
-                                        printer</strong>
-                                </label>
-                                <br>
-                                <div id="installedPrinters">
-                                    <label for="installedPrinterName">or Select an installed Printer:</label><br>
-                                    <select name="installedPrinterName" id="installedPrinterName"
-                                        class="form-control mt-1 mb-2"></select>
-                                </div>
-
-                                <button type="button" onclick="print();"
-                                    class="btn btn-primary text-center text-uppercase"
-                                    style="display:block; width:100%;" {{ $order_id ? '' : 'disabled' }}>Print
-                                    Receipt</button>
-                            </div>
-                        </div>
-
-                        <!--end of pos print using javascript-->
-                        <form method="POST" action="{{ route('admin.restaurant.sales.orderplace') }}">
+                    <div class="col-md-4 mt-2">                        
+                        <form method="POST" action="{{ route('admin.complimentary.sales.orderplace') }}">
                             @csrf
                             <div class="border px-4 rounded" style="border-color:rgb(182, 182, 182);">
                                 <h4 class="text-center mt-3 mb-4">Customer Order Table No</h4>
@@ -135,39 +109,33 @@
                                     @error('order_tableNo')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                            </div> --}}
-                            <div class="form-group">
-                                <select name="order_tableNo" id="order_tableNo" class="form-control" required>
-                                    <option></option>
-                                    @for($i=1; $i<= config('settings.total_tbls'); $i++) <option value="T-{{ $i }}">
-                                        Table
-                                        No: {{ $i }}</option>
-                                        @endfor
-                                </select>
+                                    </span>
+                                    @enderror
+                                    </div>
+                                 --}}
+                                <div class="form-group">
+                                    <select name="order_tableNo" id="order_tableNo" class="form-control" required>
+                                        <option></option>
+                                        @for($i=1; $i<= config('settings.total_tbls'); $i++) <option value="T-{{ $i }}">
+                                            Table
+                                            No: {{ $i }}</option>
+                                            @endfor
+                                    </select>
+                                </div>
+                                <div class="form-group mt-2 mb-4">
+                                    <button type="submit" class="btn btn-primary text-uppercase"
+                                        style="display:block; width:100%;" id="submit">Place order </button>
+                                </div>
                             </div>
-                            <div class="form-group mt-2 mb-4">
-                                <button type="submit" class="btn btn-primary text-uppercase"
-                                    style="display:block; width:100%;" id="submit"
-                                    {{ $order_id && App\Models\Ordersale::where('id', $order_id)->first()->status == 'receive' ? 'disabled' : '' }}>Place
-                                    Order </button>
-                            </div>
+                        </form>
                     </div>
-                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-</div>
 @endsection
 @push('scripts')
-<script src="{{ asset('backend') }}/js/pos/zip.js"></script>
-<script src="{{ asset('backend') }}/js/pos/zip-ext.js"></script>
-<script src="{{ asset('backend') }}/js/pos/deflate.js"></script>
-<script src="{{ asset('backend') }}/js/pos/JSPrintManager.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.3.5/bluebird.min.js"></script>
 <script type="text/javascript">
     // getting CSRF Token from meta tag
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
@@ -186,7 +154,7 @@
         source: function( request, response ) {
           // Fetch data
           $.ajax({
-            url:"{{ route('admin.restaurant.sales.getfoods') }}",
+            url:"{{ route('admin.complimentary.sales.getfoods') }}",
             type: 'post',
             dataType: "json",
             // passing CSRF_TOKEN along with search value in the data
@@ -211,7 +179,7 @@
       });
 
       function addToSale(foodName, foodId){
-        $.post("{{ route('admin.restaurant.sales.addtosales') }}", {        
+        $.post("{{ route('admin.complimentary.sales.addtosales') }}", {        
             _token: CSRF_TOKEN,
             foodName: foodName,
             foodId: foodId
@@ -260,7 +228,7 @@
                var product_quantity = $.trim($(this).val());
                var id = $(this).attr("id"); // getting the id of input product_qty
                
-            $.post("{{ route('admin.restaurant.sales.saleCartUpdate') }}", {
+            $.post("{{ route('admin.complimentary.sales.saleCartUpdate') }}", {
             _token: CSRF_TOKEN,
             sale_id: sale_id,
             product_quantity: product_quantity
@@ -299,7 +267,7 @@
                 }
             }
 
-            $.post("{{ route('admin.restaurant.sales.saleCartUpdate') }}", {
+            $.post("{{ route('admin.complimentary.sales.saleCartUpdate') }}", {
                 _token: CSRF_TOKEN,
                 sale_id: sale_id,
                 product_quantity: $qty.val()
@@ -316,7 +284,7 @@
 
         function cartClose(saleId, delBtnId) {
             var parent = $("#" + delBtnId).parent(); //getting the td of the del button
-            $.post("{{ route('admin.restaurant.sales.saleCartDelete') }}", {
+            $.post("{{ route('admin.complimentary.sales.saleCartDelete') }}", {
                 _token: CSRF_TOKEN,
                 sale_id: saleId
             }).done(function(data) {
@@ -333,113 +301,6 @@
                 }
             });
         }
-
-  //POS PRINT RECEIPT : https://www.neodynamic.com/articles/How-to-print-raw-ESC-POS-commands-from-Javascript/
-  
-  //WebSocket settings
-  JSPM.JSPrintManager.auto_reconnect = true;
-    JSPM.JSPrintManager.start();
-    JSPM.JSPrintManager.WS.onStatusChanged = function () {
-        if (jspmWSStatus()) {
-            //get client installed printers
-            JSPM.JSPrintManager.getPrinters().then(function (myPrinters) {
-                var options = '';
-                for (var i = 0; i < myPrinters.length; i++) {
-                    options += '<option>' + myPrinters[i] + '</option>';
-                }
-                $('#installedPrinterName').html(options);
-            });
-        }
-    };
- 
-    //Check JSPM WebSocket status
-    function jspmWSStatus() {
-        if (JSPM.JSPrintManager.websocket_status == JSPM.WSStatus.Open)
-            return true;
-        else if (JSPM.JSPrintManager.websocket_status == JSPM.WSStatus.Closed) {
-            alert('JSPrintManager (JSPM) is not installed or not running! Download JSPM Client App from https://neodynamic.com/downloads/jspm');
-            return false;
-        }
-        else if (JSPM.JSPrintManager.websocket_status == JSPM.WSStatus.Blocked) {
-            alert('JSPM has blocked this website!');
-            return false;
-        }
-    }
- 
-    //Do printing...
-    function print(o) {
-        if (jspmWSStatus()) {
-            //Create a ClientPrintJob
-            var cpj = new JSPM.ClientPrintJob();
-            //Set Printer type (Refer to the help, there many of them!)
-            if ($('#useDefaultPrinter').prop('checked')) {
-                cpj.clientPrinter = new JSPM.DefaultPrinter();
-            } else {
-                cpj.clientPrinter = new JSPM.InstalledPrinter($('#installedPrinterName').val());
-            }
-            //Set content to print...
-            //Create ESP/POS commands for sample label
-            var esc = '\x1B'; //ESC byte in hex notation
-            var newLine = '\x0A'; //LF byte in hex notation            
-            var cmds = esc + "@"; //Initializes the printer (ESC @)
-            cmds += esc + '!' + '\x30'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
-            cmds += "   {{ config('settings.site_name') }}"; //text to print site name
-            cmds += newLine;
-            cmds += esc + '!' + '\x08'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex            
-            cmds += newLine;
-            cmds += "{{ config('settings.site_title') }}"; //text to print site title
-            cmds += newLine;
-            cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
-            cmds += "---------------------------------------";
-            cmds += newLine;            
-            cmds += "{{ config('settings.contact_address') }}"; //text to print site address
-            cmds += newLine;
-            cmds += "Contact no: {{ config('settings.phone_no') }}";
-            cmds += newLine;
-            cmds += "Date: {{ date('d-M-Y h:i:s A') }}";
-            cmds += newLine;
-            cmds += "---------------------------------------";
-            cmds += newLine;
-            cmds += esc + '!' + '\x08'; //Emphasized + Double-height mode selected (ESC ! (16 + 8)) 24 dec => 18 hex
-            cmds += "Customer order Table no: {{ $order_id ? App\Models\Ordersale::find($order_id)->order_tableNo : ''}}"
-            cmds += newLine;
-            cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
-            cmds += "---------------------------------------";
-            cmds += newLine;
-            cmds += "#Item     #Qty     #Price     #subtotal";
-            cmds += newLine;
-            cmds += "---------------------------------------";
-            cmds += newLine;
-            @php $sub_tot_without_vat = 0.0; @endphp            
-            @if($order_id)
-            @php $paid_amount = App\Models\Ordersale::find($order_id)->cash_pay + App\Models\Ordersale::find($order_id)->card_pay +
-            App\Models\Ordersale::find($order_id)->mobile_banking_pay; @endphp
-            @foreach(App\Models\Sale::where('ordersale_id', $order_id)->get() as $saleCart)        
-                cmds += "{{ $saleCart->product_name }}" ;
-                cmds += newLine;
-                cmds += "           {{ $saleCart->product_quantity}}" + '   X   ' + "{{ $saleCart->unit_price }}" + "      {{ $saleCart->product_quantity *  $saleCart->unit_price }} "
-                cmds += newLine;                
-                cmds += "---------------------------------------";
-                cmds += newLine;            
-                @php $sub_tot_without_vat += $saleCart->product_quantity *  $saleCart->unit_price; @endphp                
-            @endforeach
-            @endif 
-            cmds += "Total:                         {{ $sub_tot_without_vat }}";
-            cmds += newLine + newLine;             
-            cmds += "---------------------------------------";
-            cmds += esc + '!' + '\x08'; //Emphasized + Double-height mode selected (ESC ! (16 + 8)) 24 dec => 18 hex
-            cmds += newLine;                        
-            cmds += '         Restaurant Print Receipt';
-            cmds += newLine;
-            cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
-            cmds += "---------------------------------------";
-            cmds += newLine + newLine;            
-            cmds += newLine + newLine;
-            cpj.printerCommands = cmds;
-            //Send print job to printer!
-            cpj.sendToClient();
-        }
-    }
 
 </script>
 @endpush
