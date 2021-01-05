@@ -183,6 +183,17 @@
      // Initialize jQuery UI autocomplete on #product_search field.
       $("#product_search").autocomplete({
         //Using source option to send AJAX post request to route('employees.getEmployees') to fetch data
+        position: {
+            my: "left top-16",
+            of: event,
+            collision: "fit"
+            },
+        //FIX JQUERY UIS AUTOCOMPLETE WIDTH
+        open: function(event, ui) {
+            $(this).autocomplete("widget").css({
+                "width": ($(this).width() + "px")
+            });
+        },
         source: function( request, response ) {
           // Fetch data
           $.ajax({

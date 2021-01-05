@@ -59,7 +59,9 @@
                                     <a href="{{ route('admin.ingredient.edit', $ingredient->id) }}"
                                         class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
                                     <a href="{{ route('admin.ingredient.delete', $ingredient->id) }}"
-                                        class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+                                        class="btn btn-sm btn-danger {{
+                                            App\Models\IngredientPurchase::where('ingredient_id', $ingredient->id)->count()
+                                            ? 'disabled' :'' }}"><i class="fa fa-trash"></i></a>
                                 </div>
                             </td>
                         </tr>

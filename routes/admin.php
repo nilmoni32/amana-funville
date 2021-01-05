@@ -30,8 +30,6 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
     // admin password reset
     Route::get('password/reset/{token}', 'ResetPasswordController@showResetForm')->name('password.reset');
     Route::post('password/reset', 'ResetPasswordController@reset')->name('password.update');
-     
-    
 
     // To block unauthoized incoming HTTP requests we use middleware.
     // also we have to put this route at the last. 
@@ -164,34 +162,26 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
         });
 
         Route::group(['middleware' => ['can:manage-reports']], function () { 
-            //start ecommerce reports
-            Route::get('/reports/daily', 'ReportController@daily')->name('reports.daily');
-            Route::get('/reports/daily/total', 'ReportController@dailyTotal')->name('reports.dailytotal');
-            Route::get('/reports/monthly/total', 'ReportController@monthlytotal')->name('reports.monthlytotal');
-            Route::get('/reports/yearly/total', 'ReportController@yearlytotal')->name('reports.yearlytotal');
-            Route::get('/reports/top20', 'ReportController@top20')->name('reports.top20');
-            Route::post('/reports/top20', 'ReportController@getTop20')->name('reports.getTop20');                
+            //start ecommerce reports            
+            Route::get('/reports/ecom/profit-loss', 'ReportController@profitloss')->name('reports.ecom.profitloss');
+            Route::post('/reports/ecom/profit-loss', 'ReportController@getprofitloss')->name('reports.ecom.getprofitloss'); 
+            Route::get('/reports/ecom/cash-register', 'ReportController@cashregister')->name('reports.ecom.cashregister');
+            Route::post('/reports/ecom/cash-register', 'ReportController@getcashregister')->name('reports.ecom.getcashregister');                         
             Route::get('/reports/single', 'ReportController@single')->name('reports.single');
             Route::post('/reports/single', 'ReportController@singleSale')->name('reports.singleSale');
 
-            //print-pdf-reports
-            Route::get('/report/daily/pdf', 'ReportController@pdfdaily')->name('reports.pdfdaily');
-            Route::get('/reports/daily/total/pdf', 'ReportController@pdfDailyTotal')->name('reports.pdfdailytotal');
-            Route::get('/reports/monthly/total/pdf', 'ReportController@pdfMonthlyTotal')->name('reports.pdfmonthlytotal');
-            Route::get('/reports/yearly/total/pdf', 'ReportController@pdfYearlyTotal')->name('reports.pdfyearlytotal');
-            Route::get('/reports/top20/pdf/{date1}/{date2}', 'ReportController@pdfGetTop20')->name('reports.pdfgetTop20');
-            Route::get('/reports/single/pdf/{date1}/{date2}/{search}', 'ReportController@pdfSingleSale')->name('reports.pdfSingleSale'); 
+            //pdf-reports
+            Route::get('/reports/ecom/pdf/cash-register/{date1}/{date2}', 'ReportController@pdfgetcashregister')->name('reports.ecom.pdfgetcashregister');
+            Route::get('/reports/ecom/pdf/profit-loss/{date1}/{date2}/{op}', 'ReportController@pdfgetprofitloss')->name('reports.ecom.pdfgetprofitloss');
+            //Route::get('/reports/single/pdf/{date1}/{date2}/{search}', 'ReportController@pdfSingleSale')->name('reports.pdfSingleSale'); 
 
             //excel reports
-            Route::get('/report/daily/excel', 'ReportController@exceldaily')->name('reports.exceldaily');
-            Route::get('/reports/daily/total/excel', 'ReportController@excelDailyTotal')->name('reports.exceldailytotal');
-            Route::get('/reports/monthly/total/excel', 'ReportController@excelMonthlyTotal')->name('reports.excelmonthlytotal');
-            Route::get('/reports/yearly/total/excel', 'ReportController@excelYearlyTotal')->name('reports.excelyearlytotal');
-            Route::get('/reports/top20/excel/{date1}/{date2}', 'ReportController@excelGetTop20')->name('reports.excelgetTop20');
-            Route::get('/reports/single/excel/{date1}/{date2}/{search}', 'ReportController@excelSingleSale')->name('reports.excelSingleSale');
+            //Route::get('/reports/single/excel/{date1}/{date2}/{search}', 'ReportController@excelSingleSale')->name('reports.excelSingleSale');
             //end of ecommerce reports
 
-            //MIS Reports
+            //MIS Reports            
+            Route::get('/reports/combined/profit-loss', 'MISReportController@combinedprofitLoss')->name('reports.combined.profitLoss');
+            Route::post('/reports/combined/profit-loss', 'MISReportController@getcombinedprofitLoss')->name('reports.combined.getcombinedprofitLoss');
             Route::get('/reports/profit-loss', 'MISReportController@profitLoss')->name('reports.profitLoss');
             Route::post('/reports/profit-loss', 'MISReportController@getprofitloss')->name('reports.getprofitloss');             
             Route::get('/reports/cash-register', 'MISReportController@cashRegister')->name('reports.cashRegister');
@@ -202,14 +192,17 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             Route::post('/reports/sales-complimentary', 'MISReportController@getcomplimentarySales')->name('reports.getcomplimentarySales'); 
             Route::get('/reports/bonus-point', 'MISReportController@bonusPoint')->name('reports.bonusPoint');
             Route::get('/reports/stock', 'MISReportController@stock')->name('reports.stock');
+            Route::post('/reports/stock', 'MISReportController@getstock')->name('reports.getstock');
             //ajax call to search customer via select2.
             Route::post('/reports/getclients/', 'MISReportController@getClients')->name('reports.getClients');
             //MIS PDF reports
-            Route::get('/reports/pdf/cash-register/{date1}/{date2}', 'MISReportController@pdfgetCashRegister')->name('reports.pdfgetCashRegister');
+            Route::get('/reports/combined/pdf/profit-loss/{date1}/{date2}', 'MISReportController@pdfcombinedgetprofitloss')->name('reports.pdfcombinedgetprofitloss');
+            Route::get('/reports/pdf/cash-register/{date1}/{date2}', 'MISReportController@pdfgetCashRegister')->name('reports.pdfgetCashRegister');            
             Route::get('/report/pdf/customer-points/', 'MISReportController@pdfgetBonusPoints')->name('reports.pdfgetBonusPoints');
             Route::get('/report/pdf/customer-sales/{date1}/{date2}/{id}', 'MISReportController@pdfgetCustomerSales')->name('reports.pdfgetCustomerSales');
             Route::get('/reports/pdf/profit-loss/{date1}/{date2}/{op}', 'MISReportController@pdfgetprofitloss')->name('reports.pdfgetprofitloss');
             Route::get('/reports/pdf/sales-complimentary/{date1}/{date2}', 'MISReportController@pdfcomplimentarySales')->name('reports.pdfcomplimentarySales');
+            Route::get('/report/pdf/stock/{op}', 'MISReportController@pdfstock')->name('reports.pdfstock');
         });
 
 

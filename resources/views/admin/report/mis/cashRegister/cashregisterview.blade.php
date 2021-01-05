@@ -14,7 +14,7 @@
     <div class="pull-right">
         <a href="{{ route('admin.reports.pdfgetCashRegister', [$start_date, $end_date]) }}" class="btn btn-sm btn-dark"
             target="_blank"><i class="fa fa-file-pdf-o" style="font-size:16px;"></i></a>
-        <a href="{{ route('admin.reports.excelgetTop20', [$start_date, $end_date]) }}" class="btn btn-sm btn-info"><i
+        <a href="#" class="btn btn-sm btn-info"><i
                 class="fa fa-file-excel-o" style="font-size:17px;"></i></a>
     </div>
 </div>
@@ -45,6 +45,45 @@
                                 Preview</button>
                         </form>
                     </div>
+                </div>
+                <div class="row mx-1 py-2 border border-bottom-0"> 
+                    <div class="col-12">
+                        <div class="row pt-3 h6">
+                            <div class="col-6 text-right">Net Reference Discount  :</div>
+                            <div class="col-6 pl-0 text-left"><span>{{ round($net_ref_discount,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                        </div>
+                    </div>                    
+                    <div class="col-12">
+                        <div class="row pt-1 h6">
+                            <div class="col-6 text-right">Net Customer Points Discount  :</div>
+                            <div class="col-6 pl-0 text-left"><span>{{ round($net_points_discount,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="row pt-1 h6">
+                            <div class="col-6 text-right">Net Total Sales  :</div>
+                            <div class="col-6 pl-0 text-left"><span>{{ round($net_sales,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="row pt-1 h6">
+                            <div class="col-6 text-right">Net Cash Sales  :</div>
+                            <div class="col-6 pl-0 text-left"><span>{{ round($net_cash_sales,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="row pt-1 h6">
+                            <div class="col-6 text-right">Net Card Sales  :</div>
+                            <div class="col-6 pl-0 text-left"><span>{{ round($net_card_sales,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="row pt-1 pb-2 h6">
+                            <div class="col-6 text-right">Net Mobile Bank Sales  :</div>
+                            <div class="col-6 pl-0 text-left"><span>{{ round($net_mobile_sales,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                        </div>
+                    </div>
+                    
                 </div>
                 @if($cash_register->count() > 0)
                 <div class="row mx-1 border p-3">              

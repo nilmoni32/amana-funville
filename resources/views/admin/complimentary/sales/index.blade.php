@@ -101,7 +101,7 @@
                         <form method="POST" action="{{ route('admin.complimentary.sales.orderplace') }}">
                             @csrf
                             <div class="border px-4 rounded" style="border-color:rgb(182, 182, 182);">
-                                <h4 class="text-center mt-3 mb-4">Customer Order Table No</h4>
+                                <h5 class="text-left mt-3 mb-4">Short Notes for Complimentary sales :</h5>
                                 {{-- <div class="form-group my-2">
                                     <input type="text" class="form-control @error('order_tableNo') is-invalid @enderror"
                                         id="order_tableNo" placeholder="Enter Order Table No (required)"
@@ -114,13 +114,8 @@
                                     </div>
                                  --}}
                                 <div class="form-group">
-                                    <select name="order_tableNo" id="order_tableNo" class="form-control" required>
-                                        <option></option>
-                                        @for($i=1; $i<= config('settings.total_tbls'); $i++) <option value="T-{{ $i }}">
-                                            Table
-                                            No: {{ $i }}</option>
-                                            @endfor
-                                    </select>
+                                    {{-- <label for="exampleFormControlTextarea1"></label> --}}
+                                    <textarea class="form-control" id="complimentary_notes" name="complimentary_notes" rows="2" placeholder="Enter short notes" required></textarea>
                                 </div>
                                 <div class="form-group mt-2 mb-4">
                                     <button type="submit" class="btn btn-primary text-uppercase"
@@ -149,7 +144,20 @@
              });
      // POS system starts here
      // Initialize jQuery UI autocomplete on #product_search field.
+     
       $("#product_search").autocomplete({
+        // resetting the combobox option
+        position: {
+            my: "left top-16",
+            of: event,
+            collision: "fit"
+            },
+        //FIX JQUERY UIS AUTOCOMPLETE WIDTH
+        open: function(event, ui) {
+            $(this).autocomplete("widget").css({
+                "width": ($(this).width() + "px")
+            });
+        },       
         //Using source option to send AJAX post request to route('employees.getEmployees') to fetch data
         source: function( request, response ) {
           // Fetch data
@@ -177,6 +185,8 @@
            return false;
         }
       });
+
+ 
 
       function addToSale(foodName, foodId){
         $.post("{{ route('admin.complimentary.sales.addtosales') }}", {        

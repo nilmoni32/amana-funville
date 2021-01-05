@@ -49,6 +49,7 @@
                             <th class="text-center"> Name </th>
                             <th class="text-center"> Quantity </th>
                             <th class="text-center"> Sales</th>
+                            <th class="text-center"> Remarks</th>
                         </tr>
                     </thead>
                     <tbody>

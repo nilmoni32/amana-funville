@@ -30,8 +30,7 @@ class OrderController extends BaseController
     }
 
     public function update(Request $request){
-        //before placement an order status to delivered we need to check if the food recipe is added of the same food product or not.
-        if($request->status == 'delivered'){
+        //before placement an order status to delivered we need to check if the food recipe is added of the same food product or not.        
         foreach(Cart::where('order_id', $request->id)->get() as $cart){
             if(!Recipe::where('product_id', $cart->product_id)->first()){
                  // setting flash message using trait
@@ -44,8 +43,8 @@ class OrderController extends BaseController
                 $this->showFlashMessages(); 
                 return redirect()->back(); 
                 }
-            }
         }
+        
         
         $order = Order::where('id', $request->id)->first(); 
         if($request->status == 'cancel')
@@ -57,8 +56,13 @@ class OrderController extends BaseController
                 $cart->save();           
             } 
         }
-       
-        $order->status = $request->status;
+
+        if($request->status == 'delivered'){ 
+            $order->payment_status = 1;  // means payment recived. specially for cash payment.     
+            $order->status = $request->status;
+        }else{
+            $order->status = $request->status;  
+        }
         $order->save(); 
          
         if($order->status == 'delivered'){

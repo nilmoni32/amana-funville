@@ -226,7 +226,8 @@
                 <span>Customer Points Discount</span><span style="padding-left:10px;">:</span>  {{ round($discount->point_discount,2) }} {{ config('settings.currency_symbol') }}<br/>
                 <span>Net Total Sales</span><span style="padding-left: 72px;">:</span>  {{ round($discount->total_sales,2) }} {{ config('settings.currency_symbol') }}<br/>
                 <span>Net Sales Cost</span><span style="padding-left: 74px;">:</span>  {{ $totalSalesCost + $complimentary_sales_cost }} {{ config('settings.currency_symbol') }}<br/>
-                <span>Net Profit/Loss</span><span style="padding-left: 76px;">:</span>  {{ $discount->total_sales - ($totalSalesCost + $complimentary_sales_cost)  }} {{ config('settings.currency_symbol') }} <br/>
+                <span>Net Profit/Loss</span><span style="padding-left: 76px;">:</span>  {{ $discount->total_sales - ($totalSalesCost + $complimentary_sales_cost)  }} {{ config('settings.currency_symbol') }} 
+                &nbsp; {{ "( " . round((($discount->total_sales-($totalSalesCost + $complimentary_sales_cost)) / ($totalSalesCost + $complimentary_sales_cost))*100,2) ."% )" }}<br/>
                 </p>
             </div>
             <div class="clearfix"></div>

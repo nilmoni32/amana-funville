@@ -53,6 +53,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        //defining error page
+        if($this->isHttpException($exception))
+        {
+            if($exception->getStatusCode() == 404)
+                return redirect()->route('notfound');
+        }
         return parent::render($request, $exception);
     }
 

@@ -46,23 +46,20 @@
                         <h3 class="tile-title">Edit Food Item Details</h3>
                         <hr>
                         <div class="tile-body">
-                            <div class="form-group">
-                                <label class="control-label" for="name">Name</label>
-                                <input class="form-control @error('name') is-invalid @enderror" type="text"
-                                    placeholder="Enter name" id="name" name="name"
-                                    value="{{ old('name', $product->name) }}" />
-                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                <div class="invalid-feedback active">
-                                    <i class="fa fa-exclamation-circle fa-fw"></i> @error('name')
-                                    <span>{{ $message }}</span> @enderror
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label" for="description">Description</label>
-                                <textarea name="description" id="description" rows="4" class="form-control">{{ old('description', $product->description) }}
-                                </textarea>
-                            </div>
                             <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label" for="name">Name</label>
+                                        <input class="form-control @error('name') is-invalid @enderror" type="text"
+                                            placeholder="Enter name" id="name" name="name"
+                                            value="{{ old('name', $product->name) }}" />
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                        <div class="invalid-feedback active">
+                                            <i class="fa fa-exclamation-circle fa-fw"></i> @error('name')
+                                            <span>{{ $message }}</span> @enderror
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label" for="categories">Categories</label>
@@ -106,7 +103,12 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div>                         
+                            <div class="form-group">
+                                <label class="control-label" for="description">Description</label>
+                                <textarea name="description" id="description" rows="4" class="form-control">{{ old('description', $product->description) }}
+                                </textarea>
+                            </div>                            
                             <div class="form-group">
                                 <div class="form-check">
                                     <label class="form-check-label">
@@ -198,9 +200,12 @@
     Dropzone.autoDiscover = false;
 
     $( document ).ready(function() {
-        $('#categories').select2();         
-        
-
+        $('#categories').select2(
+            { 
+            placeholder: " Select Food Category",
+            width: '100%',    
+            }
+        ); 
          // redirect to specific tab
          $('#tabMenu a[href="#{{ old('tab') }}"]').tab('show').removeClass('active');
 

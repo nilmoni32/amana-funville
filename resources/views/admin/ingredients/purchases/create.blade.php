@@ -125,7 +125,8 @@
     $('#unit').select2({
                 placeholder: "Select an measurement Unit",              
                 multiple: false, 
-                minimumResultsForSearch: -1,                        
+                minimumResultsForSearch: -1,
+                width: '100%',                         
     });
 
     $("#ingredient_search").autocomplete({

@@ -42,7 +42,9 @@
                                     <a href="{{ route('admin.ingredienttypes.edit', $ingredienttype->id) }}"
                                         class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
                                     <a href="{{ route('admin.ingredienttypes.delete', $ingredienttype->id) }}"
-                                        class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+                                        class="btn btn-sm btn-danger {{
+                                            App\Models\Ingredient::where('typeingredient_id', $ingredienttype->id)->count()
+                                            ? 'disabled' :'' }}"><i class="fa fa-trash"></i></a>
                                 </div>
                             </td>
                         </tr>

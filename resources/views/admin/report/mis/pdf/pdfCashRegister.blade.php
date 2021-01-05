@@ -205,9 +205,21 @@
             <div class="invoice-left-top float-left" style="width:100%;">
                 <h5 style="margin-top:5px; text-align: left;">Report: Cash register wise sales</h5>
                 <p style="margin-top:-45px; float:right; font-weight: bold;">From: <span class="font-normal">{{ $start_date }} To: {{ $end_date }}</span></p>
-            </div>
+            </div>            
             <div class="clearfix"></div>
         </div>
+        <div class="mt-5" style="width:100%;">
+            <p class="text-left" style="margin-top:5px;">
+                <span>Reference Discount</span><span style="padding-left: 46px;">:</span>  {{ round($net_ref_discount,2) }} {{ config('settings.currency_symbol') }}<br/>
+                <span>Customer Points Discount</span><span style="padding-left:10px;">:</span>  {{ round($net_points_discount,2) }} {{ config('settings.currency_symbol') }}<br/>
+                <span>Net Total Sales</span><span style="padding-left: 72px;">:</span>  {{ round($net_sales,2) }} {{ config('settings.currency_symbol') }}<br/>
+                <span>Net Cash Sales</span><span style="padding-left: 71px;">:</span>  {{ round($net_cash_sales,2) }} {{ config('settings.currency_symbol') }}<br/>
+                <span>Net Card Sales</span><span style="padding-left: 73px;">:</span>  {{ round($net_card_sales,2) }} {{ config('settings.currency_symbol') }}<br/>
+                <span>Net Mobile Bank Sales</span><span style="padding-left: 30px;">:</span>  {{ round($net_mobile_sales,2) }} {{ config('settings.currency_symbol') }}<br/>
+            </p>
+            <div class="clearfix"></div>
+        </div>
+        
         <div class="product-description" style="margin-top:-10px;">
             <table>
                 <thead>

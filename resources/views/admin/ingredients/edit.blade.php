@@ -174,12 +174,14 @@
         $('#ingredienttypes').select2({
                 placeholder: "Select Ingredient types",
                // allowClear: true,
-                multiple: false,                          
+                multiple: false,  
+                width: '100%',                        
              });
 
         $('#measurement_unit').select2({                 
             multiple: false, 
-            minimumResultsForSearch: -1,                        
+            minimumResultsForSearch: -1,
+            width: '100%',                        
         });
         $('#smallest_unit').select2({           
             multiple: false, 

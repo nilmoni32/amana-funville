@@ -33,6 +33,9 @@ class PagesController extends Controller
         return view('site.pages.contact');
     }
     
+    public function pagenotfound(){
+      return view('errors.404');        
+    }
 
 
 }

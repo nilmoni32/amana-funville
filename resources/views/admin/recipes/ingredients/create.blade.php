@@ -88,7 +88,8 @@
             $('#ingredient_id').select2({
                 placeholder: "Select an ingredient",              
                 multiple: false, 
-                //minimumResultsForSearch: -1,                        
+                //minimumResultsForSearch: -1, 
+                width: '100%',                        
              });
 
             //  $('#measure_unit').select2({

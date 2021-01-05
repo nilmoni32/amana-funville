@@ -54,8 +54,14 @@
                                 <div class="btn-group" role="group" aria-label="Second group">
                                     <a href="{{ route('admin.products.edit', $product->id) }}"
                                         class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
+                                        {{-- the food will be deleted only if this food has not placed an order (cartbackup and salebackup) or 
+                                        there is no cooresponding food recipe is exist --}}
                                     <a href="{{ route('admin.products.delete', $product->id) }}"
-                                        class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+                                        class="btn btn-sm btn-danger {{
+                                            App\Models\Recipe::where('product_id', $product->id)->count() ||
+                                            App\Models\Cartbackup::where('product_id', $product->id)->count()
+                                           || App\Models\Salebackup::where('product_id', $product->id)->count()
+                                            ? 'disabled' :'' }}"><i class="fa fa-trash"></i></a>
                                 </div>
                             </td>
                         </tr>

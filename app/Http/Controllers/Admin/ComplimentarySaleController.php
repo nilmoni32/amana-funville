@@ -144,10 +144,6 @@ class ComplimentarySaleController extends Controller
         $this->showFlashMessages(); 
         return redirect()->back();
         }
-        
-        $this->validate($request,[  
-            'order_tableNo'    => 'required|string|max:10',
-        ]);
 
         // finding last order id: we use it for customer order id (customized) for billing purpose
         // it will be false only for the first record.
@@ -163,14 +159,13 @@ class ComplimentarySaleController extends Controller
         $order = new ComplimentaryOrdersale(); // we use order_id as online transaction id.
         $order->admin_id = auth()->user()->id;     
         $order->order_number = $ord_id;         
-        $order->order_date = \Carbon\Carbon::now()->toDateTimeString();         
-        $order->order_tableNo = $request->order_tableNo;
+        $order->order_date = \Carbon\Carbon::now()->toDateTimeString(); 
         $order->grand_total =$this->calculateSubtotal();
+        $order->notes = $request->complimentary_notes;
         $order->save();
         // when order is placed we set complimentary_ordersales_id and order_tbl_no to complimentary Sale cart 
         foreach(Complimentarysale::where('admin_id', Auth::id())->where('complimentary_ordersales_id',NULL)->get() as $sale){
-            $sale->complimentary_ordersales_id = $order->id;
-            $sale->order_tbl_no = $order->order_tableNo;
+            $sale->complimentary_ordersales_id = $order->id;           
             $sale->save();
         }
 

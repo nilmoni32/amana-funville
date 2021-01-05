@@ -111,11 +111,13 @@
              $('#ingredienttypes').select2({
                 placeholder: "Select an ingredient types",
                // allowClear: true,
-                multiple: false,                          
+                multiple: false,  
+                width: '100%',                        
              });
              $('#measurement_unit').select2({
                 placeholder: "Select an measurement Unit",              
                 multiple: false, 
+                width: '100%',
                // minimumResultsForSearch: -1,                        
              });
             

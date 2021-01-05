@@ -14,6 +14,8 @@ require 'admin.php'; // adding admin php with web.php
 
 //Route::view('/', 'site.pages.homepage');
 Route::get('/', 'Site\PagesController@index')->name('index');
+//route for page not found
+Route::get('/pagenotfound', 'Site\PagesController@pagenotfound')->name('notfound');
 
 //other pages
 Route::get('/reservation', 'Site\PagesController@reservation')->name('reservation');

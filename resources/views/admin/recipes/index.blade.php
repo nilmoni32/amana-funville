@@ -46,7 +46,9 @@
                                     <a href="{{ route('admin.recipe.edit', $recipe->id) }}"
                                         class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
                                     <a href="{{ route('admin.recipe.delete', $recipe->id) }}"
-                                        class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+                                        class="btn btn-sm btn-danger {{
+                                            App\Models\RecipeIngredient::where('recipe_id', $recipe->id)->count()
+                                            ? 'disabled' :'' }}"><i class="fa fa-trash"></i></a>
                                 </div>
                             </td>
                         </tr>

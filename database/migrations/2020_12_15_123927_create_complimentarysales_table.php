@@ -21,7 +21,6 @@ class CreateComplimentarysalesTable extends Migration
             $table->string('product_name')->nullable();
             $table->decimal('product_quantity', 8, 2)->default(1.00);
             $table->decimal('unit_price', 8, 2)->nullable();
-            $table->string('order_tbl_no')->nullable();
             
             $table->timestamps();
 

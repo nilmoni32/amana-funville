@@ -14,7 +14,7 @@
     <div class="pull-right">
         <a href="{{ route('admin.reports.pdfgetCustomerSales', [$start_date, $end_date, $client->id]) }}" class="btn btn-sm btn-dark"
             target="_blank"><i class="fa fa-file-pdf-o" style="font-size:16px;"></i></a>
-        <a href="{{ route('admin.reports.excelgetTop20', [$start_date, $end_date]) }}" class="btn btn-sm btn-info"><i
+        <a href="#" class="btn btn-sm btn-info"><i
                 class="fa fa-file-excel-o" style="font-size:17px;"></i></a>
     </div>
 </div>

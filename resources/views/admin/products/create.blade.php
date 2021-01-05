@@ -24,20 +24,18 @@
                         <h3 class="tile-title">Food Item Details</h3>
                         <hr>
                         <div class="tile-body">
-                            <div class="form-group">
-                                <label class="control-label" for="name">Name</label>
-                                <input class="form-control @error('name') is-invalid @enderror" type="text"
-                                    placeholder="Enter name" id="name" name="name" value="{{ old('name') }}" />
-                                <div class="invalid-feedback active">
-                                    <i class="fa fa-exclamation-circle fa-fw"></i> @error('name')
-                                    <span>{{ $message }}</span> @enderror
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label" for="description">Description</label>
-                                <textarea name="description" id="description" rows="4" class="form-control"></textarea>
-                            </div>
                             <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label" for="name">Name</label>
+                                        <input class="form-control @error('name') is-invalid @enderror" type="text"
+                                            placeholder="Enter name" id="name" name="name" value="{{ old('name') }}" />
+                                        <div class="invalid-feedback active">
+                                            <i class="fa fa-exclamation-circle fa-fw"></i> @error('name')
+                                            <span>{{ $message }}</span> @enderror
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label" for="categories">Categories</label>
@@ -49,7 +47,7 @@
                                         </select>
                                     </div>
                                 </div>
-                            </div>
+                            </div>                            
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -76,6 +74,10 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label class="control-label" for="description">Description</label>
+                                <textarea name="description" id="description" rows="4" class="form-control"></textarea>
+                            </div>                            
                             <div class="form-group">
                                 <div class="form-check">
                                     <label class="form-check-label">
@@ -115,7 +117,10 @@
 <script>
     $( document ).ready(function() {
             $('#categories').select2(
-                { placeholder: " Select Food Category",}
+                { 
+                placeholder: " Select Food Category",
+                width: '100%',    
+                }
             );
         });
 </script>

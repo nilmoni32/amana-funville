@@ -55,7 +55,8 @@
     $('#recipe_id').select2({
                 placeholder: "Select a Food Menu",              
                 multiple: false, 
-                //minimumResultsForSearch: -1,                        
+                //minimumResultsForSearch: -1,   
+                width: '100%',                      
              });
 
     });

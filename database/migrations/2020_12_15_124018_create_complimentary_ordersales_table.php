@@ -19,7 +19,7 @@ class CreateComplimentaryOrdersalesTable extends Migration
             $table->string('order_number')->unique();
             $table->decimal('grand_total', 13, 6)->nullable();
             $table->string('order_date');
-            $table->string('order_tableNo')->nullable();
+            $table->text('notes')->nullable();
             
             $table->timestamps();
 
