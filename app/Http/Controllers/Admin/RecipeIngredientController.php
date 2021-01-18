@@ -47,47 +47,40 @@ class RecipeIngredientController extends BaseController
         $unit_price = $ingredient->smallest_unit_price;
         $ingredient_total_cost =  $request->quantity * $unit_price;     
         
-        // checking whether the ingredient has any purchase record by ingredient unit price.
-        if(floatval($unit_price) > 0){
-            //checking whether the ingredient is already added to the Recipe or not.
-            $recipeIngredient = RecipeIngredient::where('ingredient_id', $request->ingredient_name)->where('recipe_id', $request->recipe_id)->first();
-           
-            if(!is_null($recipeIngredient)){
-                return $this->responseRedirectBack(' This ingredient is already added to the Recipe.' ,'error', false, false); 
+     
+        //checking whether the ingredient is already added to the Recipe or not.
+        $recipeIngredient = RecipeIngredient::where('ingredient_id', $request->ingredient_name)->where('recipe_id', $request->recipe_id)->first();
+        
+        if(!is_null($recipeIngredient)){
+            return $this->responseRedirectBack(' This ingredient is already added to the Recipe.' ,'error', false, false); 
+        }else{
+            // if the ingredient is not added to the recipe.
+            $recipeIngredient= RecipeIngredient::create([
+                'recipe_id' => $request->recipe_id,
+                'ingredient_id' => $request->ingredient_name, // actually it conatains the ingredient id.
+                'quantity' => $request->quantity,
+                'unit_price' =>   $unit_price, 
+                'measure_unit' =>   $request->measurement_unit,
+                'ingredient_total_cost' => $ingredient_total_cost            
+            ]);
+    
+            //getting the recipe.
+            $recipe = Recipe::find($request->recipe_id);
+            $recipe->production_food_cost += $recipeIngredient->ingredient_total_cost; 
+            $recipe->save();                
+    
+            if($recipeIngredient){          
+    
+                // setting flash message using trait
+                $this->setFlashMessage(' Recipe ingredient is added successfully', 'success');    
+                $this->showFlashMessages();
+                return redirect()->route('admin.recipe.ingredient.index', $recipe->id);
+    
             }else{
-                // if the ingredient is not added to the recipe.
-                $recipeIngredient= RecipeIngredient::create([
-                    'recipe_id' => $request->recipe_id,
-                    'ingredient_id' => $request->ingredient_name, // actually it conatains the ingredient id.
-                    'quantity' => $request->quantity,
-                    'unit_price' =>   $unit_price, 
-                    'measure_unit' =>   $request->measurement_unit,
-                    'ingredient_total_cost' => $ingredient_total_cost            
-                ]);
-        
-                //getting the recipe.
-                $recipe = Recipe::find($request->recipe_id);
-                $recipe->production_food_cost += $recipeIngredient->ingredient_total_cost; 
-                $recipe->save();                
-        
-                if($recipeIngredient){          
-        
-                    // setting flash message using trait
-                    $this->setFlashMessage(' Recipe ingredient is added successfully', 'success');    
-                    $this->showFlashMessages();
-                    return redirect()->route('admin.recipe.ingredient.index', $recipe->id);
-        
-                }else{
-                    return $this->responseRedirectBack(' Error occurred while adding an ingredient .' ,'error', false, false);    
-                }
-
+                return $this->responseRedirectBack(' Error occurred while adding an ingredient .' ,'error', false, false);    
             }
 
-        }else{
-            return $this->responseRedirectBack(' This ingredient has not yet purchased, please purchase first and add it as ingredient.' ,'error', false, false); 
         }
-
-        
 
         
      }

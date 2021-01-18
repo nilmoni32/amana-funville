@@ -10,6 +10,8 @@ use App\Models\Ingredient;
 use App\Models\IngredientPurchase;
 use Carbon\Carbon;
 use App\Models\Unit;
+use App\Models\RecipeIngredient;
+use App\Models\Recipe;
 
 class IngredientPurchaseController extends BaseController
 {
@@ -50,7 +52,7 @@ class IngredientPurchaseController extends BaseController
             'unit' => 'required|string', 
             'price'=>  'required|regex:/^\d+(\.\d{1,2})?$/',            
         ]);        
-        //coverting date format from m-d-Y to Y-m-d as database stroes date in 'Y-m-d' format
+        //coverting date format from m-d-Y to Y-m-d as database stores date in 'Y-m-d' format
         $purchase_date = Carbon::createFromFormat('d-m-Y', $request->purchase_date)->format('Y-m-d');
         $expire_date = Carbon::createFromFormat('d-m-Y', $request->expire_date)->format('Y-m-d');
 
@@ -90,11 +92,35 @@ class IngredientPurchaseController extends BaseController
             $ingredient_smallest_unit_price = $ingredient_total_price/($ingredient_total_quantity * $unit_conversion);
         } 
       
-        // updating the ingredient total quatity, total price and unit price
+        // updating the stock ingredient total quatity, total price and unit price
         $ingredient->total_quantity = $ingredient_total_quantity;        
         $ingredient->total_price = $ingredient_total_price;
         $ingredient->smallest_unit_price = $ingredient_smallest_unit_price;
-        $ingredient->save();        
+        $ingredient->save();  
+        
+        // updating the ingredient unit price to recipe ingredients of the corresponding recipe.
+        $recipeIngredients =  RecipeIngredient::where('ingredient_id', $request->ingredient_id)->get(); 
+        foreach($recipeIngredients as $recipeIngredient){
+            //updating the ingredient unit price and its total cost for the recipe.
+            $recipeIngredient->ingredient_total_cost = $ingredient_smallest_unit_price * $recipeIngredient->quantity;
+            $recipeIngredient->unit_price = $ingredient_smallest_unit_price;
+            $recipeIngredient->save();
+        } 
+        
+        // updating the product recipe cost.
+        foreach($recipeIngredients as $recipeIngredient){
+            
+            $recipe_cost = 0;
+            //getting the recipe
+            $recipe = Recipe::find($recipeIngredient->recipe_id);
+            //getting all the recipe ingredients.
+            $recipeingredients = $recipe->recipeingredients;
+            foreach($recipeingredients as $recipeingredient){
+                $recipe_cost += $recipeingredient->ingredient_total_cost;
+            }
+            $recipe->production_food_cost = $recipe_cost;
+            $recipe->save();
+        }
 
         if($ingredientPurchase){           
 
@@ -180,11 +206,35 @@ class IngredientPurchaseController extends BaseController
             $ingredient_smallest_unit_price = $ingredient_total_price/($ingredient_total_quantity * $unit_conversion);
         }
             
-        // updating the ingredient total quatity, total price and unit price
+        // updating the stock ingredient total quatity, total price and unit price
         $ingredient->total_quantity = $ingredient_total_quantity;        
         $ingredient->total_price = $ingredient_total_price;
         $ingredient->smallest_unit_price = $ingredient_smallest_unit_price;
         $ingredient->save(); 
+
+        // updating the ingredient unit price to recipe ingredients of the corresponding recipe.
+        $recipeIngredients =  RecipeIngredient::where('ingredient_id', $ingredientPurchase->ingredient_id)->get(); 
+        foreach($recipeIngredients as $recipeIngredient){
+            //updating the ingredient unit price and its total cost for the recipe.
+            $recipeIngredient->ingredient_total_cost = $ingredient_smallest_unit_price * $recipeIngredient->quantity;
+            $recipeIngredient->unit_price = $ingredient_smallest_unit_price;
+            $recipeIngredient->save();
+        }
+
+        // updating the product recipe cost.
+        foreach($recipeIngredients as $recipeIngredient){
+            
+            $recipe_cost = 0;
+            //getting the recipe
+            $recipe = Recipe::find($recipeIngredient->recipe_id);
+            //getting all the recipe ingredients.
+            $recipeingredients = $recipe->recipeingredients;
+            foreach($recipeingredients as $recipeingredient){
+                $recipe_cost += $recipeingredient->ingredient_total_cost;
+            }
+            $recipe->production_food_cost = $recipe_cost;
+            $recipe->save();
+        }
 
         if($ingredientPurchase){           
 
@@ -216,27 +266,31 @@ class IngredientPurchaseController extends BaseController
 
         //Substracting ingredient price before deleting the new ingredient_purchase price
         $ingredient_total_price -= $ingredientPurchase->price;  
-
-        //Subtracting ingredient quantity before deleting the new quantity and Recalculating per unit cost
-        if($ingredient->measurement_unit == $ingredientPurchase->unit){
-            // getting unit conversion value 
-            $unit = Unit::where('measurement_unit', $ingredientPurchase->unit)->first();            
-            $unit_conversion = $unit->unit_conversion;
-            $ingredient_total_quantity -= $ingredientPurchase->quantity;
-            $ingredient_smallest_unit_price = $ingredient_total_price/($ingredient_total_quantity * $unit_conversion);
-        }else{
-            // getting unit conversion value 
-            $unit = Unit::where('smallest_measurement_unit', $ingredientPurchase->unit)->first();            
-            $unit_conversion = $unit->unit_conversion; 
-            $ingredient_total_quantity -= ($ingredientPurchase->quantity/$unit_conversion); 
-            $ingredient_smallest_unit_price = $ingredient_total_price/($ingredient_total_quantity * $unit_conversion);
+        //checking the ingredient is only ingredient then total price of the stock item will be equal to ingredient_purchase price
+        if($ingredient_total_price){
+             //Subtracting ingredient quantity before deleting the new quantity and Recalculating per unit cost
+            if($ingredient->measurement_unit == $ingredientPurchase->unit){
+                // getting unit conversion value 
+                $unit = Unit::where('measurement_unit', $ingredientPurchase->unit)->first();            
+                $unit_conversion = $unit->unit_conversion;
+                $ingredient_total_quantity -= $ingredientPurchase->quantity;
+                $ingredient_smallest_unit_price = $ingredient_total_price/($ingredient_total_quantity * $unit_conversion);
+            }else{
+                // getting unit conversion value 
+                $unit = Unit::where('smallest_measurement_unit', $ingredientPurchase->unit)->first();            
+                $unit_conversion = $unit->unit_conversion; 
+                $ingredient_total_quantity -= ($ingredientPurchase->quantity/$unit_conversion); 
+                $ingredient_smallest_unit_price = $ingredient_total_price/($ingredient_total_quantity * $unit_conversion);
+            }
+    
+            // updating the ingredient total quatity, total price and unit price
+            $ingredient->total_quantity = $ingredient_total_quantity;        
+            $ingredient->total_price = $ingredient_total_price;
+            $ingredient->smallest_unit_price = $ingredient_smallest_unit_price;
+            $ingredient->save();
         }
-  
-        // updating the ingredient total quatity, total price and unit price
-        $ingredient->total_quantity = $ingredient_total_quantity;        
-        $ingredient->total_price = $ingredient_total_price;
-        $ingredient->smallest_unit_price = $ingredient_smallest_unit_price;
-        $ingredient->save(); 
+
+        
         // Deleting the ingredient purchase record.
         $ingredientPurchase->delete();
 

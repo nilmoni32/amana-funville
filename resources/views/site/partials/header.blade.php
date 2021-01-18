@@ -93,18 +93,18 @@
                 </div>
                 @if(App\Models\Cart::totalItems())
                 <div class="col-md-1 col-sm-4 col-xs-4 paddleft mt-4 shop-cart">
-                    <ul class="list-inline float-right icon mt-1">
+                    <ul class="list-inline float-right icon mt-2">
                         <li class="list-inline-item"><a href="{{ route('cart.index') }}" class="btn-sm"><i
-                                    class="icofont icofont-cart-alt h4"></i>(<span
+                                    class="icofont icofont-cart-alt h4" style="position: relative;top:2px;"></i>(<span
                                     id="totalItems_desktop">{{ App\Models\Cart::totalCarts()->count() }}</span>)</a>
                         </li>
                     </ul>
                 </div>
                 @else
                 <div class="col-md-1 col-sm-4 col-xs-4 paddleft mt-4 shop-cart disabledbutton">
-                    <ul class="list-inline float-right icon mt-1">
+                    <ul class="list-inline float-right icon mt-2">
                         <li class="list-inline-item"><a href="{{ route('cart.index') }}" class="btn-sm"><i
-                                    class="icofont icofont-cart-alt h4"></i>(<span
+                                    class="icofont icofont-cart-alt h4" style="position: relative;top:2px;"></i>(<span
                                     id="totalItems_desktop">{{ App\Models\Cart::totalCarts()->count() }}</span>)</a>
                         </li>
                     </ul>

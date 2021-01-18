@@ -19,7 +19,7 @@
 <div class="shop pb-5">
     <div class="container py-3">
         <div class="row">
-            <div class="col-md-3 px-2">
+            <div class="col-md-3 px-0">
                 <!-- Left Filter Start -->
                 <div class="left-side">
                     <h4>{{ __('Funville Cuisine')}}</h4>
@@ -40,13 +40,13 @@
                             <img src="{{ asset('frontend')}}/images/dishes/all.jpg" width="60"
                                 style="margin-right:15px;"><span>{{__('All Dishes')}}</span>
                         </a>
-                        @foreach (App\Models\Category::orderBy('id', 'asc')->where('parent_id', '1')->get() as
+                        @foreach (App\Models\Category::orderBy('id', 'asc')->where('parent_id', '1')->where('menu', '1')->get() as
                         $parent)
                         <a href="{{ route('categoryproduct.show', $parent->slug ) }}" class="list-group-item list-group-item-action
                             {{ $parent->category_name == $category->category_name ? 'active' : ''}}
                             ">
                             <img src="{!! asset('storage/'.$parent->image) !!}" width="60"
-                                style="margin-right:15px;"><span>{{ $parent->category_name }}</span>
+                                style="margin-right:15px;"><span>{{ substr($parent->category_name, 0, 22) }}</span>
                         </a>
                         @endforeach
                     </div>
@@ -65,8 +65,8 @@
                     </div>
                 </div>
                 <!-- Title Content End -->
-                {{-- getting the products using many to many relatioship --}}
-                @php $products = $category->products()->paginate(9) @endphp
+                {{-- getting the products but not listed products for pos sales using many to many relatioship --}}
+                @php $products = $category->products()->where('featured', 0)->paginate(15) @endphp
                 @if($products->count())
                 @include('site.partials.productview')
                 @else

@@ -19,7 +19,7 @@
             <div class="col-sm-12">
                 @php
                 // getting the products using many to many relatioship
-                $products = $category->products;
+                $products = $category->products->sortByDesc('id');
                 // only showing 5 products in the home page
                 $top_5 = 1;
                 @endphp
@@ -41,21 +41,24 @@
                             @endforeach
 
                             <div class="caption">
-                                <h4>{{ $product->name }}</h4>
+                                <h4>{{ substr($product->name, 0, 24) }}</h4>
                                 {{-- if product discount price is available then we set it --}}
                                 @if($product->discount_price)
-                                <p>{{ config('settings.currency_symbol') }}-{{ round($product->discount_price,0)}}
-                                </p>
-                                <span
+                                <p> <span style="font-size: 18px;
+                                    font-weight: 600;
+                                    color: #e9457a; position:relative; top:2px;">{{ config('settings.currency_symbol') }} {{ round($product->discount_price,0)}}
+                                    </span><span>[</span>
+                                    <span
                                     style="text-decoration: line-through">{{ config('settings.currency_symbol') }}-{{ round($product->price,0) }}</span>
                                 {{-- calculating the discount percentage --}}
                                 <span>
-                                    -{{ round(($product->price - $product->discount_price)*100/$product->price, 0) }}%</span>
+                                    -{{ round(($product->price - $product->discount_price)*100/$product->price, 0) }}% ]</span>
+                                </p>                                
                                 @else
-                                <p>{{ config('settings.currency_symbol') }}-{{ round($product->price,0) }}</p>
+                                <p>{{ config('settings.currency_symbol') }} {{ round($product->price,0) }}</p>
                                 @endif
                                 <span
-                                    class="text-center px-1 py-1 d-block">{{ substr($product->description,0, 35)}}</span>
+                                    class="text-center px-1 py-2 d-block">{{ substr($product->description,0, 70)}}</span>
                             </div>
                             {{-- <div class="cart-overlay" onclick="addToCart({{ $product->id }}, 0)">
                             <h5>Add to Cart</h5>

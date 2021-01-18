@@ -16,20 +16,23 @@
                     @endforeach
 
                     <div class="caption">
-                        <h4>{{ $product->name }}</h4>
+                        <h4>{{ substr($product->name, 0, 24) }}</h4>
                         {{-- if product discount price is available then we set it --}}
                         @if($product->discount_price)
-                        <p>{{ config('settings.currency_symbol') }}-{{ round($product->discount_price,0)}}
-                        </p>
-                        <span
+                        <p>
+                            <span style="font-size: 18px;
+                            font-weight: 600;
+                            color: #e9457a; position:relative; top:2px;">{{ config('settings.currency_symbol') }} {{ round($product->discount_price,0)}}</span>
+                            <span>[ </span><span
                             style="text-decoration: line-through">{{ config('settings.currency_symbol') }}-{{ round($product->price,0) }}</span>
                         {{-- calculating the discount percenate --}}
                         <span>
-                            -{{ round(($product->price - $product->discount_price)*100/$product->price, 0) }}%</span>
+                            -{{ round(($product->price - $product->discount_price)*100/$product->price, 0) }}% ]</span>
+                        </p>                        
                         @else
-                        <p>{{ config('settings.currency_symbol') }}-{{ round($product->price,0) }}</p>
+                        <p>{{ config('settings.currency_symbol') }} {{ round($product->price,0) }}</p>
                         @endif
-                        <span class="text-center px-1 pt-1 d-block">{{ substr($product->description,0, 34)}}</span>
+                        <span class="text-center px-1 pt-2 d-block">{{ substr($product->description,0, 70)}}</span>
 
                     </div>
                     {{-- <div class="cart-overlay" onclick="addToCart({{ $product->id }}, 0)">

@@ -34,7 +34,7 @@
                         @foreach($categories as $category)
                             @if ($category->id != 1)
                                 <tr>
-                                    <td>{{ $category->id }}</td>
+                                    <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $category->category_name }}</td>
                                     <td>{{ $category->slug }}</td>
                                     <td>{{ $category->parent->category_name }}</td>                                    

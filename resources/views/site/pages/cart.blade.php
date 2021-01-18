@@ -39,9 +39,11 @@
                             <tr>
                                 <td class="text-left">
                                     {{-- getting the product image from cart to product image table using relatioship --}}
+                                    @if($cart->product->images->first())
                                     <img src="{{ asset('storage/'.$cart->product->images->first()->full) }}"
                                         title="{{ $cart->product->name }}"
                                         class="img-responsive pr-2 rounded d-inline-block" width="100px" />
+                                    @endif                                  
                                     @if($cart->has_attribute)
                                     {{-- if this condition is true then $cart product_id is product_attribute id --}}
                                     {{ $cart->product->name }}-({{ App\Models\ProductAttribute::find($cart->product_attribute_id)->size }})

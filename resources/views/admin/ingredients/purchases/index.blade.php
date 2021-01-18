@@ -58,7 +58,7 @@
                                             <a href="{{ route('admin.ingredient.purchase.edit', $purchase->id) }}"
                                                 class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
                                             <a href="{{ route('admin.ingredient.purchase.delete', $purchase->id) }}"
-                                                class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+                                                class="btn btn-sm btn-danger disabled"><i class="fa fa-trash"></i></a>
                                         </div>
                                     </td>
                                 </tr>

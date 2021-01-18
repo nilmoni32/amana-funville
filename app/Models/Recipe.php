@@ -30,4 +30,8 @@ class Recipe extends Model
         return $this->hasMany(RecipeIngredient::class);
     }
 
+    public static function recipeCost(){
+        
+    }
+
 }
