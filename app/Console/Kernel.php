@@ -27,10 +27,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('daily:ingredientUpdate')->dailyAt('0:00');
         //for database backup scheduler
         $schedule->command('backup:clean')->dailyAt('0:00');
-        $schedule->command('backup:run --only-db')->dailyAt('13:00');
-        $schedule->command('backup:run --only-db')->dailyAt('16:00');
-        $schedule->command('backup:run --only-db')->dailyAt('19:00');
-        $schedule->command('backup:run --only-db')->dailyAt('22:00');         
+        $schedule->command('backup:run --only-db')->dailyAt('14:00');
+        $schedule->command('backup:run --only-db')->dailyAt('18:00');
+        $schedule->command('backup:run --only-db')->dailyAt('23:00');  
+        // for sitemap
+        $schedule->command('sitemap:generate')->dailyAt('2:00');      
     }
 
     /**

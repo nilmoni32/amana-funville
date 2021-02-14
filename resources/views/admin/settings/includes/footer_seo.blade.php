@@ -10,8 +10,8 @@
                 <textarea class="form-control" rows="4" placeholder="Enter Footer Copyright Text"  name = "footer_copyright_text" id = "footer_copyright_text">{{ config('settings.footer_copyright_text') }}</textarea>
             </div>
             <div class="form-group">
-                <label class="control-label" for = "seo_meta_title">SEO Meta Title</label>
-                <input class="form-control" type="text" placeholder="Enter SEO Meta Title"  name = "seo_meta_title" id = "seo_meta_title" value = "{{ config('settings.seo_meta_title') }}">
+                <label class="control-label" for = "seo_meta_title">SEO Meta Keywords</label>
+                <input class="form-control" type="text" placeholder="Enter SEO Meta Keywords"  name = "seo_meta_title" id = "seo_meta_title" value = "{{ config('settings.seo_meta_title') }}">
             </div>
             <div class="form-group">
                 <label class="control-label" for = "seo_meta_description">SEO Meta Description</label>

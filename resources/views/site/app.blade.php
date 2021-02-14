@@ -5,11 +5,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">    
     <title>@yield('title') - {{ config('app.name') }}</title>
+    <meta name="keywords" content="{{ config('settings.seo_meta_title') }}">
+    <meta name="description" content="{{ config('settings.seo_meta_description') }}">
     <!-- Styles -->
     @include('site.partials.styles')
     <script src="https://use.fontawesome.com/3a7e4171cb.js"></script>
+    {{-- google recaptcha --}}
+    {!! htmlScriptTagJsApi() !!} 
+     {{-- google analytics code --}}
+    {!! config('settings.google_analytics') !!}
+     {{-- FaceBook Pixels code --}}
+    {!! config('settings.facebook_pixels') !!}
 </head>
 
 <body>

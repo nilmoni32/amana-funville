@@ -12,14 +12,14 @@ use App\Models\Category;
 class ProductController extends Controller
 {
     public function index(){        
-        $products = Product::orderBy('id', 'asc')->paginate(18);        
+        $products = Product::orderBy('id', 'asc')->where('featured', 0)->paginate(18);        
         return view('site.pages.product.allproducts', compact('products'));
     }
     public function categoryproductshow($slug){   
 
         if($slug == 'all'){
             // viewing all food menus.
-            $products = Product::orderBy('id', 'asc')->paginate(18); 
+            $products = Product::orderBy('id', 'asc')->where('featured', 0)->paginate(18); 
             return view('site.pages.product.allproducts', compact('products'));
         }else{
             // getting the category name by slug.

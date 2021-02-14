@@ -39,7 +39,7 @@
                             <img src="{{ asset('frontend')}}/images/dishes/all.jpg" width="60"
                                 style="margin-right:15px;"><span>{{__('All Dishes')}}</span>
                         </a>
-                        @foreach (App\Models\Category::orderBy('id', 'asc')->where('parent_id', '1')->where('menu', '1')->get() as
+                        @foreach (App\Models\Category::orderBy('id', 'desc')->where('parent_id', '1')->where('menu', '1')->get() as
                         $parent)
                         <a href="{{ route('categoryproduct.show', $parent->slug ) }}"
                             class="list-group-item list-group-item-action">

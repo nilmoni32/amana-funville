@@ -20,6 +20,7 @@
   <link rel="stylesheet" type="text/css" href="{{ asset('backend') }}/jqueryui/jquery-ui.min.css">
 
   @yield('styles')
+  {!! htmlScriptTagJsApi() !!} 
 </head>
 
 <body class="app sidebar-mini rtl" style="overflow-x: hidden;">
