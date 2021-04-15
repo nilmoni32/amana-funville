@@ -27,9 +27,11 @@
                         <tr>
                             <td>{{ $loop->index + 1 }}</td>
                             <td class="text-left" style="text-transform:capitalize">
+                                @if($cart->product->images->first())
                                 <img src="{{ asset('storage/'.$cart->product->images->first()->full) }}"
                                     title="{{ $cart->product->name }}" class="img-responsive pr-2 rounded"
                                     width="70px" />
+                                @endif
                                 @if($cart->has_attribute)
                                 {{-- if this condition is true then $cart product_id is product_attribute id --}}
                                 {{ $cart->product->name }}-({{ App\Models\ProductAttribute::find($cart->product_attribute_id)->size }})
