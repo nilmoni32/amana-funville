@@ -42,7 +42,7 @@
                                     <a href="{{ route('admin.ingredientunit.edit', $unit->id) }}" class="btn btn-sm btn-primary {{
                                             App\Models\Ingredient::where('measurement_unit', $unit->measurement_unit)->count()
                                             ? 'disabled' :'' }}"><i class="fa fa-edit"></i></a>
-                                    <a href="{{ route('admin.ingredientunit.delete', $unit->id) }}" class="btn btn-sm btn-danger {{
+                                    <a href="{{ route('admin.ingredientunit.delete', $unit->id) }}" class="btn btn-sm btn-danger delete-confirm {{
                                             App\Models\Ingredient::where('measurement_unit', $unit->measurement_unit)->count()
                                             ? 'disabled' :'' }}"><i class="fa fa-trash"></i></a>
                                 </div>
@@ -60,12 +60,26 @@
 @push('scripts')
 <script type="text/javascript" src="{{ asset('backend/js/plugins/jquery.dataTables.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('backend/js/plugins/dataTables.bootstrap.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('backend/js/sweetalert.min.js') }}"></script>
 <script type="text/javascript">
+	$('.delete-confirm').on('click', function (event) {
+        event.preventDefault();
+        const url = $(this).attr('href');
+        swal({
+            title: 'Are you sure?',
+            text: 'This record and it`s details will be permanantly deleted!',
+            icon: 'warning',
+            buttons: true,
+            buttons: ["Cancel", "Yes!"],
+        }).then(function(value) {
+            if (value) {
+                window.location.href = url;
+            }
+        });
+    });
+
     $('#sampleTable').DataTable();
     // to disable anchor link.
-    a.disabled {
-        pointer-events: none;
-        cursor: default;
-    }
+    
 </script>
 @endpush

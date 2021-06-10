@@ -61,15 +61,22 @@
     </div>
     <div class="footer-bottom footer-bg">
         <div class="container">
+	    <div class="row">               
+                <div class="col-md-12 col-sm-12 col-xs-12 text-center pt-3">
+		    <a target="_blank" href="https://www.sslcommerz.com/" title="SSLCommerz" alt="SSLCommerz">
+                        <img style="width:95%;height:auto;" src="https://securepay.sslcommerz.com/public/image/SSLCommerz-Pay-With-logo-All-Size-03.png">
+                    </a>
+                </div>
+            </div>
             <div class="row powered d-flex align-items-center">
                 <!--  Copyright Start -->
                 {{-- <div class="col-md-2 col-sm-6 order-md-1">
                 </div> --}}
-                <div class="col-md-8 col-sm-12 text-left">
-                    <p>{{ config('settings.footer_copyright_text') }},
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <p class="text-center">{{ config('settings.footer_copyright_text') }},
                         &nbsp;2019-<?php echo date("Y"); ?>.</p>
                 </div>
-                <div class="col-md-4 col-sm-12 text-right text-white">
+                {{-- <div class="col-md-4 col-sm-12 text-right text-white">
                     <p>
                         {{ __('Pay With ') }}
                         <img src="{{ asset('frontend/')}}/images/visa-icon.png" alt="" class="d-inline-block"
@@ -78,7 +85,7 @@
                             src="{{ asset('frontend/')}}/images/american-express.png" alt="" class="d-inline-block"
                             width="35px;"><img src="{{ asset('frontend/')}}/images/bkash_icon.png" alt=""
                             class="d-inline-block" width="35px;"></p>
-                </div>
+                </div> --}}
                 {{-- <div class="col-md-2 col-sm-6 text-right order-md-3">
                 </div> --}}
                 <!--  Copyright End -->

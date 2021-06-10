@@ -19,7 +19,7 @@
             <div class="col-sm-12">
                 @php
                 // getting the products using many to many relatioship
-                $products = $category->products->sortByDesc('id');
+                $products = $category->products->sortByDesc('name');
                 // only showing 5 products in the home page
                 $top_5 = 1;
                 @endphp

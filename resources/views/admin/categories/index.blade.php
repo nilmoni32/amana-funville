@@ -53,7 +53,7 @@
                                             <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
                                             {{-- Check if belongsToMany relation exists --}}
                                             <a href="{{ route('admin.categories.delete', $category->id) }}" class="btn btn-sm btn-danger
-                                                {{  $category->products->contains($category->id) ? 'disabled' :'' }}"><i class="fa fa-trash"></i></a>
+                                                {{  $category->products->count() ? 'disabled' :'' }} delete-confirm"><i class="fa fa-trash"></i></a>
                                         </div>
                                     </td>
                                 </tr>
@@ -70,7 +70,28 @@
 @push('scripts')
 <script type="text/javascript" src="{{ asset('backend/js/plugins/jquery.dataTables.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('backend/js/plugins/dataTables.bootstrap.min.js') }}"></script>
-<script type="text/javascript">$('#sampleTable').DataTable();</script>
+<script type="text/javascript" src="{{ asset('backend/js/sweetalert.min.js') }}"></script>
+<script type="text/javascript">
+
+$('.delete-confirm').on('click', function (event) {
+        event.preventDefault();
+        const url = $(this).attr('href');
+        swal({
+            title: 'Are you sure?',
+            text: 'This record and it`s details will be permanantly deleted!',
+            icon: 'warning',
+            buttons: true,
+            buttons: ["Cancel", "Yes!"],
+        }).then(function(value) {
+            if (value) {
+                window.location.href = url;
+            }
+        });
+    });
+
+$('#sampleTable').DataTable();
+
+</script>
 @endpush
 
 

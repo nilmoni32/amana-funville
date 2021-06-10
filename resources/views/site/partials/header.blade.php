@@ -67,8 +67,7 @@
                 <div class="col-md-2 col-sm-12 col-xs-12">
                     <!-- Logo Start  -->
                     <div id="logo">
-                        {{-- for home url use either url('/') or config('app.url') --}}
-                        <a href="{{config('app.url')}}"> 
+                        <a href="{{ url('/')}}">
                             <img id="logo_img" class="img-fluid"
                                 src="{{ asset('storage/'.config('settings.site_logo')) }}" alt="logo"
                                 title="logo" /></a>

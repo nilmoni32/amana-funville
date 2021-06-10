@@ -46,7 +46,7 @@
                                     <a href="{{ route('admin.recipe.edit', $recipe->id) }}"
                                         class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
                                     <a href="{{ route('admin.recipe.delete', $recipe->id) }}"
-                                        class="btn btn-sm btn-danger {{
+                                        class="btn btn-sm btn-danger delete-confirm {{
                                             App\Models\RecipeIngredient::where('recipe_id', $recipe->id)->count()
                                             ? 'disabled' :'' }}"><i class="fa fa-trash"></i></a>
                                 </div>
@@ -64,7 +64,23 @@
 @push('scripts')
 <script type="text/javascript" src="{{ asset('backend/js/plugins/jquery.dataTables.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('backend/js/plugins/dataTables.bootstrap.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('backend/js/sweetalert.min.js') }}"></script>
 <script type="text/javascript">
+	$('.delete-confirm').on('click', function (event) {
+        event.preventDefault();
+        const url = $(this).attr('href');
+        swal({
+            title: 'Are you sure?',
+            text: 'This record and it`s details will be permanantly deleted!',
+            icon: 'warning',
+            buttons: true,
+            buttons: ["Cancel", "Yes!"],
+        }).then(function(value) {
+            if (value) {
+                window.location.href = url;
+            }
+        });
+    });
     $('#sampleTable').DataTable();
 </script>
 @endpush

@@ -45,11 +45,23 @@ class DailyIngredient extends Command
         // when comparing two columns we will use whereColumn
         $ingredients = Ingredient::whereColumn('total_quantity', '<', 'alert_quantity')->get();
         //getting backend email recipients
-        $cc = explode(',', str_replace(' ', '', config('settings.email_recipient')));  
+        //$cc = explode(',', str_replace(' ', '', ));  
+	 // $cc = 'mustafi.amana@gmail.com';
+        
+	//getting backend email recipients
+        $email_recipients = explode(',', str_replace(' ', '', config('settings.email_recipient'))); 
+        $cc=[];
+        for($i=0; $i< count($email_recipients); $i++){
+            //elementing the empty array data fields
+            if($email_recipients[$i]){
+                $cc[] = $email_recipients[$i]; 
+            }
+        }
        
         // sending mail to mailable class IngredientUpdate for the ingredient purchase list to funville backend users.
        \Mail::to(config('settings.default_email_address'))
-            ->cc($cc)
+            //->cc(config('settings.email_recipient'))
+	    ->cc($cc)
             ->send(new IngredientUpdate($ingredients));
         //info function will write information to the log:
         $this->info('Daily ingredient Update has been send successfully');

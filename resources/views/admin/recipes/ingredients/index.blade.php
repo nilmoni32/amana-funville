@@ -6,6 +6,10 @@
         <h1><i class="fa fa-modx"></i> {{ $pageTitle }}</h1>
         <p>{{ $subTitle }}</p>
     </div>
+    <ul class="app-breadcrumb breadcrumb">
+        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        <li class="breadcrumb-item"><a href="{{ route('admin.recipe.index') }}">{{ __('Recipe List') }}</a></li>
+    </ul>
     {{-- <a href="{{ route('admin.recipe.ingredient.create', $recipe->id) }}" class="btn btn-primary pull-right">Add
     Ingredient</a> --}}
 </div>
@@ -53,7 +57,7 @@
                                     <a href="{{ route('admin.recipe.ingredient.edit', $recipeIngredient->id) }}"
                                         class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
                                     <a href="{{ route('admin.recipe.ingredient.delete', $recipeIngredient->id) }}"
-                                        class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+                                        class="btn btn-sm btn-danger delete-confirm"><i class="fa fa-trash"></i></a>
                                 </div>
                             </td>
                         </tr>
@@ -69,7 +73,23 @@
 @push('scripts')
 <script type="text/javascript" src="{{ asset('backend/js/plugins/jquery.dataTables.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('backend/js/plugins/dataTables.bootstrap.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('backend/js/sweetalert.min.js') }}"></script>
 <script type="text/javascript">
+	$('.delete-confirm').on('click', function (event) {
+        event.preventDefault();
+        const url = $(this).attr('href');
+        swal({
+            title: 'Are you sure?',
+            text: 'This record and it`s details will be permanantly deleted!',
+            icon: 'warning',
+            buttons: true,
+            buttons: ["Cancel", "Yes!"],
+        }).then(function(value) {
+            if (value) {
+                window.location.href = url;
+            }
+        });
+    });
     $('#sampleTable').DataTable();
 </script>
 @endpush

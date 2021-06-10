@@ -38,7 +38,9 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
     Route::group(['middleware' => ['auth:admin']], function () {
 
         Route::group(['middleware' => ['can:funville-dashboard']], function () {        
-            Route::get('/', 'DashboardController@index')->name('dashboard');
+            Route::get('/', function () {
+                return view('admin.dashboard.index');
+            })->name('dashboard');
         });
 
 

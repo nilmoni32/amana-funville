@@ -5,6 +5,10 @@
     <div>
         <h1><i class="fa fa-modx"></i> {{ $pageTitle }} - {{ $subTitle }}</h1>
     </div>
+    <ul class="app-breadcrumb breadcrumb">
+        <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
+        <li class="breadcrumb-item"><a href="{{ route('admin.recipe.ingredient.index', $recipe->id)}}">{{ __('Recipe Ingredient List') }}</a></li>
+    </ul>
 </div>
 @include('admin.partials.flash')
 <div class="row user">

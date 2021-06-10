@@ -11,7 +11,7 @@
             </div>
             <div class="form-group">
                 <label class="control-label" for = "seo_meta_title">SEO Meta Keywords</label>
-                <input class="form-control" type="text" placeholder="Enter SEO Meta Keywords"  name = "seo_meta_title" id = "seo_meta_title" value = "{{ config('settings.seo_meta_title') }}">
+                <input class="form-control" type="text" placeholder="Enter keywords with comma separated"  name = "seo_meta_title" id = "seo_meta_title" value = "{{ config('settings.seo_meta_title') }}">
             </div>
             <div class="form-group">
                 <label class="control-label" for = "seo_meta_description">SEO Meta Description</label>

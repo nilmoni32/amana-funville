@@ -6,7 +6,6 @@
     <h1><i class="fa fa-dashboard"></i>&nbsp;Dashboard</h1>
   </div>
 </div>
-
 <div class="row"> 
   <div class="col-md-6 col-lg-3">
     <div class="widget-small primary coloured-icon">
@@ -39,7 +38,7 @@
   <div class="widget-small danger coloured-icon">
     <i class="icon fa fa-cutlery fa-3x"></i>
     <div class="info">
-      <h4>Foods</h4>
+      <h5>Foods</h5>
       <p><b>({{ App\Models\Product::count() }})</b></p>
     </div>
   </div>

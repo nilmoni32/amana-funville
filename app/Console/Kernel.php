@@ -23,15 +23,16 @@ class Kernel extends ConsoleKernel
      * @return void
      */
     protected function schedule(Schedule $schedule)
-    {   //for ingredient scheduler
-        $schedule->command('daily:ingredientUpdate')->dailyAt('0:00');
+    {   
         //for database backup scheduler
         $schedule->command('backup:clean')->dailyAt('0:00');
         $schedule->command('backup:run --only-db')->dailyAt('14:00');
         $schedule->command('backup:run --only-db')->dailyAt('18:00');
-        $schedule->command('backup:run --only-db')->dailyAt('23:00');  
+        $schedule->command('backup:run --only-db')->dailyAt('23:00');         
         // for sitemap
-        $schedule->command('sitemap:generate')->dailyAt('2:00');      
+        $schedule->command('sitemap:generate')->dailyAt('2:00'); 
+        //for ingredient scheduler
+        $schedule->command('daily:ingredientUpdate')->dailyAt('0:15');
     }
 
     /**

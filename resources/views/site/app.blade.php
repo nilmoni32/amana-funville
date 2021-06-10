@@ -14,7 +14,7 @@
     <script src="https://use.fontawesome.com/3a7e4171cb.js"></script>
     {{-- google recaptcha --}}
     {!! htmlScriptTagJsApi() !!} 
-     {{-- google analytics code --}}
+    {{-- google analytics code --}}
     {!! config('settings.google_analytics') !!}
      {{-- FaceBook Pixels code --}}
     {!! config('settings.facebook_pixels') !!}

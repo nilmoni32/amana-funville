@@ -305,7 +305,7 @@ class SalesController extends BaseController
             'customer_notes'    => 'nullable|string|max:191',             
         ]);
         
-        //Order Update: Discount, reward points discount, Payment Details, Customer Points, stock ingredients update
+        //Order Update: Discount, reward points discount, Payment Details, Customer Points
         $order = Ordersale::where('id', $request->order_id)->first();
         $order->admin_id = auth()->user()->id;     
         //$order->order_number = $ord_id; 
@@ -347,7 +347,7 @@ class SalesController extends BaseController
         //updating the order
         $order->save();
 
-
+        
         //Inventory Management: We will deduct product quantity and product total cost using product id from ingredient stock. 
 
          //finding the cart using order id... it may return many sale carts for pos system
@@ -375,8 +375,7 @@ class SalesController extends BaseController
 
         }
 
-
-        //BACKUP of POS sales: Making pos sale backup to Salebackup table 
+	//BACKUP of POS sales: Making pos sale backup to Salebackup table 
         $saleCartBackup = [];
         foreach(Sale::where('ordersale_id',
         $order->id)->get() as $saleCart){
@@ -400,8 +399,8 @@ class SalesController extends BaseController
         foreach(Sale::where('ordersale_id',
         $order->id)->get() as $saleCart){
             $saleCart->delete();
-        } 
-        
+        }        
+
         
         //sending sms discount notification to reference director.
         if($order->director_id){
@@ -436,9 +435,6 @@ class SalesController extends BaseController
                 SendCode::allPaymentNotify($client_mobile, $order->cash_pay, $order->card_pay, $order->mobile_banking_pay, $client_points, 'cash','card','mobile banking'); 
             }
         }
-
-
-            
         
 
         // setting flash message using trait

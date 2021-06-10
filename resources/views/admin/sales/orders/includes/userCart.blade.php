@@ -35,11 +35,11 @@
                         $order->id)->get() as $posCart)
                         <tr>
                             <td>{{ $loop->index + 1 }}</td>
-                            <td class="text-left" style="text-transform:capitalize">                                
-                                {{-- <img src="{{ asset('storage/'.$posCart->product->images->first()->full) }}"
+                            <td class="text-left" style="text-transform:capitalize">
+                               {{-- <img src="{{ asset('storage/'.$posCart->product->images->first()->full) }}"
                                     title="{{ $posCart->product->name }}" class="img-responsive pr-2 rounded"
-                                    width="70px" />  --}}                                
-                                {{ $posCart->product->name }}                                
+                                    width="70px" /> --}}
+                                {{ $posCart->product->name }}
                             </td>
                             <td class="text-center">
                                 {{ $posCart->product_quantity }}

@@ -75,10 +75,10 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/checkout/user/address/', 'Site\CheckoutController@getUserAddress');
     // SSLCOMMERZ Start
     Route::post('/checkout/order/payment', 'SslCommerzPaymentController@index')->name('order.payment');
-    Route::post('/checkout/order/success', 'SslCommerzPaymentController@success');
-    Route::post('/checkout/order/fail', 'SslCommerzPaymentController@fail');
-    Route::post('/checkout/order/cancel', 'SslCommerzPaymentController@cancel');
-    Route::post('/checkout/order/ipn', 'SslCommerzPaymentController@ipn');
+    Route::post('/success', 'SslCommerzPaymentController@success');
+    Route::post('/fail', 'SslCommerzPaymentController@fail');
+    Route::post('/cancel', 'SslCommerzPaymentController@cancel');
+    Route::post('/ipn', 'SslCommerzPaymentController@ipn');
     // SSLCOMMERZ END
 });
 
