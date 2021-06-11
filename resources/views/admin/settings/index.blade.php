@@ -21,7 +21,7 @@
                 <li class="nav-item"><a class="nav-link" href="#footer-seo" data-toggle="tab">Footer &amp; SEO</a></li>
                 <li class="nav-item"><a class="nav-link" href="#social-links" data-toggle="tab">Social Links</a></li>
                 <li class="nav-item"><a class="nav-link" href="#analytics" data-toggle="tab">Analytics</a></li>
-                <li class="nav-item"><a class="nav-link" href="#payments" data-toggle="tab">Payments</a></li>
+                {{-- <li class="nav-item"><a class="nav-link" href="#payments" data-toggle="tab">Payments</a></li> --}}
                 <li class="nav-item"><a class="nav-link" href="#user-points" data-toggle="tab">Clients Point
                         Calculator</a>
                 </li>
@@ -48,9 +48,9 @@
             <div class="tab-pane fade" id="analytics">
                 @include('admin.settings.includes.analytics')
             </div>
-            <div class="tab-pane fade" id="payments">
+            {{-- <div class="tab-pane fade" id="payments">
                 @include('admin.settings.includes.payments')
-            </div>
+            </div> --}}
             <div class="tab-pane fade" id="user-points">
                 @include('admin.settings.includes.points')
             </div>

@@ -24,6 +24,7 @@
                             <th class="text-center"> # </th>
                             <th class="text-center"> Food Recipe Name </th>
                             <th class="text-center"> Food Production Cost </th>
+                            <th class="text-center"> Food Sale Price </th>
                             <th style="min-width:100px;" class="text-center text-danger"><i class="fa fa-bolt"></i></th>
                         </tr>
                     </thead>
@@ -40,7 +41,10 @@
                                 @endif
                                 {{ $recipe->product->name }}</td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
-                                {{ $recipe->production_food_cost }}</td>
+                                {{ round($recipe->production_food_cost,2) }} {{ config('settings.currency_symbol') }}</td>
+                            <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
+                                 {{ round($recipe->product->price,2) }} {{ config('settings.currency_symbol') }}</td>
+                            </td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                 <div class="btn-group" role="group" aria-label="Second group">
                                     <a href="{{ route('admin.recipe.edit', $recipe->id) }}"

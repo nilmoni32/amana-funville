@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Sale;
 use App\Models\Admin;
 use App\Models\Client;
-use App\Models\Sale;
+use App\Models\Ordersalepayment;
+use Illuminate\Database\Eloquent\Model;
 
 class Ordersale extends Model
 {
     protected $fillable = [
-        'admin_id', 'client_id','director_id', 'order_number', 'grand_total', 'order_date', 'order_tableNo', 'status','discount','reward_discount','payment_method', 'cash_pay', 'card_pay', 'mobile_banking_pay',];
+        'admin_id', 'client_id','director_id', 'order_number', 'grand_total', 'order_date', 'order_tableNo', 'status','discount',
+        'reward_discount','payment_method', 'cash_pay', 'card_pay', 'mobile_banking_pay', 'card_discount', 'mobilebank_discount'];
 
     public function admin(){
         return $this->belongsTo(Admin::class);
@@ -25,5 +27,12 @@ class Ordersale extends Model
      */
     public function sales(){
         return $this->hasMany(Sale::class);        
+    }
+
+     /**
+     * Order have many payment options
+     */
+    public function salepayments(){
+        return $this->hasMany(Ordersalepayment::class);        
     }
 }

@@ -331,10 +331,17 @@
     </li>
     <li>
       {{-- if current route name is admin.settings we will set active class here --}}
+      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.payment.gw.index' ? 'active' : '' }}"
+        href="{{ route('admin.payment.gw.index')}}">
+        <i class="app-menu__icon fa fa-credit-card"></i>
+        <span class="app-menu__label">Payment GW</span></a>
+    </li>
+    <li>
+      {{-- if current route name is admin.settings we will set active class here --}}
       <a class="app-menu__item {{ Route::currentRouteName() == 'admin.board.directors.index' ? 'active' : '' }}"
         href="{{ route('admin.board.directors.index')}}">
         <i class="app-menu__icon fa fa-podcast"></i>
-        <span class="app-menu__label">Board of Directors</span></a>
+        <span class="app-menu__label">Discount References</span></a>
     </li>
     <li>
       {{-- if current route name is admin.settings we will set active class here --}}

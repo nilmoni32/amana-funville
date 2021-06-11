@@ -68,6 +68,18 @@
                             @error('discount_slab_percentage') {{ $message }}@enderror
                         </div>
                     </div>
+                    <div class="col-md-8 mx-auto">
+                        <div class="form-group">
+                            <label class="control-label" for="discount_upper_limit">Discount Upper Limit
+                                (Tk)<span class="text-danger">
+                                    *</span></label>
+                            <input class="form-control @error('discount_upper_limit') is-invalid @enderror"
+                                type="text" name="discount_upper_limit" id="discount_upper_limit"
+                                value="{{ old('discount_upper_limit', round($director->discount_upper_limit, 0)) }}"
+                                placeholder="Discount Upper Limit">
+                            @error('discount_upper_limit') {{ $message }}@enderror
+                        </div>
+                    </div>
                 </div>
                 <div class="tile-footer pb-5">
                     <div class="pull-right">

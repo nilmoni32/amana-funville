@@ -49,9 +49,9 @@
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                 {{ $recipeIngredient->quantity }} {{ $recipeIngredient->measure_unit }}</td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
-                                {{ $recipeIngredient->unit_price }}</td>
+                                {{ $recipeIngredient->unit_price }} {{ config('settings.currency_symbol') }}</td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
-                                {{ $recipeIngredient->ingredient_total_cost }}</td>
+                                {{ $recipeIngredient->ingredient_total_cost }} {{ config('settings.currency_symbol') }}</td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                 <div class="btn-group" role="group" aria-label="Second group">
                                     <a href="{{ route('admin.recipe.ingredient.edit', $recipeIngredient->id) }}"

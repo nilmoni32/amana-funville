@@ -8,10 +8,10 @@
 @section('content')
 <div class="app-title">
     <div>
-        <h1><i class="fa fa-podcast"></i>&nbsp;{{ $pageTitle }}</h1>
+        <h1><i class="fa fa-credit-card"></i>&nbsp;{{ $pageTitle }}</h1>
         <p>{{ $subTitle }}</p>
     </div>
-    <a href="{{ route('admin.board.directors.create') }}" class="btn btn-primary pull-right">Add Reference</a>
+    <a href="{{ route('admin.payment.gw.create') }}" class="btn btn-primary pull-right">Add Payment Gateway</a>
 </div>
 @include('admin.partials.flash')
 <div class="row">
@@ -22,31 +22,29 @@
                     <thead>
                         <tr>
                             <th class="text-center"> # </th>
-                            <th class="text-center"> Name </th>
-                            <th class="text-center"> Phone </th>
-                            <th class="text-center"> Email</th>
-                            <th class="text-center"> Position</th>
+                            <th class="text-center"> Bank Name </th>
+                            <th class="text-center"> GW Type </th>
                             <th class="text-center"> Discount Slab (%)</th>
+                            <th class="text-center"> Discount Lower Limit</th>
                             <th class="text-center"> Discount Upper Limit</th>
                             <th style="min-width: 50px;" class="text-center text-danger"><i class="fa fa-bolt"> </i>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($directors as $director)
+                        @foreach($paymentgws as $paymentgw)
                         <tr>
                             <td class="text-center">{{ $loop->index + 1  }}</td>
-                            <td class="text-center">{{ $director->name }}</td>
-                            <td class="text-center">{{ $director->mobile }}</td>
-                            <td class="text-center">{{ $director->email }}</td>
-                            <td class="text-center">{{ $director->designation }}</td>
-                            <td class="text-center">{{ $director->discount_slab_percentage }}</td>
-                            <td class="text-center">{{ round($director->discount_upper_limit,2) }}</td>
+                            <td class="text-center">{{ $paymentgw->bank_name }}</td>
+                            <td class="text-center">{{ $paymentgw->bank_type }}</td>
+                            <td class="text-center">{{ $paymentgw->discount_percent }}</td>
+                            <td class="text-center">{{ round($paymentgw->discount_lower_limit,2) }}</td>
+                            <td class="text-center">{{ round($paymentgw->discount_upper_limit,2) }}</td>
                             <td class="text-center">
                                 <div class="btn-group" role="group" aria-label="Second group">
-                                    <a href="{{ route('admin.board.directors.edit', $director->id) }}"
+                                    <a href="{{ route('admin.payment.gw.edit', $paymentgw->id) }}"
                                         class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
-                                    <a href="{{ route('admin.board.directors.delete', $director->id) }}"
+                                    <a href="{{ route('admin.payment.gw.delete', $paymentgw->id) }}"
                                         class="btn btn-sm btn-danger delete-confirm"><i class="fa fa-trash"></i></a>
                                 </div>
                             </td>

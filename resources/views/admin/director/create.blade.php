@@ -47,11 +47,10 @@
                     </div>
                     <div class="col-md-8 mx-auto">
                         <div class="form-group">
-                            <label class="control-label" for="designation">Position<span class="text-danger">
-                                    *</span></label>
+                            <label class="control-label" for="designation">Position</label>
                             <input class="form-control @error('designation') is-invalid @enderror" type="text"
                                 name="designation" id="designation" value="{{ old('designation') }}"
-                                placeholder="Enter Postion" required>
+                                placeholder="Enter Postion">
                             @error('designation') {{ $message }}@enderror
                         </div>
                     </div>
@@ -67,11 +66,23 @@
                             @error('discount_slab_percentage') {{ $message }}@enderror
                         </div>
                     </div>
+                    <div class="col-md-8 mx-auto">
+                        <div class="form-group">
+                            <label class="control-label" for="discount_upper_limit">Discount Upper Limit
+                                (Tk)<span class="text-danger">
+                                    *</span></label>
+                            <input class="form-control @error('discount_upper_limit') is-invalid @enderror"
+                                type="text" name="discount_upper_limit" id="discount_upper_limit"
+                                value="{{ old('discount_upper_limit') }}"
+                                placeholder="Discount Upper Limit">
+                            @error('discount_upper_limit') {{ $message }}@enderror
+                        </div>
+                    </div>
                 </div>
                 <div class="tile-footer pb-5">
                     <div class="text-center">
                         <button class="btn btn-primary" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Add
-                            Director</button>
+                            Reference</button>
                         &nbsp;&nbsp;&nbsp;<a class="btn btn-danger" href="{{ route('admin.board.directors.index') }}"><i
                                 class="fa fa-fw fa-lg fa-arrow-left"></i>Go Back</a>
                     </div>

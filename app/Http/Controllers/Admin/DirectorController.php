@@ -15,14 +15,14 @@ class DirectorController extends BaseController
 
     public function index(){
         // Attaching pagetitle and subtitle to view.
-        view()->share(['pageTitle' => 'A board of Directors', 'subTitle' => 'List of all Directors']);
+        view()->share(['pageTitle' => 'A List of References', 'subTitle' => 'List of all References']);
         $directors = Director::orderBy('created_at', 'asc')->get();        
         return view('admin.director.index', compact('directors')); 
    }
 
     public function create(){  
     // Attaching pagetitle and subtitle to view.
-    view()->share(['pageTitle' => 'A board of Directors', 'subTitle' => 'Add Director Details' ]);       
+    view()->share(['pageTitle' => 'A List of References', 'subTitle' => 'Add Reference Details' ]);       
     return view('admin.director.create');  
     }
 
@@ -33,7 +33,8 @@ class DirectorController extends BaseController
             'mobile'         => 'required|regex:/(01)[3-9]{1}(\d){8}/|max:11|unique:directors,mobile',
             'email'          => 'nullable|string|email|max:191|unique:directors,email',
             'designation'    => 'nullable|string|max:255', 
-            'discount_slab_percentage' => 'required|digits_between:1,2',                                 
+            'discount_slab_percentage' => 'required|digits_between:1,2',
+            'discount_upper_limit' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
         ]);
 
         $director = Director::create([
@@ -41,23 +42,24 @@ class DirectorController extends BaseController
             'mobile' => $request->mobile,
             'email' =>  $request->email, 
             'designation' =>  $request->designation, 
-            'discount_slab_percentage' =>  $request->discount_slab_percentage,            
+            'discount_slab_percentage' =>  $request->discount_slab_percentage,   
+            'discount_upper_limit' =>  $request->discount_upper_limit,          
         ]);
         
         if($director){         
 
             // setting flash message using trait
-            $this->setFlashMessage(' New Director details is added successfully', 'success');    
+            $this->setFlashMessage(' New Reference details is added successfully', 'success');    
             $this->showFlashMessages();
             return redirect()->route('admin.board.directors.index');
         }else{
-            return $this->responseRedirectBack(' Error occurred while adding Director details.' ,'error', false, false);    
+            return $this->responseRedirectBack(' Error occurred while adding Reference details.' ,'error', false, false);    
         }
     }
 
     public function edit($id){
         $director = Director::find($id);
-        view()->share(['pageTitle' => 'A board of Directors', 'subTitle' => 'Edit Director Details']);
+        view()->share(['pageTitle' => 'A List of References', 'subTitle' => 'List of all References']);
         return view('admin.director.edit', compact('director'));   
     }
 
@@ -69,6 +71,7 @@ class DirectorController extends BaseController
             'email'          => 'nullable|string|email|max:191',
             'designation'    => 'nullable|string|max:255', 
             'discount_slab_percentage' => 'required|digits_between:1,2',
+            'discount_upper_limit' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
         ]);
         
         $director = Director::find($request->id);            
@@ -77,10 +80,11 @@ class DirectorController extends BaseController
         $director->email = $request->email;
         $director->designation = $request->designation;
         $director->discount_slab_percentage = $request->discount_slab_percentage;
+        $director->discount_upper_limit = $request->discount_upper_limit;
         $director->save();
 
         // setting flash message using trait
-        $this->setFlashMessage(' Director details is updated successfully', 'success');    
+        $this->setFlashMessage(' Reference details is updated successfully', 'success');    
         $this->showFlashMessages();
         return redirect()->route('admin.board.directors.index');
     }
@@ -89,9 +93,9 @@ class DirectorController extends BaseController
         $director = Director::find($id); 
         $director->delete();
         if(!$director){
-            return  $this->responseRedirectBack(' Error occurred while deleting the Director details.', 'error', true, true);
+            return  $this->responseRedirectBack(' Error occurred while deleting the Reference details.', 'error', true, true);
          }
-        $this->setFlashMessage(' The Director Details is deleted successfully', 'success');    
+        $this->setFlashMessage(' The Reference Details is deleted successfully', 'success');    
         $this->showFlashMessages();
         return redirect()->route('admin.board.directors.index');
     }

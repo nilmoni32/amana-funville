@@ -71,6 +71,8 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::post('/customer/mobile','SalesController@getMobileNo')->name('sales.customermobile');
                 Route::post('/customer/info','SalesController@addCustomerInfo')->name('sales.customerInfo');
                 Route::post('/discount/slab','SalesController@discountSlab')->name('sales.discountSlab');
+                Route::post('/store/payment','SalesController@storePayment')->name('store.eachpayment');
+                
                 //end of ajax route for pos sales.
             
             });
@@ -328,7 +330,17 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::post('/getunit','RecipeIngredientController@getunit')->name('recipe.ingredient.getunit');
             });
 
-            //Board of directors routes
+            //Payment Gateways
+            Route::group(['prefix' => 'payment/gw'], function(){
+                Route::get('/', 'PaymentGWController@index')->name('payment.gw.index');
+                Route::get('/create', 'PaymentGWController@create')->name('payment.gw.create');
+                Route::post('/store', 'PaymentGWController@store')->name('payment.gw.store');
+                Route::get('/edit/{id}', 'PaymentGWController@edit')->name('payment.gw.edit');
+                Route::post('/update', 'PaymentGWController@update')->name('payment.gw.update');
+                Route::get('/delete/{id}', 'PaymentGWController@delete')->name('payment.gw.delete');
+            });
+
+            //Discount Refrences
             Route::group(['prefix' => 'directors'], function(){
                 Route::get('/', 'DirectorController@index')->name('board.directors.index');
                 Route::get('/create', 'DirectorController@create')->name('board.directors.create');
@@ -337,7 +349,7 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::post('/update', 'DirectorController@update')->name('board.directors.update');
                 Route::get('/delete/{id}', 'DirectorController@delete')->name('board.directors.delete');
             });
-
+            
 
             //Complimentary sales route for restaurant.
             
@@ -362,4 +374,3 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
     
 
 });
-

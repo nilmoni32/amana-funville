@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Category;
-use App\Models\Product;
-use App\Models\Sale;
-use App\Models\Ordersale;
 use Auth;
-use App\Traits\FlashMessages; 
-use App\Models\Recipe;
+use App\Models\Sale;
 use App\Models\Unit;
-use App\Models\Director;
-use App\Models\Client;
-use App\Http\Controllers\BaseController;
 use App\Sms\SendCode;
+use App\Models\Client;
+use App\Models\Recipe;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\Director;
+use App\Models\Ordersale;
 use App\Models\Salebackup;
+use Illuminate\Http\Request;
+use App\Traits\FlashMessages; 
+use App\Models\Ordersalepayment;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseController;
 
 
 class SalesController extends BaseController
@@ -285,14 +286,52 @@ class SalesController extends BaseController
         }
     }
 
-    public function discountSlab(Request $request){        
+    public function discountSlab(Request $request){ 
         $directorId = $request->directorId;
         $orderTotal = $request->orderTotal;
         $discount = $request->discount;
-        // getting the director discount slab using director id.        
-        $discount_slab_percentage = Director::where('id', $directorId)->first()->discount_slab_percentage;
+        // getting the reference director using director id. 
+        $director = Director::where('id', $request->directorId)->first();
+        $discount_upper_limit = $director->discount_upper_limit;
+        $discount_slab_percentage = $director->discount_slab_percentage;
+        
         $discount_limit = $orderTotal * ($discount_slab_percentage/100);
-        return json_encode(['status' => 'success', 'discountLimit' => $discount_limit, 'discount' => $discount ]);
+        return json_encode(['status' => 'success', 'discountLimit' => $discount_limit, 'discount' => $discount, 'discountUpperLimit' => $discount_upper_limit ] );
+    }
+
+    /*
+    * Storing all payments[cash, card, mobile] for an order placement.
+    */
+    public function storePayment(Request $request){ 
+        $cash_flag =0;
+        $card_flag =0;
+        $mobile_flag =0;
+        //finding the record using ordersale_id.- we use existing record for any change payment.
+        $salepayment = Ordersalepayment::where('ordersale_id', $request->ordersale_id)->where('payment_method', $request->paymentMethod)->first();      
+        // if no record exist corresponding to the ordersale_id and payment method, we will create a new one.
+        if(!$salepayment){
+            $salepayment = new Ordersalepayment();
+        }                
+        $salepayment->ordersale_id = $request->ordersale_id;
+        $salepayment->payment_method = $request->paymentMethod;
+        $salepayment->cash_exchange = $request->cashExchange;
+        $salepayment->store_paidamount = $request->customerPaid - $request->cashExchange;
+        $salepayment->customer_paid_amount = $request->customerPaid;
+        $salepayment->bank_name = $request->bankName;
+        $salepayment->save();
+
+        //setting payment flag for cash, card and mobile payment.
+        if($request->paymentMethod == 'cash'){
+            $cash_flag = 1;
+        }else if($request->paymentMethod == 'card'){
+            $card_flag = 1;
+        }else if($request->paymentMethod == 'mobile'){
+            $mobile_flag = 1;
+        }                   
+
+        return json_encode([ 'status' => 'success', 'cashExchange' => $salepayment->cash_exchange, 
+        'customerPaid' => $salepayment->customer_paid_amount, 'cashFlag' => $cash_flag, 'cardFlag' => $card_flag,  'mobileFlag' => $mobile_flag ]);        
+        
     }
 
     public function orderupdate(Request $request){ 
@@ -316,8 +355,8 @@ class SalesController extends BaseController
         $order->payment_method = implode(',', $request->payment_method); // making array to string before saving to database.
         $order->cash_pay = $request->cash_pay;
         $order->card_pay = $request->card_pay;
-        $order->card_bank = $request->card_bank;
-        $order->mobile_bank = $request->mobile_bank;
+       // $order->card_bank = $request->card_bank;
+       // $order->mobile_bank = $request->mobile_bank;
         $order->mobile_banking_pay = $request->mobile_banking_pay;
         $order->order_tableNo = NULL;//$request->order_tableNo;    
         $order->status = 'delivered';
