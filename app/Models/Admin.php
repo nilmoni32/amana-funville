@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use App\Notifications\AdminPasswordResetNotification;
 use App\Models\Role;
+use App\Models\Userlog;
 use App\Models\Ordersale;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\AdminPasswordResetNotification;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Admin extends Authenticatable
 {
@@ -72,6 +73,13 @@ class Admin extends Authenticatable
 
     public function ordersales(){
         return $this->hasMany(Ordersale::class);  
+    }
+
+    /**
+     * Admin account have many logs
+     */
+    public function userlog(){
+        return $this->hasMany(Userlog::class);        
     }
    
         

@@ -47,11 +47,16 @@
                     </div>
                     <div class="col-md-8 mx-auto">
                         <div class="form-group">
-                            <label class="control-label" for="designation">Position</label>
-                            <input class="form-control @error('designation') is-invalid @enderror" type="text"
-                                name="designation" id="designation" value="{{ old('designation') }}"
-                                placeholder="Enter Postion">
-                            @error('designation') {{ $message }}@enderror
+                            <label class="control-label" for="ref_type">Reference Type<span class="text-danger">
+                                *</span></label>
+                            <select class="form-control custom-select mt-15 @error('ref_type') is-invalid @enderror"
+                                id="ref_type" name="ref_type" required>
+                                <option value="" disabled selected>Select Reference Type</option>
+                                @foreach(['Management', 'ShareHolder','Employee', 'other'] as $ref)
+                                <option value="{{ $ref }}">{{ $ref }}</option>
+                                @endforeach
+                            </select>                           
+                            @error('ref_type') {{ $message }}@enderror
                         </div>
                     </div>
                     <div class="col-md-8 mx-auto">

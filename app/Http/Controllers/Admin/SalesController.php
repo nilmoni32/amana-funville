@@ -12,6 +12,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Director;
 use App\Models\Ordersale;
+use App\Models\Paymentgw;
 use App\Models\Salebackup;
 use Illuminate\Http\Request;
 use App\Traits\FlashMessages; 
@@ -299,43 +300,16 @@ class SalesController extends BaseController
         return json_encode(['status' => 'success', 'discountLimit' => $discount_limit, 'discount' => $discount, 'discountUpperLimit' => $discount_upper_limit ] );
     }
 
-    /*
-    * Storing all payments[cash, card, mobile] for an order placement.
-    */
-    public function storePayment(Request $request){ 
-        $cash_flag =0;
-        $card_flag =0;
-        $mobile_flag =0;
-        //finding the record using ordersale_id.- we use existing record for any change payment.
-        $salepayment = Ordersalepayment::where('ordersale_id', $request->ordersale_id)->where('payment_method', $request->paymentMethod)->first();      
-        // if no record exist corresponding to the ordersale_id and payment method, we will create a new one.
-        if(!$salepayment){
-            $salepayment = new Ordersalepayment();
-        }                
-        $salepayment->ordersale_id = $request->ordersale_id;
-        $salepayment->payment_method = $request->paymentMethod;
-        $salepayment->cash_exchange = $request->cashExchange;
-        $salepayment->store_paidamount = $request->customerPaid - $request->cashExchange;
-        $salepayment->customer_paid_amount = $request->customerPaid;
-        $salepayment->bank_name = $request->bankName;
-        $salepayment->save();
-
-        //setting payment flag for cash, card and mobile payment.
-        if($request->paymentMethod == 'cash'){
-            $cash_flag = 1;
-        }else if($request->paymentMethod == 'card'){
-            $card_flag = 1;
-        }else if($request->paymentMethod == 'mobile'){
-            $mobile_flag = 1;
-        }                   
-
-        return json_encode([ 'status' => 'success', 'cashExchange' => $salepayment->cash_exchange, 
-        'customerPaid' => $salepayment->customer_paid_amount, 'cashFlag' => $cash_flag, 'cardFlag' => $card_flag,  'mobileFlag' => $mobile_flag ]);        
-        
+    public function cardDiscount(Request $request){
+        $card_bank = $request->cardBank;
+        $card = Paymentgw::where('bank_type', 'card')->where('bank_name', $card_bank)->first();
+        $card_discount = $card->discount_percent;
+        $discount_upper_limit = $card->discount_upper_limit;
+        return response()->json(['cardDiscount' => $card_discount, 'upperLimit' => $discount_upper_limit]);
     }
 
     public function orderupdate(Request $request){ 
-       
+        //dd($request->all());
         $this->validate($request,[  
             // 'order_tableNo'    => 'nullable|string|max:10',
             'customer_name'     => 'nullable|string|max:40',             
@@ -344,28 +318,96 @@ class SalesController extends BaseController
             'customer_notes'    => 'nullable|string|max:191',             
         ]);
         
+        /*
+        * storing all the payment details to db table ordersalepayments and cal culating cash_pay, card_pay or mobile_pay.
+        */
+        $order_payments = '';
+        // As each order might have single card discount or mobile discount, so we store it directly.        
+        $card_discount = 0;
+        $fraction_discount = 0; 
+        //calculating cash_pay, card_pay & mobile_banking_pay for the current order.       
+        $cash_pay = 0; $card_pay = 0; $mobile_banking_pay = 0;
+        //Convert JSON String to PHP Array     
+        $order_payments = json_decode($request->payment_details, true);
+
+        foreach($order_payments as $single_payment_details){
+            //creating a new instance of ordersalepayments table          
+            $ordersalepayment = new Ordersalepayment();
+            $ordersalepayment->ordersale_id = $single_payment_details['saleOrderId'];
+            $ordersalepayment->payment_method = $single_payment_details['paymentMethod'];
+            $ordersalepayment->bank_name = $single_payment_details['bankName'];
+            $ordersalepayment->card_discount = $single_payment_details['cardDiscount'];
+            $ordersalepayment->customer_paid_amount = $single_payment_details['customerPaid'];
+            $ordersalepayment->cash_exchange = $single_payment_details['due'];
+            //store_paidamount = Customer paid + due as due can be negative value that means 500 + due(-50) = 450 taka will be stored.
+            $ordersalepayment->store_paidamount = $single_payment_details['customerPaid'] + $single_payment_details['due'];            
+            $ordersalepayment->save();
+
+            //storing card discount
+            if(!$card_discount){
+                $card_discount = $single_payment_details['cardDiscount'];
+            }
+
+            //storing fraction discount
+            if(!$fraction_discount){
+                $fraction_discount = $single_payment_details['fractionDiscount'];
+            }           
+           
+            //calculating cash_pay, card_pay & mobile_banking_pay for the current order. 
+            //C-1: when due = 0 with multimode payments.
+            if(!$single_payment_details['due']) {
+                if($single_payment_details['paymentMethod'] == 'cash'){
+                    $cash_pay += $single_payment_details['customerPaid'];
+                }elseif($single_payment_details['paymentMethod'] == 'card'){
+                    $card_pay += $single_payment_details['customerPaid'];
+                }elseif($single_payment_details['paymentMethod'] == 'mobile'){
+                    $mobile_banking_pay += $single_payment_details['customerPaid'];
+                }
+            }
+            //C-2: when due is less tha 0 (due < 0): customer has received cash exchanged.
+            if($single_payment_details['due'] < 0) {
+                // Calculating actual paid amount paid by the customer.
+                $actual_paid_amount = $single_payment_details['customerPaid'] + $single_payment_details['due'];
+
+                if($single_payment_details['paymentMethod'] == 'cash'){
+                    $cash_pay += $actual_paid_amount;
+                }elseif($single_payment_details['paymentMethod'] == 'card'){
+                    $card_pay += $actual_paid_amount;
+                }elseif($single_payment_details['paymentMethod'] == 'mobile'){
+                    $mobile_banking_pay += $actual_paid_amount;
+                }
+            }           
+            
+        }//end of foreach loop.
+
         //Order Update: Discount, reward points discount, Payment Details, Customer Points
         $order = Ordersale::where('id', $request->order_id)->first();
         $order->admin_id = auth()->user()->id;     
         //$order->order_number = $ord_id; 
-        $order->discount = $request->order_discount;
+        $order->discount = $request->order_discount; //referene discount.
         $order->reward_discount = $request->reward_discount;
         $order->director_id = $request->order_discount_reference;        
         $order->order_date = \Carbon\Carbon::now()->toDateTimeString(); 
         $order->payment_method = implode(',', $request->payment_method); // making array to string before saving to database.
-        $order->cash_pay = $request->cash_pay;
-        $order->card_pay = $request->card_pay;
-       // $order->card_bank = $request->card_bank;
-       // $order->mobile_bank = $request->mobile_bank;
-        $order->mobile_banking_pay = $request->mobile_banking_pay;
-        $order->order_tableNo = NULL;//$request->order_tableNo;    
+        $order->cash_pay = $cash_pay;
+        $order->card_pay = $card_pay;
+        $order->mobile_banking_pay = $mobile_banking_pay;
+        $order->card_discount = $card_discount; //either card or mobile bank discount will store.
+        $order->order_tableNo = NULL;//$request->order_tableNo; as that table no should be free to feed another customer.   
         $order->status = 'delivered';
+        $order->fraction_discount = $fraction_discount;
+
         //calculating order total + tax, if exists
         $order_total = $request->subtotal + ($request->subtotal * (config('settings.tax_percentage')/100));
         //substracting director reference discount        
         $order_discount_total = $request->order_discount ?  $order_total - $request->order_discount : $order_total;
         //substracting reward point discount
-        $order_grand_total = $request->reward_discount ? $order_discount_total - $request->reward_discount : $order_discount_total;        
+        $order_grand_total = $request->reward_discount ? $order_discount_total - $request->reward_discount : $order_discount_total;  
+        //substracting card discount
+        $order_grand_total = $card_discount ? $order_grand_total - $card_discount : $order_grand_total;  
+         //substracting fraction discount
+         $order_grand_total = $fraction_discount ? $order_grand_total - $fraction_discount : $order_grand_total; 
+        //grand total after substracting all the discount options      
         $order->grand_total = $order_grand_total;
         // if customer data is not available we will not create the customer details.
         if($request->customer_mobile){    
@@ -452,28 +494,30 @@ class SalesController extends BaseController
             //sending discount amount to phone_number 
             SendCode::sendDiscountAmount($reference_mobile, $order_no, $reference_discount_limit, $reference_discount);
         }
-
-        //sending sms payment notification to the customer.
-        if($request->customer_mobile){
-            $client = Client::where('id', $order->client_id)->first();
-            $client_mobile = $client->mobile; 
-            $client_points = $client->total_points;
-            if($order->cash_pay && !$order->card_pay && !$order->mobile_banking_pay){
-                SendCode::paymentNotify($client_mobile, $order->cash_pay, $client_points, 'cash');
-            }elseif(!$order->cash_pay && $order->card_pay && !$order->mobile_banking_pay){
-                SendCode::paymentNotify($client_mobile, $order->card_pay, $client_points, 'card');
-            }elseif(!$order->cash_pay && !$order->card_pay && $order->mobile_banking_pay){
-                SendCode::paymentNotify($client_mobile, $order->mobile_banking_pay, $client_points, 'mobile banking');
-            }elseif($order->cash_pay && $order->card_pay && !$order->mobile_banking_pay){
-                SendCode::twoPaymentNotify($client_mobile, $order->cash_pay, $order->card_pay, $client_points, 'cash','card'); 
-            }elseif($order->cash_pay && !$order->card_pay && $order->mobile_banking_pay){
-                SendCode::twoPaymentNotify($client_mobile, $order->cash_pay, $order->mobile_banking_pay, $client_points, 'cash','mobile banking'); 
-            }elseif(!$order->cash_pay && $order->card_pay && $order->mobile_banking_pay){
-                SendCode::twoPaymentNotify($client_mobile, $order->card_pay, $order->mobile_banking_pay, $client_points, 'card','mobile banking'); 
-            }elseif($order->cash_pay && $order->card_pay && $order->mobile_banking_pay){
-                SendCode::allPaymentNotify($client_mobile, $order->cash_pay, $order->card_pay, $order->mobile_banking_pay, $client_points, 'cash','card','mobile banking'); 
-            }
-        }
+        /**
+         * Avoided due to slow the payment process.
+         */
+        // //sending sms payment notification to the customer.
+        // if($request->customer_mobile){
+        //     $client = Client::where('id', $order->client_id)->first();
+        //     $client_mobile = $client->mobile; 
+        //     $client_points = $client->total_points;
+        //     if($order->cash_pay && !$order->card_pay && !$order->mobile_banking_pay){
+        //         SendCode::paymentNotify($client_mobile, $order->cash_pay, $client_points, 'cash');
+        //     }elseif(!$order->cash_pay && $order->card_pay && !$order->mobile_banking_pay){
+        //         SendCode::paymentNotify($client_mobile, $order->card_pay, $client_points, 'card');
+        //     }elseif(!$order->cash_pay && !$order->card_pay && $order->mobile_banking_pay){
+        //         SendCode::paymentNotify($client_mobile, $order->mobile_banking_pay, $client_points, 'mobile banking');
+        //     }elseif($order->cash_pay && $order->card_pay && !$order->mobile_banking_pay){
+        //         SendCode::twoPaymentNotify($client_mobile, $order->cash_pay, $order->card_pay, $client_points, 'cash','card'); 
+        //     }elseif($order->cash_pay && !$order->card_pay && $order->mobile_banking_pay){
+        //         SendCode::twoPaymentNotify($client_mobile, $order->cash_pay, $order->mobile_banking_pay, $client_points, 'cash','mobile banking'); 
+        //     }elseif(!$order->cash_pay && $order->card_pay && $order->mobile_banking_pay){
+        //         SendCode::twoPaymentNotify($client_mobile, $order->card_pay, $order->mobile_banking_pay, $client_points, 'card','mobile banking'); 
+        //     }elseif($order->cash_pay && $order->card_pay && $order->mobile_banking_pay){
+        //         SendCode::allPaymentNotify($client_mobile, $order->cash_pay, $order->card_pay, $order->mobile_banking_pay, $client_points, 'cash','card','mobile banking'); 
+        //     }
+        // }
         
 
         // setting flash message using trait

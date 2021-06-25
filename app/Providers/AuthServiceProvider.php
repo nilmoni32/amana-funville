@@ -26,23 +26,27 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies(); 
         
         Gate::define('funville-dashboard', function($user){
-            return $user->hasAnyRoles(['admin', 'order-control', 'stock-control', 'user']);
+            return $user->hasAnyRoles(['admin', 'order-control', 'stock-control', 'user', 'super-admin']);
         });
 
         Gate::define('manage-reports', function($user){
-            return $user->hasAnyRoles(['admin', 'order-control', 'stock-control', 'user']);
+            return $user->hasAnyRoles(['admin', 'order-control', 'stock-control', 'user', 'super-admin']);
         });
 
         Gate::define('manage-orders', function($user){
-            return $user->hasAnyRoles(['admin', 'order-control']);
+            return $user->hasAnyRoles(['admin', 'order-control','super-admin']);
         });
 
         Gate::define('manage-stock', function($user){
-            return $user->hasAnyRoles(['admin', 'stock-control']);
+            return $user->hasAnyRoles(['admin', 'stock-control','super-admin']);
         });
 
         Gate::define('all-admin-features', function($user){
-            return $user->hasRole('admin');
+            return $user->hasAnyRoles(['admin','super-admin']);
+        });
+
+        Gate::define('super-admin', function($user){
+            return $user->hasRole('super-admin');
         });
 
         

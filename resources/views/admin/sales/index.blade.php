@@ -104,10 +104,24 @@
                                                 class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
                                         </h5>
                                         @endif
-                                        <h5 class="text-right pb-3 pt-1 border-bottom">Order Total :
-                                            <span
+                                        <h5 class="text-right pb-3 pt-1 border-bottom">
+                                            @php $number = floatval($total_taka + $total_taka * (config('settings.tax_percentage')/100)) @endphp
+                                            @if(!(floor($number) == $number))
+                                            <div class="row mr-1">
+                                                <div class="col-8 pr-0 text-right">
+                                                    Fraction Discount: <span id="fraction-due" class="py-2 mt-1">{{ round(($number - floor($number)),2) }}</span>
+                                                </div>
+                                                <div class="col-4 pr-0 pl-0">
+                                                    Order Total: <span id="total-tk">
+                                                        {{ floor($number)  }}</span><span
+                                                        class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span></span>
+                                                </div>
+                                            </div>
+                                            @else 
+                                            Order Total :<span
                                                 id="total-tk">{{ $total_taka + ($total_taka * (config('settings.tax_percentage')/100))}}</span><span
                                                 class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
+                                            @endif
                                         </h5>
                                         <h5 class="text-right pb-2 pt-1 border-bottom" id="discount-blk">
                                             <label id="discount-lbl" style="margin-right:-15px; cursor:pointer;"><input
@@ -115,13 +129,14 @@
                                                     id="discount_check" onclick="discountCheck()">
                                                 Reference Discount :
                                             </label>
-                                            <div class="form-check form-check-inline cash-discount">
+                                            <div class="form-check form-check-inline cash-discount">                                                
                                                 <select name="director_id" id="discount_reference"
                                                     class="form-control font-weight-normal" style="display:none;">
-                                                    <option value="" disabled selected>Select Discount Reference
-                                                    </option>
+                                                    {{-- <option value="" disabled selected>Select Discount Reference
+                                                    </option>                                                     --}}
                                                     @foreach( App\Models\Director::orderBy('name', 'asc')->get() as
-                                                    $director)
+                                                    $director)  
+                                                    <option></option>                                                 
                                                     <option value="{{ $director->id }}">{{ $director->name }}</option>
                                                     @endforeach
                                                 </select>
@@ -139,27 +154,30 @@
                                                     {{_('** The given amount exceeds the discount limit. **')}}
                                                 </span>
                                             </div>
-                                        </h5>
+                                        </h5>                                                                                
                                         <h5 class="text-right pb-2 pt-1 border-bottom d-none" id="reward-point-blk">
                                             <label id="discount-point-lbl"
                                                 style="margin-right:-15px; cursor:pointer; margin-right:3em;"><input
                                                     type="checkbox" class="radio-inline" name="reward_discount"
-                                                    id="reward_point_check" onclick="rewardPoint()"> Use Reward
-                                                points:
+                                                    id="reward_point_check" onclick="rewardPoint()"> Use Reward points:
                                                 <span class="ml-1" id="reward-discount"></span>
                                                 {{ config('settings.currency_symbol') }}
                                             </label>
                                         </h5>
-                                        <h5 class="text-right pb-3 pt-1 border-bottom">Due Amount:
-                                            <span
-                                                id="due-tk">{{ $total_taka + $total_taka * (config('settings.tax_percentage')/100)  }}</span><span
-                                                class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
+                                        <h5 class="text-right pb-2 pt-1 border-bottom d-none" id="card-discount-blk">
+                                            <label id="card-discount-lbl" style="margin-right:-15px; cursor:pointer; margin-right:3em;">
+                                                {{ __('Card Discount: ') }}<span class="ml-1" id="card-discount"></span>
+                                                {{ config('settings.currency_symbol') }}
+                                            </label>
+                                        </h5>
+                                        <h5 class="text-right pb-3 pt-1 border-bottom">Due Amount: <span id="due-tk">
+                                            {{ floor($total_taka + $total_taka * (config('settings.tax_percentage')/100))  }}</span><span
+                                            class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
                                         </h5>
                                         <h5 class="text-right pb-2 pt-1 border-bottom" id="cash_blk">
                                             <label style="cursor:pointer;"><input type="checkbox"
                                                     class="radio-inline payments" name="cash_check" id="cash_check"
-                                                    onclick="cashCheck()"> Cash
-                                                Payment :
+                                                    onclick="cashCheck()"> Cash Payment :
                                             </label>
                                             <div class="form-check form-check-inline cash-payment"
                                                 style="margin-right:3em">
@@ -171,13 +189,12 @@
                                         <h5 class="text-right pb-2 pt-1 border-bottom" id="card_blk">
                                             <label style="cursor:pointer; margin-right:-1em" id="card_blk_lbl"><input type="checkbox"
                                                     class="radio-inline payments" name="card_check" id="card_check"
-                                                    onclick="cardCheck()"> Card
-                                                Payment :
+                                                    onclick="cardCheck()"> Card Payment :
                                             </label>                                           
                                             <div class="form-check form-check-inline card-payment">
                                                 <select name="bank_reference" id="bank_reference"
                                                         class="form-control font-weight-normal" style="display:none;">
-                                                        <option value="" disabled selected>Select a Bank
+                                                        <option value="" disabled selected>Select a CardBank
                                                         </option>
                                                         @foreach( App\Models\Paymentgw::where('bank_type', 'card')->orderBy('bank_name', 'asc')->get() as
                                                         $payment_gw)
@@ -216,19 +233,17 @@
                                             </div>
                                             
                                         </h5>
-                                        <h5 class="text-right py-2 pr-5 d-none text-danger" id="total-pay-block">Payment
-                                            Details:&nbsp;
-                                            <span id="pay-details"></span>
+                                        <h5 class="text-right py-2 pr-5 d-none text-danger" id="total-pay-block">Payment Details:&nbsp;
+                                            <div class="row mr-1">
+                                                <div class="col-11 pr-1"><div id="pay-details" class="py-2"></div></div>
+                                                <div class="col-1 pl-0 text-left"><div id="pay-totals" class="py-2 mt-1"></div></div>                                                
+                                            </div>                                            
                                         </h5>
-                                        <h4 class="text-right py-4 d-none text-danger" id="pay-more-block">Customer
-                                            need to pay
-                                            more
+                                        <h4 class="text-right py-4 d-none text-danger" id="pay-more-block">Customer need to pay more
                                             <span id="pay-more"></span><span
                                                 class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
                                         </h4>
-                                        <h4 class="text-right py-4 d-none text-danger" id="pay-change-block">You
-                                            need to pay
-                                            change
+                                        <h4 class="text-right py-4 d-none text-danger" id="pay-change-block">You need to pay change
                                             <span id="pay-change"></span><span
                                                 class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
                                         </h4>
@@ -271,15 +286,16 @@
                             <input type="hidden" id="order_id" name="order_id" value="{{ $order_id ? $order_id : '' }}">
                             <input type="hidden" id="sub-total" name="subtotal"
                                 value="{{ $order_id ? $total_taka : '' }}">
-                            <input type="hidden" id="order_discount" name="order_discount" value="">
+                            <input type="hidden" id="order_discount" name="order_discount" value=""> <!-- reference discount -->
                             <input type="hidden" id="order_discount_reference" name="order_discount_reference" value="">
                             <input type="hidden" id="reward_point_discount" name="reward_discount" value="">
                             <input type="hidden" id="payment_method" name="payment_method[]" value="">
-                            <input type="hidden" id="pay_cash" name="cash_pay" value="">
+                            <input type="hidden" id="payment_details" name="payment_details" value="">
+                            {{-- <input type="hidden" id="pay_cash" name="cash_pay" value="">
                             <input type="hidden" id="pay_card" name="card_pay" value="">
                             <input type="hidden" id="cardbank" name="card_bank" value="">
                             <input type="hidden" id="mobibank" name="mobile_bank" value="">
-                            <input type="hidden" id="pay_mobile" name="mobile_banking_pay" value="">
+                            <input type="hidden" id="pay_mobile" name="mobile_banking_pay" value=""> --}}
 
                             <div class="border px-4 rounded" style="border-color:rgb(182, 182, 182);">
                                 <h4 class="text-center mt-3 mb-4">Customer Details</h4>
@@ -362,18 +378,26 @@
 <script src="{{ asset('backend') }}/js/pos/JSPrintManager.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.3.5/bluebird.min.js"></script>
 <script type="text/javascript">
-    var smallAmountCashPaid = 0; //global declaration
-    var smallAmountCardPaid = 0; 
-    var smallAmountMobilePaid = 0;
-    var dueAfterPayment = 0;
+    //global declaration
     var methods = []; 
-    var OrderTotal = $('#total-tk').text();    
-
+    //var OrderTotal = $('#total-tk').text();  
+    var allPayments=[]; // Holds all the paid amounts & methods. 
+    var cardDiscountFlag = 0; // used to allow only one card discount
 
     // getting CSRF Token from meta tag
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     $(document).ready(function(){
-        
+
+         //Getting Branch Name 
+        $('#discount_reference').select2({
+                placeholder: "Select discount reference",              
+                multiple: false, 
+                width: '100%',
+                containerCssClass : 'd-none',
+                maximumSelectionLength: 3,               
+               // minimumResultsForSearch: -1,                        
+        });
+
      // POS system starts here   
         $("#customer_mobile").autocomplete({
         //Using source option to send AJAX post request to route('employees.getEmployees') to fetch data
@@ -421,7 +445,7 @@
         });
         }
 
-        // pos system discount       
+        // pos system reference discount       
        $('#discount').on('input', function() {
            if($.isNumeric( $.trim($('#discount').val() ))){
             orderTotal = $('#total-tk').text();
@@ -505,9 +529,8 @@
             resetPayment();
         });
         
-        // POS System: Cash payment:
-        // note: cashDue is globally declared.
-        $('#cash_pay').on('input', function() { 
+        // POS System: Cash payment:      
+        $('#cash_pay').change(function() { 
             
             if($.isNumeric( $.trim($('#cash_pay').val() ))){
                 // avoiding alphanumeric input and make input text normal.
@@ -516,42 +539,43 @@
                         "background": ""
                 });
 
-                dueTotal = $('#due-tk').text(); // getting the total dueAmount
-                cashPay = $.trim($('#cash_pay').val());
-                cashExchange = 0;  // the amount of cash has to be exchanged.
-                // avoiding for cash payment 0 tk.
-                if(cashPay != ''){
-                    dueTotal -= cashPay; 
-                    if(dueTotal == 0){ 
-                        // when no cash exchange after the payment, we will store the payment details into the database.
-                        smallAmountCashPaid = 0;
-                        storeEachPayment('cash', cashExchange, cashPay);
-                    }else if(dueTotal > 0){ // total due after cash payment.// 500-300 = 200
-                        $('#pay-change-block').addClass('d-none');
-                        $('#total-pay-block').addClass('d-none');
-                        $('#pay-more-block').removeClass('d-none');
-                        $('#pay-more').html(dueTotal);
-                        smallAmountCashPaid = dueTotal;        // small cash is stored for every single input digit for this jquery input event.                 
-                    }else if(dueTotal < 0){ // 200 - 300 = -100
-                        $('#pay-more-block').addClass('d-none'); 
-                        $('#total-pay-block').addClass('d-none');
-                        $('#pay-change-block').removeClass('d-none');
-                        $('#pay-change').html(~dueTotal+1);  
-                        cashExchange = ~dueTotal+1; // cash to be exchanged.
-                        storeEachPayment('cash', cashExchange, cashPay);
+                // if total due > calculateTotalPaidByCustomer
+                if($('#due-tk').text() > calculateTotalPaidByCustomer()){
+
+                    // getting the total dueAmount
+                    dueTotal = allPayments.length && allPayments.find(obj => obj.due > 0) ? allPayments.find(obj => obj.due > 0 ).due : $('#due-tk').text();
+                    //dueTotal =  allPayments.length && allPayments[allPayments.length - 1].due > 0 ? allPayments[allPayments.length - 1].due : $('#due-tk').text();
+                    cashPay = $.trim($('#cash_pay').val());               
+                    // avoiding for cash payment 0 tk.
+                    if(cashPay != ''){
+                        dueTotal -= cashPay; 
+                        dueTotal = parseFloat(dueTotal).toFixed(4);
+                        if(dueTotal == 0){
+                            //storeEachPayment(paymentMethod, customerPaid, due, bankName='')  
+                            storeEachPayment('cash',cashPay, 0);
+                            noDueDisplay();
+                        }else if(dueTotal > 0){ // total due after cash payment.// 500-300 = 200 
+                            storeEachPayment('cash',cashPay, dueTotal);
+                            duePayDisplay(cashPay, 'cash', '', dueTotal);
+                        }else if(dueTotal < 0){ // 200 - 300 = -100                       
+                            storeEachPayment('cash', cashPay, dueTotal);
+                            exchangeDisplay(cashPay, dueTotal, 'cash', '');
+                            
+                        }
+                        //setting payment method to form hidden input field
+                        methods.push('cash');
+                        //filtering only unique values
+                        var uniqueMethods = methods.filter( onlyUnique );
+                        $('#payment_method').val(uniqueMethods);
+                        
+                    }else{ // if user does not any input or null on cash payment
+                        
+                    $('#pay-more-block').addClass('d-none');
+                    $('#pay-change-block').addClass('d-none');
+                    $('#total-pay-block').addClass('d-none');                 
                     }
-                    //setting payment method to form hidden input field
-                    methods.push('cash');
-                    //filtering only unique values
-                    var uniqueMethods = methods.filter( onlyUnique );
-                    $('#payment_method').val(uniqueMethods);
-                    
-                }else{ // if user does not any input or null on cash payment
-                    
-                $('#pay-more-block').addClass('d-none');
-                $('#pay-change-block').addClass('d-none');
-                $('#total-pay-block').addClass('d-none');                 
-                }
+
+                } //end if total due > calculateTotalPaidByCustomer
 
             }else{
                // if the entered data is not digit, we just focus on it
@@ -559,90 +583,111 @@
                         "border": "2px solid #007065",
                         "background": "#e4f5f3"                    
                     }); 
-                    resetPayment();
+                    //resetPayment();
              }
             
         });
 
         // POS System: Card payment 
-        $('#card_pay').on('input', function() {
-
-            //getting the card bank name.
-            cardBank = $('#bank_reference :selected').val();           
-            
-            // here cashExchange parameter is zero.
-            // smallAmountCashPaid is the small cash payment and still card or mobile payment would be taken place.
-            if(!dueAfterPayment && smallAmountCashPaid){
-                // storing small cash payment record when due payment exists.
-                storeEachPayment('cash', 0, smallAmountCashPaid);                
-                dueAfterPayment =  $('#due-tk').text() - smallAmountCashPaid;
-            }
-
-            if(smallAmountCashPaid){
-                dueTotal = dueAfterPayment;
-            }else{               
-                dueTotal = $('#due-tk').text();
-            }            
+        $('#card_pay').change(function() {
 
             if($.isNumeric( $.trim($('#card_pay').val() ))){
                 // avoiding alphanumeric input and make input text normal.
                 $('#card_pay').css({
                         "border": "",
                         "background": ""
-                }); 
-                                         
-                cardPay = $.trim($('#card_pay').val());  
-                cashExchange = 0;  // the amount of cash has to be exchanged.          
-                // avoiding for card payment 0 tk.
-                if(cardPay != ''){ 
-                    dueTotal -= cardPay;          
-                        if(dueTotal == 0){ 
-                            // when no cash exchange after the card payment, we will store the payment details into the database.
-                            cardDue = 0;
-                            storeEachPayment('card', cashExchange, cardPay, cardBank);
-                        }else if(dueTotal > 0){ // 500-300 = 200                            
-                            $('#pay-change-block').addClass('d-none'); 
-                            $('#total-pay-block').addClass('d-none');
-                            $('#pay-more-block').removeClass('d-none');
-                            $('#donot-change-block').addClass('d-none');
-                            $('#pay-more').html(dueTotal); 
-                            duePay = dueTotal;
-                        }else if(dueTotal < 0){ // 200 - 300 = -100
-                            $('#pay-more-block').addClass('d-none');                                   
-                            $('#pay-change-block').addClass('d-none');
-                            $('#total-pay-block').addClass('d-none');
-                            $('#donot-change-block').removeClass('d-none');
-                            $('#donot-change').html(~dueTotal+1);                                
+                });
+
+                // if total due > calculateTotalPaidByCustomer
+                if($('#due-tk').text() > calculateTotalPaidByCustomer()){
+
+                    //getting the card bank name.
+                    cardBank= $('#bank_reference option:selected').text();                            
+                    //dueTotal =  allPayments.length && allDues > 0 ? allDues : $('#due-tk').text();
+                    dueTotal = allPayments.length && allPayments.find(obj => obj.due > 0) ? allPayments.find(obj => obj.due > 0 ).due : $('#due-tk').text();
+                                                                                    
+                    cardPay = $.trim($('#card_pay').val());
+                    //getting card discount promise object
+                    cardDiscountPromise = getCardDiscount(cardBank);
+
+                    cardDiscountPromise.then(val => {
+                        //debugger
+                        //Calculating Card Discount Amount from the total payable.
+                        cardDiscount = parseFloat(cardPay) * parseFloat(val.cardDiscount)/100; 
+                        cardDiscount = Math.ceil(cardDiscount); // remove the fractional portion of the card discount.
+                        //setting card discount = upper limit, if it cross the upper limit.
+                        if(cardDiscount > parseFloat(val.upperLimit)){
+                            cardDiscount = parseFloat(val.upperLimit).toFixed(2);
                         }
-                
+
+                        //to check card have discount or not 
+                        // here cardFlag is used to allow to take only one card discount 
+                        if(cardDiscount && !cardDiscountFlag){
+                            // displaying avaiable card discount.
+                            $('#card-discount-blk').removeClass('d-none');
+                            $('#card-discount').html(cardDiscount); 
+                            cardDiscountFlag = 1;
+                            //resetting the cardpayment after subtracting card discount.
+                            $('#card_pay').val(cardPay - cardDiscount);
+                            // setting total payble due after having card discount. [only for user view]                         
+                            $('#due-tk').text(Number($('#due-tk').text()) - cardDiscount);
+                            //finding due after the card payment with card discount.
+                            dueTotal -= cardPay; 
+                            //getting the card payment after having card discount.
+                            cardPay = cardPay - cardDiscount;
+                            dueTotal = parseFloat(dueTotal).toFixed(4);         
+                            if(dueTotal == 0){ 
+                            //storeEachPayment(paymentMethod, customerPaid, due, cardDiscount, bankName) 
+                                storeEachPayment('card', cardPay, 0, cardDiscount,cardBank);
+                                noDueDisplay();
+                            }else if(dueTotal > 0){ // 500-300 = 200                            
+                                storeEachPayment('card', cardPay, dueTotal, cardDiscount, cardBank);                           
+                                duePayDisplay(cardPay, 'card', cardBank, dueTotal); 
+                            }else if(dueTotal < 0){ // 200 - 300 = -100
+                                storeEachPayment('card', cardPay, dueTotal, cardDiscount, cardBank); 
+                                exchangeDisplay(cardPay, dueTotal, 'card', cardDiscount, cardBank);
+                            }                                                
+                        }else{
+
+                           // $('#card-discount-blk').addClass('d-none');
+                            //finding due after the card payment.
+                            dueTotal -= cardPay; 
+                            dueTotal = parseFloat(dueTotal).toFixed(4);         
+                            if(dueTotal == 0){ 
+                            //storeEachPayment(paymentMethod, customerPaid, due, cardDiscount, bankName) 
+                                storeEachPayment('card', cardPay, 0, 0, cardBank);
+                                noDueDisplay();
+                            }else if(dueTotal > 0){ // 500-300 = 200                            
+                                storeEachPayment('card', cardPay, dueTotal, 0, cardBank);                           
+                                duePayDisplay(cardPay, 'card', cardBank, dueTotal); 
+                            }else if(dueTotal < 0){ // 200 - 300 = -100
+                                storeEachPayment('card', cardPay, dueTotal, 0, cardBank); 
+                                exchangeDisplay(cardPay, dueTotal, 'card', cardBank);
+                            }
+                        } 
+                    });                    
 
                     //setting payment method to form hidden input field
                     methods.push('card');                    
                     //filtering only unique values
                     var uniqueMethods = methods.filter( onlyUnique );
                     $('#payment_method').val(uniqueMethods);
-                    // // setting cash payment to form hidden input field
-                    // $('#pay_card').val($.trim($('#card_pay').val()));
+                    
+                }//end if total due > calculateTotalPaidByCustomer
 
-                }else{                  
-                    $('#pay-more-block').addClass('d-none');
-                    $('#pay-change-block').addClass('d-none'); 
-                    $('#donot-change-block').addClass('d-none');
-                    $('#total-pay-block').addClass('d-none'); 
-                }
             }else{
                // if the entered data is not digit, we just focus on it
                     $('#card_pay').css({
                         "border": "2px solid #007065",
                         "background": "#e4f5f3"                    
                     }); 
-                    resetPayment();
+                    //resetPayment();
              }
             
         });
 
-        // mobile banking payment 
-        $('#mobile_banking_pay').on('input', function() { 
+        // mobile banking payment
+        $('#mobile_banking_pay').change(function() {
 
             if($.isNumeric( $.trim($('#mobile_banking_pay').val() ))){
                 // avoiding alphanumeric input and make input text normal.
@@ -650,111 +695,233 @@
                         "border": "",
                         "background": ""
                 });
-                dueTotal = 0;
-                mobilePay = $.trim($('#mobile_banking_pay').val());             
-                //  avoiding for mobile banking payment 0 tk.
-                if(mobilePay != ''){
-                    dueTotal -= mobilePay;          
+
+                // if total due > calculateTotalPaidByCustomer
+                if($('#due-tk').text() > calculateTotalPaidByCustomer()){
+                        //getting the card bank name.
+                    mobiBank= $('#mobibank_reference option:selected').text();              
+                    //dueTotal =  allPayments.length && allPayments[allPayments.length - 1].due > 0 ? allPayments[allPayments.length - 1].due : $('#due-tk').text();
+                    dueTotal = allPayments.length && allPayments.find(obj => obj.due > 0) ? allPayments.find(obj => obj.due > 0 ).due : $('#due-tk').text();
+                    mobilePay = $.trim($('#mobile_banking_pay').val()); 
+
+                    dueTotal -= mobilePay;   
+                    dueTotal = parseFloat(dueTotal).toFixed(4);       
                         if(dueTotal == 0){ 
-                            // when no dues after the payment, we will show the payment details               
-                            noDueTotal();
-                        }else if(dueTotal > 0){ // 500-300 = 200  
-                            $('#pay-change-block').addClass('d-none'); 
-                            $('#total-pay-block').addClass('d-none');
-                            $('#pay-more-block').removeClass('d-none');
-                            $('#donot-change-block').addClass('d-none');
-                            $('#pay-more').html(dueTotal);                              
-                            duePay = dueTotal;  // total due after cash payment.                                     
+                            //storeEachPayment(paymentMethod, customerPaid, due, bankName) 
+                            storeEachPayment('mobile', mobilePay, 0, 0, mobiBank);
+                            noDueDisplay();
+                        }else if(dueTotal > 0){ // 500-300 = 200 
+                            storeEachPayment('mobile', mobilePay, dueTotal, 0, mobiBank); 
+                            //duePayDisplay(customerPaid,paymentMethod,bankName,due)                            
+                            duePayDisplay(mobilePay, 'mobile', mobiBank, dueTotal);                                                             
                         }else if(dueTotal < 0){ // 200 - 300 = -100
-                            $('#pay-more-block').addClass('d-none');   
-                            $('#pay-change-block').addClass('d-none');
-                            $('#total-pay-block').addClass('d-none');
-                            $('#donot-change-block').removeClass('d-none');
-                            $('#donot-change').html(~dueTotal+1);                                
+                            storeEachPayment('mobile', mobilePay, dueTotal, 0, mobiBank); 
+                            //exchangeDisplay(customerPaid, due, paymentMethod, bankName)                           
+                            exchangeDisplay(mobilePay, dueTotal, 'mobile', mobiBank);               
                         }
 
                     //setting payment method to form hidden input field
-                    methods.push('mobile banking');                    
+                    methods.push('mobile-banking');                    
                     //filtering : to get only unique values
                     var uniqueMethods = methods.filter( onlyUnique );
                     $('#payment_method').val(uniqueMethods);
-                    
-                    // // setting cash payment to form hidden input field
-                    // $('#pay_mobile').val($.trim($('#mobile_banking_pay').val()));
-                }
-                else{              
-                    $('#pay-more-block').addClass('d-none');
-                    $('#pay-change-block').addClass('d-none'); 
-                    $('#donot-change-block').addClass('d-none');
-                    $('#total-pay-block').addClass('d-none'); 
-                }
+
+                }// end if total due > calculateTotalPaidByCustomer
+                
             }else{
                // if the entered data is not digit, we just focus on it
                     $('#mobile_banking_pay').css({
                         "border": "2px solid #007065",
                         "background": "#e4f5f3"                    
                     }); 
-                    resetPayment();
+                    //resetPayment();
              }
             
         });
 
+        
+        function storeEachPayment(paymentMethod, customerPaid, due, cardDiscount=0, bankName=''){
 
-        function storeEachPayment(paymentMethod, cashExchange, customerPaid, bankName=''){
-            $.post("{{ route('admin.store.eachpayment') }}", {        
-                _token: CSRF_TOKEN,   
-                paymentMethod: paymentMethod,
-                cashExchange: cashExchange,
-                customerPaid: customerPaid,
-                bankName: bankName, 
-                ordersale_id : {{ $order_id }}    // attaching ordersale no to payments table.             
-            }).done(function(data) { 
-                data = JSON.parse(data);
-                if(data.status == "success") {                    
-                    cashExchange  = parseFloat(data.cashExchange);
-                    customerPaid = parseFloat(data.customerPaid);                    
-                    // Showing the payment Details.
-                    if(!cashExchange){
-                        noDueTotal(customerPaid, cashExchange, data.cashFlag, data.cardFlag, data.mobileFlag);
-                    }else{
-                        exchangeTotal(customerPaid, cashExchange);
-                    }
-                    
+            fractionDiscount = $('#fraction-due').text() ? parseFloat($('#fraction-due').text()) : 0;           
+
+            // to store other payment records we need to check dues                
+            // getting the total paid by Customer
+            totalPaid = calculateTotalPaidByCustomer();  
+            //getting the total due.           
+            totalDue = parseFloat($('#due-tk').text()) - totalPaid;
+
+            // checking any dues [avoiding store payments when dues such as -10 or 0]
+            if(totalDue > 0){                
+                // if payment is done for a particular method
+                objSale = allPayments.find(obj => obj.paymentMethod == paymentMethod);                                     
+                if(objSale){
+                    // here, we are avioding the same type bank or mobile banking payment 
+                    // creating two or more card payments or mobile payments
+                    if(allPayments.find(obj => (obj.paymentMethod == paymentMethod && obj.bankName != bankName))){
+                        payment = {
+                            'saleOrderId' : {{ $order_id }},
+                            'paymentMethod' : paymentMethod,
+                            'customerPaid': customerPaid,
+                            'bankName': bankName,
+                            'due': due,
+                            'cardDiscount': cardDiscount,
+                            'fractionDiscount': fractionDiscount                   
+                        };
+                        allPayments.push(payment);  // array of objects holds all the payment details 
+                    }           
+                                
+                }else{  //we will not store any payment history if there no dues
+                    payment = {
+                        'saleOrderId' : {{ $order_id }},
+                        'paymentMethod' : paymentMethod,
+                        'customerPaid': customerPaid,
+                        'bankName': bankName,
+                        'due': due, 
+                        'cardDiscount': cardDiscount,
+                        'fractionDiscount': fractionDiscount                       
+                    };
+
+                    allPayments.push(payment);  // array of objects holds all the payment details 
                 }
-            });
+            }
+            
+            //Resetting all the dues & fraction part to zero except the last object due.        
+            for(let i = allPayments.length - 2; i >= 0; i--){ 
+                allPayments[i].due = 0;
+                allPayments[i].fractionDiscount = 0;
+            }
+            console.log(allPayments);
+            
+            //converting array of objects to json string to pass data to controller.
+            jsonStringAllPayments = JSON.stringify(allPayments);
+            //setting all payment details to form hidden input field           
+            $('#payment_details').val(jsonStringAllPayments);
+
         }
 
-        function exchangeTotal(customerPaid, cashExchange){
+        function calculateTotalPaidByCustomer(){
+            totalPaid = 0;
+            for(let i = 0; i < allPayments.length; i++){
+                totalPaid += parseFloat(allPayments[i].customerPaid);
+            }
+            return totalPaid;
+        }
+        
+        // Deleting the particular payment history if user clicked close button
+        // We are using document here due to .pay-close is added after the page load.
+        $(document).on('click', '.pay-close', function(){
+            $(this).parent().addClass('d-none');
+            // get deleted obj index from the id value
+            getDeletedObjIndex = $(this).attr('id').slice(-1);
+            //resetting the card discount flag if the deleted payment object has card discount
+            cardDiscount = 0
+            if(allPayments[getDeletedObjIndex].cardDiscount){
+                cardDiscountFlag = 0;
+                cardDiscount = allPayments[getDeletedObjIndex].cardDiscount;
+                $('#card-discount-blk').addClass('d-none');
+                // setting total payble due after adding deleted card discount.                       
+                $('#due-tk').text(Number($('#due-tk').text()) + cardDiscount);
+            }
+            // delete the obj from all payments.
+            allPayments.splice(getDeletedObjIndex, 1);
+           
+            // After delete the obj getting the total payments
+            totalPaid = calculateTotalPaidByCustomer();            
+            //getting the total due.           
+            totalDue = parseFloat($('#due-tk').text()) - totalPaid;           
+            // updating the total due at last obj
+            if(totalPaid){
+                allPayments[allPayments.length-1].due = totalDue;
+            }
 
-            Tk = " {{ config('settings.currency_symbol') }}, "; // money symbol
-            cashPay = cashExchange ? 'Cash = ' + customerPaid + Tk : '';
-            cardPay = 0 ? 'Card = ' + card + Tk : '';
-            mobilePay = 0 ? 'Mobile Banking = ' + mobile + Tk : '';             
-            totalPay = cashPay + cardPay + mobilePay;
+            $('#pay-change-block').addClass('d-none');
+            $('#pay-more-block').removeClass('d-none');
+            $('#pay-more').html(totalDue);  
+            $('#pay-totals').html( '=' + totalPaid);   
+
+            // Resetting all the payment textbox.    
+            $('#cash_pay').val("");
+            $('#card_pay').val("");
+            $('#mobile_banking_pay').val("");  
+
+            if(!allPayments.length){
+                $('#pay-change-block').addClass('d-none');
+                $('#pay-more-block').addClass('d-none');
+                $('#total-pay-block').addClass('d-none'); 
+            }      
+        });
+
+     
+        function noDueDisplay(){
+                let tk = " {{ config('settings.currency_symbol') }}, "; // money symbol
+                let totalPay = '';
+
+                for(let i = 0; i < allPayments.length; i++){
+                    if(allPayments[i].bankName){ // for bank
+                        totalPay += '<span class="badge badge-info text-uppercase ml-1 pl-1"><span style="line-height:21px;">' + allPayments[i].bankName + ' = ' + allPayments[i].customerPaid+ 
+                '</span><button id="pay-close'+ i + '" type="button" class="btn close text-white pay-close" aria-label="Close"><span aria-hidden="true">&nbsp;×</span></button></span>'
+                    }else{ // for cash
+                        totalPay += '<span class="badge badge-info text-uppercase ml-1 pl-1"><span style="line-height:21px;">' + allPayments[i].paymentMethod + ' = ' + allPayments[i].customerPaid+ 
+                '</span><button id="pay-close'+ i + '" type="button" class="btn close text-white pay-close" aria-label="Close"><span aria-hidden="true">&nbsp;×</span></button></span>'
+                    }
+                }                         
+                $('#pay-more-block').addClass('d-none');
+                $('#pay-change-block').addClass('d-none');                
+                $('#total-pay-block').removeClass('d-none'); 
+                $('#pay-details').html(totalPay);
+
+                totalPaid = calculateTotalPaidByCustomer();
+                $('#pay-totals').html( '=' + totalPaid);               
+                
+        }
+
+        function duePayDisplay(customerPaid,paymentMethod,bankName,due){
+            let tk = " {{ config('settings.currency_symbol') }}, "; // money symbol
+            let totalPay = '';
+
+            for(let i = 0; i < allPayments.length; i++){
+                if(allPayments[i].bankName){ // for bank
+                        totalPay += '<span class="badge badge-info text-uppercase ml-1 pl-1"><span style="line-height:21px;">' + allPayments[i].bankName + ' = ' + allPayments[i].customerPaid+ 
+                '</span><button id="pay-close'+ i + '" type="button" class="btn close text-white pay-close" aria-label="Close"><span aria-hidden="true">&nbsp;×</span></button></span>'
+                    }else{ // for cash
+                        totalPay += '<span class="badge badge-info text-uppercase ml-1 pl-1"><span style="line-height:21px;">' + allPayments[i].paymentMethod + ' = ' + allPayments[i].customerPaid+ 
+                '</span><button id="pay-close'+ i + '" type="button" class="btn close text-white pay-close" aria-label="Close"><span aria-hidden="true">&nbsp;×</span></button></span>'
+                    }
+            }
+            $('#pay-change-block').addClass('d-none');
+            $('#pay-more-block').removeClass('d-none');
+            $('#pay-more').html(parseFloat(due).toFixed(2));
+            $('#total-pay-block').removeClass('d-none'); 
+            $('#pay-details').html(totalPay);
+
+            totalPaid = calculateTotalPaidByCustomer();
+            $('#pay-totals').html( '=' + totalPaid);
+        }
+
+        function exchangeDisplay(customerPaid, due, paymentMethod, bankName){
+            let tk = " {{ config('settings.currency_symbol') }}, "; // money symbol
+            let totalPay = '';
+
+            for(let i = 0; i < allPayments.length; i++){
+                if(allPayments[i].bankName){ // for bank
+                        totalPay += '<span class="badge badge-info text-uppercase ml-1 pl-1"><span style="line-height:21px;">' + allPayments[i].bankName + ' = ' + allPayments[i].customerPaid+ 
+                '</span><button id="pay-close'+ i + '" type="button" class="btn close text-white pay-close" aria-label="Close"><span aria-hidden="true">&nbsp;×</span></button></span>'
+                    }else{ // for cash
+                        totalPay += '<span class="badge badge-info text-uppercase ml-1 pl-1"><span style="line-height:21px;">' + allPayments[i].paymentMethod + ' = ' + allPayments[i].customerPaid+ 
+                '</span><button id="pay-close'+ i + '" type="button" class="btn close text-white pay-close" aria-label="Close"><span aria-hidden="true">&nbsp;×</span></button></span>'
+                    }
+            }
 
             $('#pay-more-block').addClass('d-none');
             $('#pay-change-block').removeClass('d-none');
-            $('#pay-change').html(cashExchange);
+            $('#pay-change').html(parseFloat(Math.abs(due)).toFixed(2));
             $('#total-pay-block').removeClass('d-none'); 
             $('#pay-details').html(totalPay);
 
+            totalPaid = calculateTotalPaidByCustomer();
+            $('#pay-totals').html( '=' + totalPaid);
         }
-        
-
-        // when no dues after the payment, we will show the payment details
-        function noDueTotal(customerPaid,cashExchange, cashFlag, cardFlag, mobileFlag ){
-            Tk = " {{ config('settings.currency_symbol') }}, "; // money symbol
-            cashPay = cashFlag ? 'Cash = ' + customerPaid + Tk : '';
-            cardPay = cardFlag ? 'Card = ' + card + Tk : '';
-            mobilePay = mobileFlag ? 'Mobile Banking = ' + mobile + Tk : '';             
-            totalPay = cashPay + cardPay + mobilePay;
-
-            $('#pay-more-block').addClass('d-none');
-            $('#pay-change-block').addClass('d-none');
-            $('#total-pay-block').removeClass('d-none'); 
-            $('#pay-details').html(totalPay);
-        }
-        
+       
         // while submit cilck, validating the discount_reference field.
         // this discount and discount reference fields are not inside form    
         $('#submit').click(function(e){
@@ -844,11 +1011,49 @@
                         "background": ""
                  });   
             }
+
+            //when card or mobile payment checkbox is true
+            if($("#card_check").prop("checked") == true || $("#mobileBank_check").prop("checked") == true ) { 
+                //when card bank reference field is empty but card payment is not empty.
+                if ($.trim($('#bank_reference').val()) == '' && $.trim($('#card_pay').val()) != '') {
+                    isValid = false;
+                    $('#bank_reference').css({
+                        "border": "2px solid #007065",
+                        "background": "#e4f5f3"
+                    }); 
+                }else{
+                    $('#bank_reference').css({
+                        "border": "",
+                        "background": ""
+                    });
+                }
+
+                //when mobile bank reference field is empty but mobile payment is not empty.
+                if ($.trim($('#mobibank_reference').val()) == '' && $.trim($('#mobile_banking_pay').val()) != '') {
+                    isValid = false;
+                    $('#mobibank_reference').css({
+                        "border": "2px solid #007065",
+                        "background": "#e4f5f3"
+                    }); 
+                }else{
+                    $('#mobibank_reference').css({
+                        "border": "",
+                        "background": ""
+                    });
+                }
+
+
+            }
+
+            //if the payment due is exists or due is greater than zero, we will prevent submit data.
+            if(allPayments.length && allPayments[allPayments.length - 1].due > 0){
+                isValid = false;
+            }
             
 
             if (isValid == false)
                 e.preventDefault();
-        });
+        });//end of submit.
 
         
     });
@@ -858,15 +1063,18 @@
                 $('#discount-lbl').css('margin-right','5px');
                 $('.cash-discount').addClass('discount-w');
                 $('#discount_reference').show();
-                $('#discount').show();  
-                $('#discount-blk').removeClass('pt-1');                
+                $('#discount').show();
+                $('#discount-blk').removeClass('pt-1'); 
+                $('.select2-selection').removeClass('d-none');       
+                $('.select2-selection__placeholder').addClass('font-weight-normal');       
             }else{
                 //when unchecked chkbox we set discount to null and due amount to order total.
                 $('#discount-lbl').css('margin-right','-15px');               
                 $('#discount_reference').removeAttr("style").hide();
                 $('#discount').removeAttr("style").hide(); 
-                $('.cash-discount').removeClass('discount-w');                 
+                $('.cash-discount').removeClass('discount-w');
                 $('#discount').val("");
+                $('.select2-selection').addClass('d-none');
                 if($("#reward_point_check").prop("checked") == true){
                     $('#due-tk').html($("#total-tk").html() - $("#reward-discount").text());
                 }else{
@@ -888,7 +1096,8 @@
                 $('#cash_pay').removeAttr("style").hide(); 
                 $('.cash-payment').removeClass('discount-w pl-1');                 
                 $('#cash_pay').val("");                
-                $('#cash_blk').addClass('pt-1');                
+                $('#cash_blk').addClass('pt-1');  
+                //resetPayment();              
             }           
         }
 
@@ -907,20 +1116,28 @@
                 $('.card-payment').removeClass('discount-w pl-1');                 
                 $('#card_pay').val("");                
                 $('#card_blk').addClass('pt-1');    
-                $('#card_blk_lbl').css('margin-right', '-1em');            
+                $('#card_blk_lbl').css('margin-right', '-1em'); 
+                //resetPayment();           
             }           
         }
 
-        // if card bank_reference is changed 
-        $('#bank_reference').change(function() { 
-            cardBank = $('#bank_reference :selected').val();
-            // setting card bank name to form hidden input field
-            if(cardBank){
-                $('#cardbank').val(cardBank);
-            }  
-        });
 
-        
+        // getting card discount via ajax call
+        async function getCardDiscount(cardBank){
+            let result = await $.ajax({
+            url:"{{ route('admin.sales.card.discount') }}",
+            type: 'post',
+            dataType: "json",
+            // passing CSRF_TOKEN along with search value in the data
+            data: {
+               _token: CSRF_TOKEN,
+               cardBank: cardBank
+            }
+          });
+
+        return result; // returns a promise object.
+                 
+        } 
 
         function rewardPoint(){            
             var dueAmount = 0;     
@@ -964,26 +1181,27 @@
                 $('#mobile_banking_pay').val("");                  
                 $('#mobileBank_blk').addClass('pt-1'); 
                 $('#mobileBank_blk_lbl').css('margin-right', '-1em');
+               // resetPayment();  
             }           
         }
 
-        // if mobile bank_reference is changed 
-        $('#mobibank_reference').change(function() { 
-            mobiBank = $('#mobibank_reference :selected').val();
-            // setting mobile bank name to form hidden input field
-            if(mobiBank){
-                $('#mobibank').val(mobiBank);
-            }  
-        });
+        // // if mobile bank_reference is changed 
+        // $('#mobibank_reference').change(function() { 
+        //     mobiBank = $('#mobibank_reference :selected').val();
+        //     // setting mobile bank name to form hidden input field
+        //     if(mobiBank){
+        //         $('#mobibank').val(mobiBank);
+        //     }  
+        // });
 
         // whenever any change is made on product search or discount we use this function.
         function resetPayment(){
             // resetting all the global variables which are needed to calculate.
-            duePay = 0; 
-            paymentMethod = 'notDefined';
-            moreDue = 0;
-            moreDueMethod = 'notDefined';
-            methods = [];
+            methods = []; 
+            OrderTotal = $('#total-tk').text();  
+            allPayments=[]; // Holds all the paid amounts & methods. 
+            cardDiscountFlag = 0; // used to allow only one card discount
+
             // now resetting cashpay, cardpay, mobilePay amounts and the dues after the payemnts
             $('#pay-more').html('');
             $('#pay-change').html('');
@@ -1009,7 +1227,8 @@
             // $('.mobileBank-payment').removeClass('discount-w pl-1');                 
             $('#mobile_banking_pay').val("");                  
             //$('#mobileBank_blk').addClass('pt-1');
-
+            $('#card-discount-blk').addClass('d-none');
+            $('#card-discount').html('');  
 
         }
 

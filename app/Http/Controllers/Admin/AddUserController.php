@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Role;
 use App\Models\Admin;
+use App\Models\Userlog;
+use Illuminate\Http\Request;
+use App\Traits\FlashMessages; 
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\BaseController;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Hash;
-use App\Traits\FlashMessages; 
-use App\Models\Role;
 
 class AddUserController extends BaseController
 {
@@ -59,6 +60,9 @@ class AddUserController extends BaseController
             // assigning default role: 'user' to the user when created. using attach()
             $role = Role::select('id')->where('name', 'user')->first();        
             $user->roles()->attach($role);
+
+            //saving log for the creation of new user.            
+            //Userlog::user_role("A new User '{$request->name}' is created with 'User' role by ".auth()->user()->name);
 
             // setting flash message using trait
             $this->setFlashMessage('User account is created successfully', 'success');    

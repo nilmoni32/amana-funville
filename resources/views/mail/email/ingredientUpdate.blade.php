@@ -46,9 +46,9 @@
             <tr>
                 <td style="height:40px; width:400px; margin:0; text-align:center;">{{ $loop->index + 1  }}</td>
                 <td style="height:40px; width:400px; margin:0; text-align:center;">{{ $ingredient->name }}</td>
-                <td style="height:40px; width:400px; margin:0; text-align:center;">{{ $ingredient->total_quantity }}
+                <td style="height:40px; width:400px; margin:0; text-align:center;">{{ $ingredient->total_quantity }} {{ $ingredient->measurement_unit }}
                 </td>
-                <td style="height:40px; width:400px; margin:0; text-align:center;">{{ $ingredient->alert_quantity }}
+                <td style="height:40px; width:400px; margin:0; text-align:center;">{{ $ingredient->alert_quantity }} {{ $ingredient->measurement_unit }}
                 </td>
             </tr>
             @endforeach

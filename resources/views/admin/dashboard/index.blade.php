@@ -82,4 +82,54 @@
     </div>
   </div>
 </div>
+<!-- User Activity Log -->
+<div class="row mt-5">
+  <div class="col-md-12">
+      <div class="tile">
+          <div class="tile-body">
+            <h4 class="tile-title text-center mb-4">{{ __(': User Activity Log :') }}</h4>
+              <table class="table table-hover table-bordered" id="sampleTable">
+                  <thead>
+                      <tr>
+                          <th> # </th>
+                          <th class="text-center"> Date </th>
+                          <th class="text-center"> Log Type </th>
+                          <th class="text-center"> Done By </th>
+                          <th class="text-center"> Description </th>                          
+                          {{-- <th style="min-width:70px;" class="text-center text-danger"><i class="fa fa-bolt"> </i></th> --}}
+                      </tr>
+                  </thead>
+                  <tbody>
+                    @php $userlogs = App\Models\Userlog::latest()->take(150)->get(); @endphp
+                      @foreach($userlogs as $userlog)
+                      <tr>
+                          <td class="text-center">{{ $loop->index + 1 }}</td>
+                          <td class="text-center">{{ $userlog->log_date }}</td>
+                          <td class="text-center">{{ $userlog->log_type }}</td>
+                          <td class="text-center">{{ $userlog->done_by }}</td>
+                          <td class="text-left">{{ $userlog->description }}</td> 
+                          {{-- <td class="text-center">
+                            <div class="btn-group" role="group" aria-label="Second group">
+                                <a href="#"
+                                    class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
+                            </div>
+                        </td>                          --}}
+                      </tr>
+                      @endforeach
+                  </tbody>
+              </table>
+          </div>
+      </div>
+  </div>
+</div>
+
+
 @endsection
+{{-- we need to add  @stack('scripts') in the app.blade.php for the following scripts --}}
+@push('scripts')
+<script type="text/javascript" src="{{ asset('backend/js/plugins/jquery.dataTables.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('backend/js/plugins/dataTables.bootstrap.min.js') }}"></script>
+<script type="text/javascript">
+    $('#sampleTable').DataTable();
+</script>
+@endpush

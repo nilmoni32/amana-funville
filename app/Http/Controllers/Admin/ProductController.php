@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\BaseController;
+use App\Models\Product;
+use App\Models\Userlog;
 use Illuminate\Http\Request;
-use App\Contracts\CategoryContract;
 use App\Contracts\ProductContract;
+use App\Contracts\CategoryContract;
+use App\Http\Controllers\BaseController;
 use App\Http\Requests\StoreProductFormRequest;
 
 class ProductController extends BaseController
@@ -85,14 +87,26 @@ class ProductController extends BaseController
                 'name'               =>  'required|max:191',
                 'price'              =>  'required|regex:/^\d+(\.\d{1,2})?$/',                  
             ]);
-        }        
-
-        $params = $request->except('_token'); // getting all the inputs
+        }  
+        
+        //saving log for the changing product price up & down.  
+        $old_price = Product::where('id', $request->product_id)->first()->price;
+        $old_discount_price = Product::where('id', $request->product_id)->first()->discount_price;
+        $new_price = $request->price;
+        $new_discount_price = $request->discount_price;
+        $name = $request->name;
+        // getting all the inputs
+        $params = $request->except('_token'); 
         $product = $this->productRepository->updateProduct($params);
-
+        
         if (!$product) {
             return $this->responseRedirectBack('Error occurred while updating product.', 'error', true, true);
         }
+        //saving log for the changing product price up & down.
+        if($old_price != $new_price || $old_discount_price != $new_discount_price){
+            Userlog::product_price_up_down($name, $request->product_id, $old_price, $new_price, $old_discount_price,$new_discount_price);
+        }        
+
         return $this->responseRedirect('admin.products.index', ' Product updated successfully' ,'success',false, false);
     }
 

@@ -18,7 +18,7 @@ class CreateDirectorsTable extends Migration
             $table->string('name');
             $table->string('mobile'); 
             $table->string('email')->nullable(); 
-            $table->string('designation')->nullable(); 
+            $table->enum('ref_type', ['Management', 'ShareHolder', 'Employee', 'other'])->default('other');
             $table->string('discount_slab_percentage')->nullable();    
             $table->decimal('discount_upper_limit', 12, 6)->nullable();        
             $table->timestamps();

@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Director extends Model
 {
-    protected $fillable = ['name', 'mobile', 'email', 'designation', 'discount_slab_percentage', 'discount_upper_limit'];
+    protected $fillable = ['name', 'mobile', 'email', 'ref_type', 'discount_slab_percentage', 'discount_upper_limit'];
     
 }

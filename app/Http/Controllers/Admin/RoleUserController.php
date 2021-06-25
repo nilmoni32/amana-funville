@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Http\Controllers\BaseController;
-use App\Models\Admin;
 use App\Models\Role;
+use App\Models\Admin;
+use App\Models\Userlog;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseController;
 
 class RoleUserController extends BaseController
 {
@@ -31,8 +32,7 @@ class RoleUserController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {
-        
+    {  
         // finding the current admin user.
          $admin = Admin::where('id', $id)->first();             
          // getting the logged user
@@ -71,6 +71,11 @@ class RoleUserController extends BaseController
         $admin->email = $request->email;
 
         if($admin->save()){
+
+            //saving log for the changing role of a user.            
+            Userlog::user_role("Role Change","User account '". $request->name. "' new role '". 
+            $admin->roles()->pluck('name')->first()."' is assigned by ".auth()->user()->name);
+
             // setting flash message using trait
             $this->setFlashMessage(' User account is updated successfully', 'success');    
             $this->showFlashMessages();
@@ -99,14 +104,27 @@ class RoleUserController extends BaseController
         $logged_user = auth()->user();       
         //Checking logged admin user or not
         if($logged_user <> $admin ){
-        	// Detach all roles from the user...
+        	
+            //before deleting the user we will log deleted account details.
+            //getting the role
+            $del_role = $admin->roles()->pluck('name')->first();
+            //Account name
+            $del_name = $admin->name;
+
+            // Detach all roles from the user...
         	$admin->roles()->detach();
+
         	//delete the user.       
         	if($admin->delete()){
+
+                //saving log for deleting of a user account.            
+                Userlog::user_role("User Delete","User account '". $del_name. "' with role '". 
+                $del_role."' is deleted by ".auth()->user()->name);
+
              	// setting flash message using trait
              	$this->setFlashMessage(' User account is deleted successfully', 'success');    
              	$this->showFlashMessages();
-		return redirect()->route('admin.users.index');
+		        return redirect()->route('admin.users.index');
               	// getting all admin users
               	//$admins = Admin::all();
              	// Attaching pagetitle and subtitle to view.

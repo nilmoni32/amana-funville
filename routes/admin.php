@@ -71,8 +71,7 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::post('/customer/mobile','SalesController@getMobileNo')->name('sales.customermobile');
                 Route::post('/customer/info','SalesController@addCustomerInfo')->name('sales.customerInfo');
                 Route::post('/discount/slab','SalesController@discountSlab')->name('sales.discountSlab');
-                Route::post('/store/payment','SalesController@storePayment')->name('store.eachpayment');
-                
+                Route::post('/card/discount','SalesController@cardDiscount')->name('sales.card.discount'); 
                 //end of ajax route for pos sales.
             
             });
@@ -207,7 +206,7 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             Route::get('/report/pdf/stock/{op}', 'MISReportController@pdfstock')->name('reports.pdfstock');
         });
 
-
+        //admin role
         Route::group(['middleware' => ['can:all-admin-features']], function () {  
 
             //  for all settings we will use one controller : SettingController
@@ -267,16 +266,6 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 // Delete product attribute from the current product
                 Route::get('/{id}/delete', 'ProductAttributeController@delete')->name('products.attribute.delete');
             });
-
-            // Add Users  
-            Route::get('/adduser', 'AddUserController@showAddUserForm')->name('adduser.form'); 
-            Route::post('/adduser', 'AddUserController@saveUser')->name('adduser.save'); 
-            // Users Role  
-            Route::get('/role/users', 'RoleUserController@index')->name('users.index');
-            Route::get('/role/users/{id}/edit','RoleUserController@edit')->name('users.edit');
-            Route::post('/role/users', 'RoleUserController@update')->name('users.update');
-            Route::get('/role/users/{id}', 'RoleUserController@destroy')->name('users.destroy');
-            // Route::resource('/role/users', 'RoleUserController', ['except' => ['show','create', 'store']]);
 
             // Add Services
             Route::group(['prefix' => 'services'], function(){  
@@ -338,17 +327,7 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::get('/edit/{id}', 'PaymentGWController@edit')->name('payment.gw.edit');
                 Route::post('/update', 'PaymentGWController@update')->name('payment.gw.update');
                 Route::get('/delete/{id}', 'PaymentGWController@delete')->name('payment.gw.delete');
-            });
-
-            //Discount Refrences
-            Route::group(['prefix' => 'directors'], function(){
-                Route::get('/', 'DirectorController@index')->name('board.directors.index');
-                Route::get('/create', 'DirectorController@create')->name('board.directors.create');
-                Route::post('/store', 'DirectorController@store')->name('board.directors.store');
-                Route::get('/edit/{id}', 'DirectorController@edit')->name('board.directors.edit');
-                Route::post('/update', 'DirectorController@update')->name('board.directors.update');
-                Route::get('/delete/{id}', 'DirectorController@delete')->name('board.directors.delete');
-            });
+            });           
             
 
             //Complimentary sales route for restaurant.
@@ -368,6 +347,32 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
 
 
         });
+        //super admin role.
+        Route::group(['middleware' => ['can:super-admin']], function () {  
+            
+            // Add Users  
+            Route::get('/adduser', 'AddUserController@showAddUserForm')->name('adduser.form'); 
+            Route::post('/adduser', 'AddUserController@saveUser')->name('adduser.save'); 
+            // Users Role  
+            Route::get('/role/users', 'RoleUserController@index')->name('users.index');
+            Route::get('/role/users/{id}/edit','RoleUserController@edit')->name('users.edit');
+            Route::post('/role/users', 'RoleUserController@update')->name('users.update');
+            Route::get('/role/users/{id}', 'RoleUserController@destroy')->name('users.destroy');
+            // Route::resource('/role/users', 'RoleUserController', ['except' => ['show','create', 'store']]);           
+
+            //Discount Refrences
+            Route::group(['prefix' => 'directors'], function(){
+                Route::get('/', 'DirectorController@index')->name('board.directors.index');
+                Route::get('/create', 'DirectorController@create')->name('board.directors.create');
+                Route::post('/store', 'DirectorController@store')->name('board.directors.store');
+                Route::get('/edit/{id}', 'DirectorController@edit')->name('board.directors.edit');
+                Route::post('/update', 'DirectorController@update')->name('board.directors.update');
+                Route::get('/delete/{id}', 'DirectorController@delete')->name('board.directors.delete');
+            });
+
+
+        });
+
 
         
     });

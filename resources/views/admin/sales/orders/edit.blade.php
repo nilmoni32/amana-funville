@@ -83,7 +83,7 @@
                                                 </p>
                                             </td>
                                             <td class="text-center" id="price{{$i}}">
-                                                {{ round($sale->product_quantity * $sale->unit_price,0) }}</td>
+                                                {{ round($sale->product_quantity * $sale->unit_price,2) }}</td>
                                             @php $total_taka += $sale->product_quantity * $sale->unit_price @endphp
                                             <td class="text-center">
                                                 <button class="btn btn-sm btn-danger" id="cart-close{{$i}}"
@@ -247,8 +247,8 @@
                 if(data.status == "success") { 
                     // finding the rowno from the id such add1, add2, minus1 etc.
                     var row = id.substring(id.length - 1); //Displaying the last character                    
-                    $("#price" + row).html(data.total_unit_price);                    
-                    $("#sub-total-tk").html(data.sub_total);
+                    $("#price" + row).html((data.total_unit_price).toFixed(2));                    
+                    $("#sub-total-tk").html((data.sub_total).toFixed(2));
                 }
             });
                

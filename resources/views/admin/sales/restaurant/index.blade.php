@@ -280,8 +280,8 @@
                 if(data.status == "success") { 
                     // finding the rowno from the id such add1, add2, minus1 etc.
                     var row = id.substring(id.length - 1); //Displaying the last character                    
-                    $("#price" + row).html(data.total_unit_price);                    
-                    $("#sub-total-tk").html(data.sub_total);
+                    $("#price" + row).html((data.total_unit_price).toFixed(2));                    
+                    $("#sub-total-tk").html((data.sub_total).toFixed(2));
                 }
             });
                

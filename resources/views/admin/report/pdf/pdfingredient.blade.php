@@ -201,10 +201,10 @@
                             {{ $ingredient->name }}
                         </td>
                         <td>
-                            {{ $ingredient->total_quantity }}
+                            {{ $ingredient->total_quantity }} {{ $ingredient->measurement_unit }}
                         </td>
                         <td style="text-transform:capitalize">
-                            {{ $ingredient->alert_quantity }}
+                            {{ $ingredient->alert_quantity }} {{ $ingredient->measurement_unit }}
                         </td>
                     </tr>
                     @endforeach

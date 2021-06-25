@@ -25,7 +25,7 @@
                             <th class="text-center"> Name </th>
                             <th class="text-center"> Phone </th>
                             <th class="text-center"> Email</th>
-                            <th class="text-center"> Position</th>
+                            <th class="text-center"> Reference Type</th>
                             <th class="text-center"> Discount Slab (%)</th>
                             <th class="text-center"> Discount Upper Limit</th>
                             <th style="min-width: 50px;" class="text-center text-danger"><i class="fa fa-bolt"> </i>
@@ -39,7 +39,7 @@
                             <td class="text-center">{{ $director->name }}</td>
                             <td class="text-center">{{ $director->mobile }}</td>
                             <td class="text-center">{{ $director->email }}</td>
-                            <td class="text-center">{{ $director->designation }}</td>
+                            <td class="text-center">{{ $director->ref_type }}</td>
                             <td class="text-center">{{ $director->discount_slab_percentage }}</td>
                             <td class="text-center">{{ round($director->discount_upper_limit,2) }}</td>
                             <td class="text-center">

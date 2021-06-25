@@ -12,7 +12,7 @@ class Ordersale extends Model
 {
     protected $fillable = [
         'admin_id', 'client_id','director_id', 'order_number', 'grand_total', 'order_date', 'order_tableNo', 'status','discount',
-        'reward_discount','payment_method', 'cash_pay', 'card_pay', 'mobile_banking_pay', 'card_discount', 'mobilebank_discount'];
+        'reward_discount','payment_method', 'cash_pay', 'card_pay', 'mobile_banking_pay', 'card_mobile_discount', 'fraction_discount'];
 
     public function admin(){
         return $this->belongsTo(Admin::class);

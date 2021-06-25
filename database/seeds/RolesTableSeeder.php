@@ -17,6 +17,7 @@ class RolesTableSeeder extends Seeder
         Role::create(['name' => 'admin']);
         Role::create(['name' => 'order-control']);
         Role::create(['name' => 'stock-control']);
-        Role::create(['name' => 'user']);  // generic user for reporting only.
+        Role::create(['name' => 'user']); // generic user for reporting only.
+        Role::create(['name' => 'super-admin']); 
     }
 }

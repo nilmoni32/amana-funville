@@ -21,7 +21,8 @@ class CreateOrdersalepaymentsTable extends Migration
             $table->decimal('store_paidamount', 12, 6)->nullable(); // Amount to be stored after the exchange or customer paid actual amount when no exchange is made.
             $table->decimal('cash_exchange', 12, 6); // exchange amount. 
             $table->decimal('customer_paid_amount', 12, 6); // customer actual paid amount
-            $table->decimal('card_mobile_discount', 12, 6)->nullable(); 
+            $table->decimal('card_discount', 12, 6)->nullable(); 
+            $table->decimal('mobile_discount', 12, 6)->nullable(); 
             $table->timestamps();
 
             $table->foreign('ordersale_id')->references('id')->on('ordersales');

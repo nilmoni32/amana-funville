@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Userlog;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
@@ -73,6 +74,13 @@ class Product extends Model
     public function recipe()
     {
         return $this->hasOne(Recipe::class);
+    }
+
+    /**
+     * Product has many logs
+     */
+    public function userlog(){
+        return $this->hasMany(Userlog::class);        
     }
 
 }

@@ -32,7 +32,7 @@ class DirectorController extends BaseController
             'name'           => 'required|string|max:255',            
             'mobile'         => 'required|regex:/(01)[3-9]{1}(\d){8}/|max:11|unique:directors,mobile',
             'email'          => 'nullable|string|email|max:191|unique:directors,email',
-            'designation'    => 'nullable|string|max:255', 
+            'ref_type'       => 'required|string|max:255', 
             'discount_slab_percentage' => 'required|digits_between:1,2',
             'discount_upper_limit' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
         ]);
@@ -41,7 +41,7 @@ class DirectorController extends BaseController
             'name' =>   $request->name,
             'mobile' => $request->mobile,
             'email' =>  $request->email, 
-            'designation' =>  $request->designation, 
+            'ref_type' =>  $request->ref_type, 
             'discount_slab_percentage' =>  $request->discount_slab_percentage,   
             'discount_upper_limit' =>  $request->discount_upper_limit,          
         ]);
@@ -69,7 +69,7 @@ class DirectorController extends BaseController
             'name'           => 'required|string|max:255',            
             'mobile'         => 'required|regex:/(01)[3-9]{1}(\d){8}/|max:11',
             'email'          => 'nullable|string|email|max:191',
-            'designation'    => 'nullable|string|max:255', 
+            'ref_type'       => 'required|string|max:255', 
             'discount_slab_percentage' => 'required|digits_between:1,2',
             'discount_upper_limit' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
         ]);
@@ -78,7 +78,7 @@ class DirectorController extends BaseController
         $director->name = $request->name;
         $director->mobile = $request->mobile;
         $director->email = $request->email;
-        $director->designation = $request->designation;
+        $director->ref_type = $request->ref_type;
         $director->discount_slab_percentage = $request->discount_slab_percentage;
         $director->discount_upper_limit = $request->discount_upper_limit;
         $director->save();
