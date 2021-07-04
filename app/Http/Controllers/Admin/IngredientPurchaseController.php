@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Http\Controllers\BaseController;
-use App\Traits\FlashMessages;
-use App\Models\Ingredient; 
-use App\Models\IngredientPurchase;
 use Carbon\Carbon;
 use App\Models\Unit;
-use App\Models\RecipeIngredient;
 use App\Models\Recipe;
+use App\Models\Userlog;
+use App\Models\Ingredient; 
+use Illuminate\Http\Request;
+use App\Traits\FlashMessages;
+use App\Models\RecipeIngredient;
+use App\Models\IngredientPurchase;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseController;
 
 class IngredientPurchaseController extends BaseController
 {
@@ -167,6 +168,15 @@ class IngredientPurchaseController extends BaseController
         $ingredient = Ingredient::find($ingredientPurchase->ingredient_id);       
         $ingredient_total_quantity = $ingredient->total_quantity;
         $ingredient_total_price = $ingredient->total_price;
+
+        //saving log for the changing ingredient purchase price up & down. 
+        $old_price = $ingredientPurchase->price;
+        $new_price = $request->price;
+        $name = $request->name;
+        //saving log for the changing ingredient purchase price up & down.
+        if($old_price != $new_price ){
+            Userlog::Ingredient_purchase_price_up_down($name, $request->purchase_id, $old_price, $new_price);
+        } 
         
         //Substracting ingredient price before adding the new ingredient_purchase price
         $ingredient_total_price -= $ingredientPurchase->price;  

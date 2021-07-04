@@ -15,7 +15,9 @@ use App\Models\Ordersale;
 use App\Models\Paymentgw;
 use App\Models\Salebackup;
 use Illuminate\Http\Request;
+use App\Models\Gpstardiscount;
 use App\Traits\FlashMessages; 
+use App\Mail\ReferenceAuthority;
 use App\Models\Ordersalepayment;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\BaseController;
@@ -295,9 +297,16 @@ class SalesController extends BaseController
         $director = Director::where('id', $request->directorId)->first();
         $discount_upper_limit = $director->discount_upper_limit;
         $discount_slab_percentage = $director->discount_slab_percentage;
-        
-        $discount_limit = $orderTotal * ($discount_slab_percentage/100);
+        $discount_limit = $orderTotal * ($discount_slab_percentage/100); //percentage limit
         return json_encode(['status' => 'success', 'discountLimit' => $discount_limit, 'discount' => $discount, 'discountUpperLimit' => $discount_upper_limit ] );
+    }
+
+    public function gpStarDiscount(Request $request){
+        $gpstarId = $request->gpstarId;
+        $gpstar_discount = Gpstardiscount::where('id', $request->gpstarId)->first();
+        $discount_percent = $gpstar_discount->discount_percent;
+        $discount_upper_limit = $gpstar_discount->discount_upper_limit;
+        return json_encode(['status' => 'success', 'discountPercent' => $discount_percent, 'discountUpperLimit' => $discount_upper_limit ] );
     }
 
     public function cardDiscount(Request $request){
@@ -396,6 +405,8 @@ class SalesController extends BaseController
         $order->order_tableNo = NULL;//$request->order_tableNo; as that table no should be free to feed another customer.   
         $order->status = 'delivered';
         $order->fraction_discount = $fraction_discount;
+        $order->gpstarmobile_no = $request->gpstarmobile;
+        $order->gpstar_discount = $request->gpstar_discount;
 
         //calculating order total + tax, if exists
         $order_total = $request->subtotal + ($request->subtotal * (config('settings.tax_percentage')/100));
@@ -405,8 +416,11 @@ class SalesController extends BaseController
         $order_grand_total = $request->reward_discount ? $order_discount_total - $request->reward_discount : $order_discount_total;  
         //substracting card discount
         $order_grand_total = $card_discount ? $order_grand_total - $card_discount : $order_grand_total;  
-         //substracting fraction discount
-         $order_grand_total = $fraction_discount ? $order_grand_total - $fraction_discount : $order_grand_total; 
+        //substracting fraction discount
+        $order_grand_total = $fraction_discount ? $order_grand_total - $fraction_discount : $order_grand_total; 
+        //substracting gpstar discount
+        $order_grand_total = $request->gpstar_discount ? $order_grand_total - $request->gpstar_discount : $order_grand_total;
+
         //grand total after substracting all the discount options      
         $order->grand_total = $order_grand_total;
         // if customer data is not available we will not create the customer details.
@@ -483,16 +497,35 @@ class SalesController extends BaseController
         }        
 
         
-        //sending sms discount notification to reference director.
+        //sending email discount notification to the authority [Director, Asst. Director, etc].
         if($order->director_id){
-            $reference_discount = $order->discount;
-            $order_no = $order->order_number;
-            $reference_director = Director::where('id', $order->director_id)->first();
-            $reference_mobile = $reference_director->mobile;           
-            $reference_discount_slab = $reference_director->discount_slab_percentage/100;            
-            $reference_discount_limit = $order_total * $reference_discount_slab;
-            //sending discount amount to phone_number 
-            SendCode::sendDiscountAmount($reference_mobile, $order_no, $reference_discount_limit, $reference_discount);
+            $referee = Director::where('id', $order->director_id)->first();
+            
+            //creating reference array.
+            $ref_data = array( 
+                'date' => $order->order_date, 
+                'order_no' => $order->order_number, 
+                'name' => $referee->name, 
+                'type' => $referee->ref_type, 
+                'discount' => $order->discount,
+                'discount_limit' => $referee->discount_upper_limit,
+            );
+            
+            //getting backend email recipients
+            $email_recipients = explode(',', str_replace(' ', '', config('settings.ref_email_recipient'))); 
+            $cc=[];
+            for($i=0; $i< count($email_recipients); $i++){
+                //elementing the empty array data fields
+                if($email_recipients[$i]){
+                    $cc[] = $email_recipients[$i]; 
+                }
+            }
+
+            //sending mail to mailable class ReferenceAuthority to update about reference details.
+            \Mail::to(config('settings.default_email_address'))->cc($cc)->send(new ReferenceAuthority($ref_data));
+            
+            //sending sms
+            //SendCode::sendDiscountAmount($reference_mobile, $order_no, $reference_discount_limit, $reference_discount);
         }
         /**
          * Avoided due to slow the payment process.

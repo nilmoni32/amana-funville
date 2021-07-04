@@ -101,6 +101,8 @@ class IngredientController extends Controller
         return view('admin.ingredients.edit', compact('ingredienttypes', 'ingredient'));
     }
 
+  
+
      /**
      * Update the ingredient
      * @param Request $request  

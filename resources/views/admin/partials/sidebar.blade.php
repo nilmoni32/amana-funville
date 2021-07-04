@@ -309,7 +309,14 @@
         href="{{ route('admin.payment.gw.index')}}">
         <i class="app-menu__icon fa fa-credit-card"></i>
         <span class="app-menu__label">Payment GW</span></a>
-    </li>    
+    </li> 
+    <li>
+      {{-- if current route name is admin.settings we will set active class here --}}
+      <a class="app-menu__item {{ Route::currentRouteName() == 'admin.gpstar.index' ? 'active' : '' }}"
+        href="{{ route('admin.gpstar.index')}}">
+        <i class="app-menu__icon fa fa-mobile fa-2x"></i>
+        <span class="app-menu__label">GP Star Discount</span></a>
+    </li>   
     <li>
       {{-- if current route name is admin.settings we will set active class here --}}
       <a class="app-menu__item {{ Route::currentRouteName() == 'admin.settings' ? 'active' : '' }}"

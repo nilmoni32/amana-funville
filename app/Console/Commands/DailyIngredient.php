@@ -46,9 +46,9 @@ class DailyIngredient extends Command
         $ingredients = Ingredient::whereColumn('total_quantity', '<', 'alert_quantity')->get();
         //getting backend email recipients
         //$cc = explode(',', str_replace(' ', '', ));  
-	 // $cc = 'mustafi.amana@gmail.com';
+	    // $cc = 'mustafi.amana@gmail.com';
         
-	//getting backend email recipients
+	    //getting backend email recipients
         $email_recipients = explode(',', str_replace(' ', '', config('settings.email_recipient'))); 
         $cc=[];
         for($i=0; $i< count($email_recipients); $i++){

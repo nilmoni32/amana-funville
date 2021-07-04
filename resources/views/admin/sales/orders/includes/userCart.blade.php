@@ -6,16 +6,16 @@
                 <h5 class="modal-title text-right mt-3" id="exampleModalLabel"><i class="fa fa-shopping-basket"></i>
                     Customer POS Order Details
                 </h5>
-            </div>
+            </div>            
             <div class="modal-body text-center">
                 <p class="text-center h6 mt-2">[ Order Number:&nbsp;
                     {{ $order->order_number }} ]</p>
                 <p class="text-center h6 py-2">[ Payment Details:&nbsp;
-                    @if($order->cash_pay)<span>Cash:
+                    @if((float)$order->cash_pay)<span>Cash:
                         {{ round($order->cash_pay,2)  }} {{ config('settings.currency_symbol') }}</span>@endif
-                    @if($order->card_pay)<span>, Card:
+                    @if((float)$order->card_pay)<span>, Card:
                         {{ round($order->card_pay,2)  }} {{ config('settings.currency_symbol') }}</span>@endif
-                    @if($order->mobile_banking_pay)<span>, Mobile Banking:
+                    @if((float)$order->mobile_banking_pay)<span>, Mobile Banking:
                         {{ round($order->mobile_banking_pay,2) }} {{ config('settings.currency_symbol') }}</span>@endif
                     ]</p>
                 <table class="table table-hover table-bordered" id="sampleTable">
@@ -77,24 +77,38 @@
                                 <p class="text-right my-2 ">Order Total:
                                     {{ round( ($subtotal + $subtotal * (config('settings.tax_percentage')/100)), 2)}}
                                     {{ config('settings.currency_symbol') }}
+                                </p> 
+                                @if((float)$order->fraction_discount)
+                                <p class="text-right my-2 ">Fraction Discount:
+                                    {{ round($order->fraction_discount,2) }} {{ config('settings.currency_symbol') }}
                                 </p>
-                                <p class="text-right my-2 ">Discount:
-                                    @if($order->discount)
-                                    {{ round($order->discount,2) }} {{ config('settings.currency_symbol') }}
-                                    @else
-                                    {{ config('settings.currency_symbol') }}
-                                    @endif
+                                @endif                               
+                                @if((float)$order->discount)
+                                <p class="text-right my-2 ">Reference Discount:
+                                    {{ round($order->discount,2) }} {{ config('settings.currency_symbol') }}                                   
                                 </p>
-                                <p class="text-right my-2 ">Reward Point Discount:
-                                    @if($order->reward_discount)
+                                @endif
+                                @if((float)$order->reward_discount)
+                                <p class="text-right my-2 ">Reward Points Discount:
                                     {{ round($order->reward_discount,2) }} {{ config('settings.currency_symbol') }}
-                                    @else
-                                    {{ config('settings.currency_symbol') }}
-                                    @endif
                                 </p>
+                                @endif
+                                @if((float)$order->gpstar_discount)
+                                <p class="text-right my-2 ">GP Star Discount:
+                                    {{ round($order->gpstar_discount,2) }} {{ config('settings.currency_symbol') }}
+                                </p>
+                                @endif  
+                                @if((float)$order->card_discount)
+                                <p class="text-right my-2 ">Card Discount:
+                                    {{ round($order->card_discount,2) }} {{ config('settings.currency_symbol') }}
+                                </p>
+                                @endif                              
                                 <p class="text-right mb-0 h6 mt-2">
-                                    Due Amount:
-                                    {{ round($order->grand_total,2) }}
+                                    @if($order->status == 'delivered')
+                                    {{ __('Paid Amount:') }} {{ round($order->grand_total,2) }}
+                                    @else
+                                    {{ __('Due Amount:') }} {{ round( ($subtotal + $subtotal * (config('settings.tax_percentage')/100)), 2) }}
+                                    @endif
                                     {{ config('settings.currency_symbol') }}
                                 </p>
                             </td>

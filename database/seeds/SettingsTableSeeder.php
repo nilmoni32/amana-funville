@@ -85,15 +85,7 @@ class SettingsTableSeeder extends Seeder
         [
             'key'   => 'paypal_secret_id',
             'value' => '',
-        ],
-        [
-            'key'   => 'store_passwd',
-            'value' => '',
-        ], 
-        [
-            'key'   => 'store_id',
-            'value' => '',
-        ],
+        ],       
         [
             'key'   => 'phone_no',
             'value' => '+88017111111',
@@ -147,11 +139,7 @@ class SettingsTableSeeder extends Seeder
             'value' => '',
         ],
         [
-            'key'   => 'card_bank_list',
-            'value' => '',
-        ],
-        [
-            'key'   => 'mobile_bank_list',
+            'key'   => 'ref_email_recipient',
             'value' => '',
         ],
 

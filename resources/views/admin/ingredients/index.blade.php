@@ -54,14 +54,14 @@
                                 {{ $ingredient->smallest_unit }}</td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                 {{ $ingredient->smallest_unit_price }}</td>
-                            <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
+                            <td class="text-center">
                                 <div class="btn-group" role="group" aria-label="Second group">
                                     <a href="{{ route('admin.ingredient.edit', $ingredient->id) }}"
                                         class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
-                                    <a href="{{ route('admin.ingredient.delete', $ingredient->id) }}"
+                                    {{-- <a href="{{ route('admin.ingredient.delete', $ingredient->id) }}"
                                         class="btn btn-sm btn-danger delete-confirm {{
                                             App\Models\IngredientPurchase::where('ingredient_id', $ingredient->id)->count()
-                                            ? 'disabled' :'' }}"><i class="fa fa-trash"></i></a>
+                                            ? 'disabled' :'' }}"><i class="fa fa-trash"></i></a> --}}
                                 </div>
                             </td>
                         </tr>

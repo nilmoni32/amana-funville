@@ -14,8 +14,8 @@
     <div class="pull-right">
         <a href="{{ route('admin.reports.pdfgetprofitloss', [$start_date, $end_date, 'summary']) }}" class="btn btn-sm btn-dark"
             target="_blank"><i class="fa fa-file-pdf-o" style="font-size:16px;"></i></a>
-        <a href="#" class="btn btn-sm btn-info"><i
-                class="fa fa-file-excel-o" style="font-size:17px;"></i></a>
+        {{-- <a href="#" class="btn btn-sm btn-info"><i
+                class="fa fa-file-excel-o" style="font-size:17px;"></i></a> --}}
     </div>
 </div>
 <div class="row">
@@ -69,8 +69,11 @@
                         <tr>
                             <th class="text-center"> # </th>                                
                             <th class="text-center"> Name </th>
-                            <th class="text-center"> Sales</th>
-                            <th class="text-center"> SalesCost </th>                            
+                            <th class="text-center"> Sale Price</th>
+                            @if(config('settings.tax_percentage'))
+                            <th class="text-center"> With Vat Sale Price</th> 
+                            @endif
+                            <th class="text-center"> Cost Price</th>                            
                             <th class="text-center"> Profit/Loss </th>
                         </tr>
                     </thead>
@@ -83,6 +86,10 @@
                             <td class="text-center">{{ round( $totalSales,2) }}
                                 {{ config('settings.currency_symbol') }}
                             </td>
+                            @if(config('settings.tax_percentage'))
+                                <td class="text-center">{{ round(($totalSales + ($totalSales * (config('settings.tax_percentage')/100))), 2)  }}
+                                {{ config('settings.currency_symbol') }}</td> 
+                            @endif
                             <td class="text-center">{{ round($totalSalesCost,2) }}
                                 {{ config('settings.currency_symbol') }}                                  
                             </td>
@@ -91,10 +98,14 @@
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="5">
+                            <td colspan="6">
                                 <div class="row h6">
                                     <div class="col-10 text-right">Complimentary Sales Cost :</div>
                                     <div class="col-2 pl-0"><span>{{ round($complimentary_sales_cost,2) }}</span><span class="ml-1 mr-2">{{ config('settings.currency_symbol') }}</span></div>                        
+                                </div>
+                                <div class="row h6">
+                                    <div class="col-10 text-right">Fraction Discount :</div>
+                                    <div class="col-2 pl-0"><span>{{ round($discount->fraction_discount,2) }}</span><span class="ml-1 mr-2">{{ config('settings.currency_symbol') }}</span></div>                        
                                 </div>
                                 <div class="row h6 ">
                                     <div class="col-10 text-right">Reference Discount :</div>
@@ -103,6 +114,14 @@
                                 <div class="row h6">
                                     <div class="col-10 text-right">Customer Points Discount :</div>
                                     <div class="col-2 pl-0"><span>{{ round($discount->point_discount,2) }}</span><span class="ml-1 mr-2">{{ config('settings.currency_symbol') }}</span></div>                        
+                                </div>                                
+                                <div class="row h6">
+                                    <div class="col-10 text-right">Card Discount :</div>
+                                    <div class="col-2 pl-0"><span>{{ round($discount->card_discount,2) }}</span><span class="ml-1 mr-2">{{ config('settings.currency_symbol') }}</span></div>                        
+                                </div>
+                                <div class="row h6">
+                                    <div class="col-10 text-right">GP Star Discount :</div>
+                                    <div class="col-2 pl-0"><span>{{ round($discount->gpstar_discount,2) }}</span><span class="ml-1 mr-2">{{ config('settings.currency_symbol') }}</span></div>                        
                                 </div>
                                 <div class="row h6">
                                     <div class="col-10 text-right">Net Total Sales :</div>

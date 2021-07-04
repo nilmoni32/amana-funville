@@ -50,12 +50,12 @@ class Userlog extends Model
      public static function product_price_up_down($name, $id, $old_price, $new_price, $old_discount_price, $new_discount_price){
 
         if($old_price != $new_price && $old_discount_price == $new_discount_price){
-            $description = "The Price of Food '{$name}' is changed from tk ".($old_price ? $old_price : 0)." to tk ".
-            ($new_price ? $new_price : 0) ." by ".auth()->user()->name;
+            $description = "The Price of Food '{$name}' is changed from ".($old_price ? $old_price : 0)." tk to ".
+            ($new_price ? $new_price : 0) ." tk by ".auth()->user()->name;
 
         }else if($old_price == $new_price && $old_discount_price != $new_discount_price){
-            $description = "The Discount Price of Food {$name} is changed from tk ". ($old_discount_price ? $old_discount_price : 0)
-            ." to tk ".($new_discount_price ? $new_discount_price : 0)." by ".auth()->user()->name;
+            $description = "The Discount Price of Food {$name} is changed from ". ($old_discount_price ? $old_discount_price : 0)
+            ." tk to ".($new_discount_price ? $new_discount_price : 0)."  tk by ".auth()->user()->name;
         }        
 
         $user_log = new Userlog();
@@ -67,6 +67,21 @@ class Userlog extends Model
         $user_log->description =  $description; 
         $user_log->save();
 
+     }
+
+     public static function Ingredient_purchase_price_up_down($name, $id, $old_price, $new_price){
+
+        $description = "The ingredient '{$name}' purchase price is changed from ".round($old_price,2). " tk to ". round($new_price,2)." tk by ".auth()->user()->name .".";
+
+        $user_log = new Userlog();
+        $user_log->admin_id = auth()->user()->id; 
+        $user_log->product_id = $id;         
+        $user_log->done_by =  auth()->user()->name;
+        $user_log->log_type = "Ingredient Price Change"; 
+        $user_log->log_date = \Carbon\Carbon::now()->toDateTimeString();
+        $user_log->description =  $description; 
+        $user_log->save();
+           
      }
 
     

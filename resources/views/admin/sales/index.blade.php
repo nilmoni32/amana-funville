@@ -125,7 +125,7 @@
                                         </h5>
                                         <h5 class="text-right pb-2 pt-1 border-bottom" id="discount-blk">
                                             <label id="discount-lbl" style="margin-right:-15px; cursor:pointer;"><input
-                                                    type="checkbox" class="radio-inline" name="dicount"
+                                                    type="checkbox" class="radio-inline" name="discount"
                                                     id="discount_check" onclick="discountCheck()">
                                                 Reference Discount :
                                             </label>
@@ -137,7 +137,7 @@
                                                     @foreach( App\Models\Director::orderBy('name', 'asc')->get() as
                                                     $director)  
                                                     <option></option>                                                 
-                                                    <option value="{{ $director->id }}">{{ $director->name }}</option>
+                                                    <option value="{{ $director->id }}">{{ $director->mobile }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -154,7 +154,33 @@
                                                     {{_('** The given amount exceeds the discount limit. **')}}
                                                 </span>
                                             </div>
-                                        </h5>                                                                                
+                                        </h5> 
+                                        <h5 class="text-right pb-2 pt-1 border-bottom" id="gpstar-blk">
+                                            <label id="gpstar-lbl" style="margin-right:-15px; cursor:pointer;"><input
+                                                    type="checkbox" class="radio-inline" name="gpstar"
+                                                    id="gpstar_check" onclick="gpstarCheck()">{{ __(' GP Star Discount : ') }}
+                                            </label>                                             
+                                            <div class="form-check form-check-inline star-discount">
+                                                <input type="text" class="form-control" id="gpstarmobile_no"
+                                                    placeholder="GP Star Mobile no" name="gpstarmobile_no" style="display:none;">
+                                            </div>
+                                            <div class="form-check form-check-inline star-discount mr-5" id="gp-ref-blk">                                                
+                                                <select name="gpstar_id" id="gpstar_ref"
+                                                    class="form-control font-weight-normal" style="display:none;">
+                                                    <option value="" disabled selected>Select GP Star Reference</option>
+                                                    @foreach( App\Models\Gpstardiscount::where('status', 'Active')->orderBy('gp_star_name', 'asc')->get() as
+                                                    $gpstar)                                                                                           
+                                                    <option value="{{ $gpstar->id }}">{{ $gpstar->gp_star_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>                                            
+                                            <div class="form-check form-check-inline d-none" id="gp-discount-blk">
+                                                <label id="gpstar-discount-lbl" style="cursor:pointer; margin-right:2.3em;">
+                                                    {{ __('Amount: ') }}<span id="gp-discount"></span>
+                                                    {{ config('settings.currency_symbol') }}
+                                                </label>
+                                            </div>                                           
+                                        </h5>                                                                               
                                         <h5 class="text-right pb-2 pt-1 border-bottom d-none" id="reward-point-blk">
                                             <label id="discount-point-lbl"
                                                 style="margin-right:-15px; cursor:pointer; margin-right:3em;"><input
@@ -261,9 +287,7 @@
 
                             <div class="text-center">
                                 <label class="checkbox">
-                                    <input type="checkbox" id="useDefaultPrinter" /> <strong>Print to
-                                        Default
-                                        printer</strong>
+                                    <input type="checkbox" id="useDefaultPrinter" /> <strong>{{ __('Print to Default printer') }}</strong>
                                 </label>
                                 <br>
                                 <div id="installedPrinters">
@@ -291,12 +315,9 @@
                             <input type="hidden" id="reward_point_discount" name="reward_discount" value="">
                             <input type="hidden" id="payment_method" name="payment_method[]" value="">
                             <input type="hidden" id="payment_details" name="payment_details" value="">
-                            {{-- <input type="hidden" id="pay_cash" name="cash_pay" value="">
-                            <input type="hidden" id="pay_card" name="card_pay" value="">
-                            <input type="hidden" id="cardbank" name="card_bank" value="">
-                            <input type="hidden" id="mobibank" name="mobile_bank" value="">
-                            <input type="hidden" id="pay_mobile" name="mobile_banking_pay" value=""> --}}
-
+                            <input type="hidden" id="gpstarmobile" name="gpstarmobile" value="">
+                            <input type="hidden" id="gpstar_discount" name="gpstar_discount" value="">
+                            
                             <div class="border px-4 rounded" style="border-color:rgb(182, 182, 182);">
                                 <h4 class="text-center mt-3 mb-4">Customer Details</h4>
                                 {{-- <div class="input-group my-2">
@@ -359,8 +380,7 @@
                                 <button type="submit" class="btn btn-primary text-uppercase"
                                     style="display:block; width:100%;"
                                     {{ $order_id && App\Models\Ordersale::where('id', $order_id)->first()->status == 'receive' ? '' : 'disabled' }}
-                                    id="submit">Update
-                                    Order </button>
+                                    id="submit">Update Order </button>
                             </div>
                     </div>
                     </form>
@@ -390,11 +410,11 @@
 
          //Getting Branch Name 
         $('#discount_reference').select2({
-                placeholder: "Select discount reference",              
+                placeholder: "Select a reference",              
                 multiple: false, 
                 width: '100%',
                 containerCssClass : 'd-none',
-                maximumSelectionLength: 3,               
+                maximumSelectionLength: 5,               
                // minimumResultsForSearch: -1,                        
         });
 
@@ -448,21 +468,32 @@
         // pos system reference discount       
        $('#discount').on('input', function() {
            if($.isNumeric( $.trim($('#discount').val() ))){
-            orderTotal = $('#total-tk').text();
-            discount = $.trim($('#discount').val());
+            let orderTotal = $('#total-tk').text();
+            let discount = $.trim($('#discount').val());
             //getting reward discount 
-            var rewardDiscount = $("#reward-discount").text(); 
+            let rewardDiscount = $("#reward-discount").text(); 
+            //getting GP star discount
+            let gpStarDiscount = $('#gp-discount').text();
             //getting the director id value.
-            directorId = $('#discount_reference :selected').val();
+            let directorId = $('#discount_reference option:selected').val();
             if(directorId){
                 //checking the discount slab of the corresponding director via ajax call
                 checkDiscountSlab(discount, directorId, orderTotal);
             } 
             //calculating due amount  
             if($("#reward_point_check").prop("checked") == true) {
-                dueAmount = orderTotal - (Number(discount) + Number(rewardDiscount));
+                if(gpStarDiscount){
+                    dueAmount = orderTotal - (Number(discount) + Number(rewardDiscount) + Number(gpStarDiscount));
+                }else{
+                    dueAmount = orderTotal - (Number(discount) + Number(rewardDiscount));
+                }                
             }else{
-                dueAmount = orderTotal - discount;
+                if(gpStarDiscount){
+                    dueAmount = orderTotal - (Number(discount) + Number(gpStarDiscount));
+                }else{
+                    dueAmount = orderTotal - discount;
+                }
+                
             }
             //setting due amount 
             $('#due-tk').text(dueAmount); 
@@ -482,13 +513,18 @@
            }
         });
 
+        // setting gp star mobile no to form hidden input field.
+        $('#gpstarmobile_no').change(function(){
+            $('#gpstarmobile').val($.trim($('#gpstarmobile_no').val()));
+        });
 
-         // if discount reference is changed, checkDiscountSlab is called 
-         $('#discount_reference').change(function() {            
-            orderTotal = $('#total-tk').text();
-            discount = $.trim($('#discount').val()); 
+
+        // if discount reference is changed, checkDiscountSlab is called 
+        $('#discount_reference').change(function() {            
+            var orderTotal = $('#total-tk').text();
+            var discount = $.trim($('#discount').val()); 
             //getting the director id value.
-            directorId = $('#discount_reference :selected').val();
+            var directorId = $('#discount_reference :selected').val();
             // setting discount reference as director id to form hidden input field
             $('#order_discount_reference').val(directorId);             
             if(directorId){
@@ -496,6 +532,62 @@
                 checkDiscountSlab(discount, directorId, orderTotal);
             }
 
+        });
+
+        //when gp star reference has a value and it is changed then calculate the discount value.
+        $('#gpstar_ref').change(function(){
+            //calculate gpstar discount and showing
+            $('#gp-discount-blk').removeClass('d-none');
+            $('#gp-ref-blk').removeClass('mr-5');
+
+            // to calculate totaldue we need to check other discount options availability.
+            var orderTotal = $('#total-tk').text(); // order total
+            var discount = $.trim($('#discount').val()); // reference discount            
+            var rewardDiscount = $("#reward-discount").text(); //reward discount [clients points]
+            //at first we need getting the director id value.
+            var gpstarId = $('#gpstar_ref option:selected').val();
+            var gpstarDiscount = 0;
+
+            $.post("{{ route('admin.sales.gpStarDiscount') }}", {        
+                _token: CSRF_TOKEN,
+                gpstarId: gpstarId,                    
+            }).done(function(data) { 
+                data = JSON.parse(data);
+                if(data.status == "success") {
+                    var discountPercent = Number(data.discountPercent);
+                    var discountUpperLimit = Number(data.discountUpperLimit);
+                    //getting the total dueAmount before calculating gpstar discount amount.
+                    if($("#reward_point_check").prop("checked") == true) { 
+                        if(discount){
+                            dueAmount = Number(orderTotal) - (Number(discount) + Number(rewardDiscount));
+                        }else{
+                            dueAmount =  Number(orderTotal) - Number(rewardDiscount);
+                        }
+                    }else{
+                        if(discount){
+                            dueAmount =  Number(orderTotal) - Number(discount);
+                        }else{
+                            dueAmount =  Number(orderTotal);
+                        }
+                    }
+                    //finding the gpstardiscount.    
+                    gpstarDiscount = dueAmount * (discountPercent/100);
+                    gpstarDiscount = Math.ceil(gpstarDiscount); // remove the fractional portion of the card discount.
+                    //setting gpstarDiscount = upper limit, if it cross the upper limit.
+                    if(gpstarDiscount > discountUpperLimit){
+                        gpstarDiscount = discountUpperLimit;
+                    }
+
+                    //setting due amount 
+                    dueAmount -= gpstarDiscount;
+                    $('#due-tk').text(dueAmount);
+                    // setting gp star discount.
+                    $('#gp-discount').text(gpstarDiscount);
+                    // setting gpstar discount data to form hidden input field.
+                    $('#gpstar_discount').val(gpstarDiscount);
+                }                
+            });
+           
         });
     
         
@@ -508,8 +600,10 @@
                 orderTotal: orderTotal       
             }).done(function(data) { 
                 data = JSON.parse(data);
-                if(data.status == "success") {
-                    if((data.discount > data.discountUpperLimit) || (data.discount > data.discountLimit)){
+                if(data.status == "success"){
+                    //if percentage limit cross the discount upper limit, then we will assign discount upper limit to discountLimit.
+                    let discountLimit =  data.discountLimit > data.discountUpperLimit ? data.discountUpperLimit : data.discountLimit;
+                    if(data.discount > discountLimit){
                         $('#discount-limit').removeClass('d-none');                        
                     }else{
                         $('#discount-limit').addClass('d-none');                        
@@ -526,6 +620,10 @@
         });
 
         $("#reward_point_check").change(function(){
+            resetPayment();
+        });
+
+        $("#gpstar_check").change(function(){
             resetPayment();
         });
         
@@ -984,6 +1082,23 @@
                     
             } 
 
+            // when GP Star checkbox is true
+            if($("#gpstar_check").prop("checked") == true) {
+                //when GP Discount have a value but GP star mobileno isnot present then.
+                if($.trim($('#gpstarmobile_no').val()) == ''){
+	                isValid = false;
+                    $('#gpstarmobile_no').css({
+                        "border": "2px solid #007065",
+                        "background": "#e4f5f3"
+                    });
+                }else{
+                    $('#gpstarmobile_no').css({
+                        "border": "",
+                        "background": ""
+                    });
+                }                
+            }
+
             // if no payments checkbox is checked
             if($('.payments:checkbox:checked').length == 0){
                 isValid = false;
@@ -1057,7 +1172,7 @@
 
         
     });
-        //pos system discount option is showing or hiding.
+        //pos system reference discount option is showing or hiding.
         function discountCheck(){             
             if($("#discount_check").prop("checked") == true) { 
                 $('#discount-lbl').css('margin-right','5px');
@@ -1075,14 +1190,79 @@
                 $('.cash-discount').removeClass('discount-w');
                 $('#discount').val("");
                 $('.select2-selection').addClass('d-none');
-                if($("#reward_point_check").prop("checked") == true){
-                    $('#due-tk').html($("#total-tk").html() - $("#reward-discount").text());
+                $('#discount-blk').addClass('pt-1');
+                $('#discount-limit').addClass('d-none');
+                $("#discount_reference").select2("val", "");
+
+                //restoring the dueAmmount
+                var orderTotal = $('#total-tk').text(); // order total
+                var gpStarDiscount = $('#gp-discount').text(); // GP star discount            
+                var rewardDiscount = $("#reward-discount").text(); //reward discount [clients points]  
+
+                if($("#reward_point_check").prop("checked") == true ){
+                    if(gpStarDiscount){
+                        dueAmount = orderTotal - (Number(gpStarDiscount) + Number(rewardDiscount));
+                    }else{
+                        dueAmount = orderTotal - Number(rewardDiscount);
+                    }  
                 }else{
-                    $('#due-tk').html($("#total-tk").html());
-                } 
-                $('#discount-blk').addClass('pt-1');           
+                    if(gpStarDiscount){
+                        dueAmount = orderTotal - Number(gpStarDiscount);
+                    }else{
+                        dueAmount = orderTotal;
+                    }  
+                }
+                $('#due-tk').text(dueAmount); 
+                           
             }           
         }
+
+        //pos system GP star discount option is showing or hiding.
+        function gpstarCheck(){             
+            if($("#gpstar_check").prop("checked") == true) { 
+                $('#gpstar-lbl').css('margin-right','0px');
+                $('.star-discount').addClass('discount-w');
+                $('#gpstarmobile_no').show();
+                $('#gpstar_ref').show();
+                $('#gpstar-discount-lbl').show();
+                $('#gpstar-blk').removeClass('pt-1');  
+                $('#gp-ref-blk').addClass('mr-5');                 
+            }else{
+                //when unchecked chkbox we set discount to null and due amount to order total.
+                $('#gpstar-lbl').css('margin-right','20px');               
+                $('#gpstar_ref').removeAttr("style").hide();
+                $('#gpstarmobile_no').removeAttr("style").hide(); 
+                $('.star-discount').removeClass('discount-w');
+                $('.star-discount').removeClass('mr-5');
+                $('#gpstarmobile_no').val("");
+                $('#gp-discount').text('');
+                $('#gpstar-blk').addClass('pt-1');
+                $('#gp-discount-blk').addClass('d-none');
+                $("#gpstar_ref").val("");
+                //restoring the dueAmmount
+                var orderTotal = $('#total-tk').text(); // order total
+                var discount = $.trim($('#discount').val()); // reference discount            
+                var rewardDiscount = $("#reward-discount").text(); //reward discount [clients points]  
+
+                if($("#reward_point_check").prop("checked") == true ){
+                    if(discount){
+                        dueAmount = orderTotal - (Number(discount) + Number(rewardDiscount));
+                    }else{
+                        dueAmount = orderTotal - rewardDiscount;
+                    }  
+                }else{
+                    if(discount){
+                        dueAmount = orderTotal - discount;
+                    }else{
+                        dueAmount = orderTotal;
+                    }  
+                }
+                $('#due-tk').text(dueAmount);
+                           
+            }           
+        }
+
+
 
         
 
@@ -1143,23 +1323,43 @@
             var dueAmount = 0;     
             var discount =  $.trim($('#discount').val());
             var orderTotal = $("#total-tk").html();
-            var rewardDiscount = $("#reward-discount").text();            
-            if($("#reward_point_check").prop("checked") == true) {                 
-                if(discount){
-                    dueAmount = orderTotal - (Number(discount) + Number(rewardDiscount));
+            var rewardDiscount = $("#reward-discount").text(); 
+            var gpStarDiscount = $('#gp-discount').text();
+
+            if($("#reward_point_check").prop("checked") == true) { 
+                if(gpStarDiscount){
+                    if(discount){
+                        dueAmount = orderTotal - (Number(rewardDiscount) + Number(discount) + Number(gpStarDiscount));
+                    }else{
+                        dueAmount = orderTotal - (Number(rewardDiscount) + Number(gpStarDiscount));
+                    }
                 }else{
-                    dueAmount = orderTotal - rewardDiscount;
+                    if(discount){
+                        dueAmount = orderTotal - (Number(rewardDiscount) + Number(discount));
+                    }else{
+                        dueAmount = orderTotal - Number(rewardDiscount);
+                    } 
                 }               
+                                  
                 $('#due-tk').text(dueAmount);
                 // setting reward_point_discount to form hidden input field
                 $('#reward_point_discount').val(rewardDiscount);
               
             }else{
-                if(discount){
-                    dueAmount = orderTotal - discount;
+                if(gpStarDiscount){
+                    if(discount){
+                        dueAmount = orderTotal - (Number(discount) + Number(gpStarDiscount));
+                    }else{
+                        dueAmount = orderTotal - Number(gpStarDiscount);
+                    }
                 }else{
-                    dueAmount = orderTotal;
-                }               
+                    if(discount){
+                        dueAmount = orderTotal - Number(discount);
+                    }else{
+                        dueAmount = orderTotal;
+                    }
+                }
+                               
                 $('#due-tk').text(dueAmount);
                 // setting reward_point_discount to form hidden input field
                 $('#reward_point_discount').val(0);
@@ -1198,7 +1398,7 @@
         function resetPayment(){
             // resetting all the global variables which are needed to calculate.
             methods = []; 
-            OrderTotal = $('#total-tk').text();  
+            //OrderTotal = $('#total-tk').text();  
             allPayments=[]; // Holds all the paid amounts & methods. 
             cardDiscountFlag = 0; // used to allow only one card discount
 
@@ -1293,14 +1493,16 @@
             cmds += newLine;
             cmds += esc + '!' + '\x08'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex            
             cmds += newLine;
-            cmds += "{{ config('settings.site_title') }}"; //text to print site title
+            cmds += "{{ __('The best Restaurant, Party center and Kids zone in Rajshahi.') }}"; //text to print site title
             cmds += newLine;
             cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
             cmds += "---------------------------------------";
             cmds += newLine;            
-            cmds += "{{ config('settings.contact_address') }}"; //text to print site address
+            cmds += "Location: {{ config('settings.contact_address') }}"; //text to print site address
             cmds += newLine;
             cmds += "Contact no: {{ config('settings.phone_no') }}";
+            cmds += newLine;         
+            cmds += "Operator Name: {{ auth()->user()->name }}";
             cmds += newLine;
             cmds += "Date: {{ date('d-M-Y h:i:s A') }}";
             cmds += newLine;
@@ -1318,10 +1520,16 @@
             cmds += newLine;
             @php $sub_tot_without_vat = 0.0;
                  $vat_percentage = config('settings.tax_percentage');
+                 $discount =0;
             @endphp
             @if($order_id && App\Models\Ordersale::where('id', $order_id)->first()->status == 'delivered')
+            //calculating paid amount
             @php $paid_amount = App\Models\Ordersale::find($order_id)->cash_pay + App\Models\Ordersale::find($order_id)->card_pay +
-            App\Models\Ordersale::find($order_id)->mobile_banking_pay; @endphp
+            App\Models\Ordersale::find($order_id)->mobile_banking_pay; 
+            //calculating total discount amount received.
+            $discount = App\Models\Ordersale::find($order_id)->discount + App\Models\Ordersale::find($order_id)->reward_discount +
+            App\Models\Ordersale::find($order_id)->card_discount + App\Models\Ordersale::find($order_id)->gpstar_discount;            
+            @endphp
             @foreach(App\Models\Salebackup::where('ordersale_id', $order_id)->get() as $saleCart)        
                 cmds += "{{ $saleCart->product_name }}" ;
                 cmds += newLine;
@@ -1336,18 +1544,16 @@
             cmds += newLine;
             @php $food_vat = $sub_tot_without_vat * ($vat_percentage)/100; @endphp
             @if(config('settings.tax_percentage'))
-            cmds += "        ++ VAT ({{ $vat_percentage }}%):           {{$food_vat}}";
+            cmds += "        ++ VAT ({{ $vat_percentage }}%):          {{$food_vat}}";
             cmds += newLine;
             @endif            
             cmds += "                          -------------";
             cmds += '           Total Amount:          {{ $sub_tot_without_vat + $food_vat }}';
             cmds += newLine;
-            cmds += '           -Discount:           {{ $order_id ? round(App\Models\Ordersale::find($order_id)->discount,2) : '' }}';
-            cmds += newLine;
-            @if($order_id && App\Models\Ordersale::find($order_id)->reward_discount)
-            cmds += '           -Reward Discount:     {{ $order_id ? round(App\Models\Ordersale::find($order_id)->reward_discount,2) : '' }}';
-            cmds += newLine;
+            @if($order_id && (float)$discount)
+            cmds += '           -Discount:          {{ $order_id ? round($discount,2) : '' }}';
             @endif
+            cmds += newLine;            
             cmds += "                          -------------";
             cmds += '             Amount Due:          {{ $order_id ? round(App\Models\Ordersale::find($order_id)->grand_total,2) : '' }}'; 
             cmds += newLine;           
@@ -1358,15 +1564,15 @@
             cmds += "---------------------------------------";
             cmds += newLine;
             @if($order_id)
-            @if(App\Models\Ordersale::find($order_id)->cash_pay)
+            @if((float)App\Models\Ordersale::find($order_id)->cash_pay)
             cmds += 'CASH:                          {{ $order_id ? round(App\Models\Ordersale::find($order_id)->cash_pay,2) : '' }}';
             cmds += newLine;
             @endif
-            @if(App\Models\Ordersale::find($order_id)->card_pay)
+            @if((float)App\Models\Ordersale::find($order_id)->card_pay)
             cmds += 'CARD:                          {{ $order_id ? round(App\Models\Ordersale::find($order_id)->card_pay,2) : '' }}';
             cmds += newLine;
             @endif
-            @if(App\Models\Ordersale::find($order_id)->mobile_banking_pay)
+            @if((float)App\Models\Ordersale::find($order_id)->mobile_banking_pay)
             cmds += 'Mobile Banking:                {{ $order_id ? round(App\Models\Ordersale::find($order_id)->mobile_banking_pay,2) : '' }}';
             cmds += newLine;
             @endif
@@ -1374,19 +1580,19 @@
             cmds += "---------------------------------------";
             cmds += newLine;
             @if($order_id)
-            @if(App\Models\Ordersale::find($order_id)->discount)
-            cmds += 'Reference Discount:            {{ $order_id ? round(App\Models\Ordersale::find($order_id)->discount,2) : '' }}';
+            @if($discount)
+            cmds += 'Total Discount:                {{ $order_id ? round($discount,2) : '' }}';
             cmds += newLine;
             cmds += "---------------------------------------";
             @endif
             cmds += newLine;
-            @if(App\Models\Ordersale::find($order_id)->reward_discount)
-            cmds += 'Other Discount:                 {{ $order_id ? round(App\Models\Ordersale::find($order_id)->reward_discount,2) : '' }}';
+            @if((float)App\Models\Ordersale::find($order_id)->fraction_discount)
+            cmds += 'Other Discount:                {{ $order_id ? round(App\Models\Ordersale::find($order_id)->fraction_discount,2) : '' }}';
             cmds += newLine;
             cmds += "---------------------------------------";
             cmds += newLine;
             @endif
-            cmds += 'You Have Saved:                {{ $order_id ? round((App\Models\Ordersale::find($order_id)->discount + App\Models\Ordersale::find($order_id)->reward_discount),2)  : '' }}';            
+            cmds += 'You Have Saved:                {{ $order_id ? round(($discount + App\Models\Ordersale::find($order_id)->fraction_discount),2)  : '' }}';            
             @endif
             cmds += newLine + newLine;
             cmds += 'Note: Sold food items can not be refunded';

@@ -221,13 +221,34 @@
                 @endforeach
                 
                 <p class="text-left" style="margin-top:5px;">
-                <span>Complimentary Sales Cost </span><span style="padding-left: 3px;">:</span> {{ $complimentary_sales_cost }} {{ config('settings.currency_symbol') }}<br/>
-                <span>Reference Discount</span><span style="padding-left: 46px;">:</span>  {{ round($discount->ref_discount,2) }} {{ config('settings.currency_symbol') }}<br/>
-                <span>Customer Points Discount</span><span style="padding-left:10px;">:</span>  {{ round($discount->point_discount,2) }} {{ config('settings.currency_symbol') }}<br/>
-                <span>Net Total Sales</span><span style="padding-left: 72px;">:</span>  {{ round($discount->total_sales,2) }} {{ config('settings.currency_symbol') }}<br/>
-                <span>Net Sales Cost</span><span style="padding-left: 74px;">:</span>  {{ $totalSalesCost + $complimentary_sales_cost }} {{ config('settings.currency_symbol') }}<br/>
-                <span>Net Profit/Loss</span><span style="padding-left: 76px;">:</span>  {{ $discount->total_sales - ($totalSalesCost + $complimentary_sales_cost)  }} {{ config('settings.currency_symbol') }} 
-                &nbsp; {{ "( " . round((($discount->total_sales-($totalSalesCost + $complimentary_sales_cost)) / ($totalSalesCost + $complimentary_sales_cost))*100,2) ."% )" }}<br/>
+                    <div style="line-height: 20px;">
+                        <span>Complimentary Sales Cost </span><span style="padding-left: 3px;">:</span> {{ $complimentary_sales_cost }} {{ config('settings.currency_symbol') }}
+                    </div>
+                    <div style="line-height: 20px;">
+                        <span>Fraction Discount </span><span style="padding-left: 56px;">:</span> {{ round($discount->fraction_discount,2) }} {{ config('settings.currency_symbol') }}
+                    </div>
+                    <div style="line-height: 20px;">
+                        <span>Reference Discount</span><span style="padding-left: 46px;">:</span>  {{ round($discount->ref_discount,2) }} {{ config('settings.currency_symbol') }}
+                    </div>
+                    <div style="line-height: 20px;">
+                        <span>Customer Points Discount</span><span style="padding-left:10px;">:</span>  {{ round($discount->point_discount,2) }} {{ config('settings.currency_symbol') }}
+                    </div>
+                    <div style="line-height: 20px;">
+                        <span>Card Discount </span><span style="padding-left: 75px;">:</span> {{ round($discount->card_discount,2) }} {{ config('settings.currency_symbol') }}
+                    </div>
+                    <div style="line-height: 20px;">
+                        <span>GP Star Discount </span><span style="padding-left:57px;">:</span> {{ round($discount->gpstar_discount,2) }} {{ config('settings.currency_symbol') }}
+                    </div>
+                    <div style="line-height: 20px;">
+                        <span>Net Total Sales</span><span style="padding-left: 72px;">:</span>  {{ round($discount->total_sales,2) }} {{ config('settings.currency_symbol') }}
+                    </div>
+                    <div style="line-height: 20px;">
+                        <span>Net Sales Cost</span><span style="padding-left: 74px;">:</span>  {{ round($totalSalesCost + $complimentary_sales_cost,2) }} {{ config('settings.currency_symbol') }}
+                    </div>
+                    <div style="line-height: 20px; font-weight:bold;">
+                        <span>Net Profit/Loss</span><span style="padding-left:68px;">:</span>  {{ round($discount->total_sales - ($totalSalesCost + $complimentary_sales_cost),2)  }} {{ config('settings.currency_symbol') }} 
+                        &nbsp; {{ "( " . round((($discount->total_sales-($totalSalesCost + $complimentary_sales_cost)) / ($totalSalesCost + $complimentary_sales_cost))*100,2) ."% )" }}
+                    </div>                
                 </p>
             </div>
             <div class="clearfix"></div>
@@ -238,17 +259,24 @@
                     <tr>
                         <th class="text-left"> # </th>
                         <th class="text-left"> Restaurant </th>
-                        <th class="text-left"> Sales</th>
-                        <th class="text-left"> SalesCost </th>                            
+                        <th class="text-left"> Sale Price</th>
+                        @if(config('settings.tax_percentage'))
+                        <th class="text-left"> With Vat Sale Price</th> 
+                        @endif
+                        <th class="text-left"> Cost Price</th>                            
                         <th class="text-left"> Profit/Loss </th>
                     </tr>
                 </thead>
                 <tbody>           
                     <tr>
                         <td class="text-left">{{ 1 }}</td>
-                        <td class="text-left">{{ config('app.name', 'Funville') }} Limited</td>                       
+                        <td class="text-left">{{ config('app.name', 'Funville') }}</td>                       
                         <td class="text-left">{{ round($totalSales,2)  }}
                             {{ config('settings.currency_symbol') }}</td>
+                        @if(config('settings.tax_percentage'))
+                        <td class="text-left">{{ round(($totalSales + ($totalSales * (config('settings.tax_percentage')/100))), 2)  }}
+                            {{ config('settings.currency_symbol') }}</td> 
+                        @endif
                         <td class="text-left">{{ round($totalSalesCost,2)  }}
                             {{ config('settings.currency_symbol') }}</td>
                         <td class="text-left">{{ round(($totalSales - $totalSalesCost) ,2)  }}

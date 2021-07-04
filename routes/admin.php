@@ -72,6 +72,7 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::post('/customer/info','SalesController@addCustomerInfo')->name('sales.customerInfo');
                 Route::post('/discount/slab','SalesController@discountSlab')->name('sales.discountSlab');
                 Route::post('/card/discount','SalesController@cardDiscount')->name('sales.card.discount'); 
+                Route::post('/gpstar/discount','SalesController@gpStarDiscount')->name('sales.gpStarDiscount'); 
                 //end of ajax route for pos sales.
             
             });
@@ -133,7 +134,7 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::post('/store', 'IngredientController@store')->name('ingredient.store');
                 Route::get('/edit/{id}', 'IngredientController@edit')->name('ingredient.edit');
                 Route::post('/update', 'IngredientController@update')->name('ingredient.update');
-                Route::get('/delete/{id}', 'IngredientController@delete')->name('ingredient.delete');
+                Route::get('/delete/{id}', 'IngredientController@delete')->name('ingredient.delete');                
             });
 
             // ingredient purchase or damage ajax route to autocomplete ingredient name.
@@ -327,7 +328,17 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::get('/edit/{id}', 'PaymentGWController@edit')->name('payment.gw.edit');
                 Route::post('/update', 'PaymentGWController@update')->name('payment.gw.update');
                 Route::get('/delete/{id}', 'PaymentGWController@delete')->name('payment.gw.delete');
-            });           
+            });  
+            
+            //GP Star discount
+            Route::group(['prefix' => 'gpstar/discount'], function(){
+                Route::get('/', 'GpStarController@index')->name('gpstar.index');
+                Route::get('/create', 'GpStarController@create')->name('gpstar.create');
+                Route::post('/store', 'GpStarController@store')->name('gpstar.store');
+                Route::get('/edit/{id}', 'GpStarController@edit')->name('gpstar.edit');
+                Route::post('/update', 'GpStarController@update')->name('gpstar.update');
+                Route::get('/delete/{id}', 'GpStarController@delete')->name('gpstar.delete');
+            });
             
 
             //Complimentary sales route for restaurant.

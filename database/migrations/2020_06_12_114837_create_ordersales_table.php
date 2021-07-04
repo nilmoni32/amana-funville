@@ -32,6 +32,8 @@ class CreateOrdersalesTable extends Migration
             $table->decimal('card_discount')->nullable(); // card discount
             $table->decimal('mobile_discount')->nullable(); //  mobile bank means bkash, nagad discount
             $table->decimal('fraction_discount')->nullable(); // means if duetotal is 333.78 then fraction discount will store .78 tk
+            $table->string('gpstarmobile_no')->nullable();
+            $table->decimal('gpstar_discount')->nullable();
 
             $table->timestamps();
 

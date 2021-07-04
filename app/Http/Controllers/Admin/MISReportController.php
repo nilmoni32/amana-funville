@@ -21,7 +21,7 @@ class MISReportController extends BaseController
     }
 
     public function getprofitloss(Request $request){
-        //converting date format from m-d-Y to Y-m-d as database stroes date in 'Y-m-d' format
+        //converting date format from m-d-Y to Y-m-d as database stores date in 'Y-m-d' format
         $start_date = Carbon::createFromFormat('d-m-Y', $request->start_date)->format('Y-m-d');
         $end_date = Carbon::createFromFormat('d-m-Y', $request->end_date)->format('Y-m-d');
                  
@@ -96,7 +96,8 @@ class MISReportController extends BaseController
     public function Discount($start_date, $end_date){
 
         $discount = DB::table('ordersales')
-        ->select(DB::raw('SUM(discount) as ref_discount, SUM(reward_discount) as point_discount, SUM(grand_total) as total_sales'))
+        ->select(DB::raw('SUM(discount) as ref_discount, SUM(reward_discount) as point_discount, SUM(card_discount) as card_discount,
+         SUM(gpstar_discount) as gpstar_discount, SUM(fraction_discount) as fraction_discount, SUM(grand_total) as total_sales'))
         ->whereDate('created_at', '>=', $start_date)
         ->whereDate('created_at', '<=', $end_date)
         ->first();
