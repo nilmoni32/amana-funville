@@ -14,8 +14,8 @@
     <div class="pull-right">
         <a href="{{ route('admin.reports.pdfgetCustomerSales', [$start_date, $end_date, $client->id]) }}" class="btn btn-sm btn-dark"
             target="_blank"><i class="fa fa-file-pdf-o" style="font-size:16px;"></i></a>
-        <a href="#" class="btn btn-sm btn-info"><i
-                class="fa fa-file-excel-o" style="font-size:17px;"></i></a>
+        {{-- <a href="#" class="btn btn-sm btn-info"><i
+                class="fa fa-file-excel-o" style="font-size:17px;"></i></a> --}}
     </div>
 </div>
 <div class="row">
@@ -88,8 +88,10 @@
                                 <th class="text-center"> # </th>
                                 <th class="text-center"> ReceiptNo </th>
                                 <th class="text-center"> PaidAmount </th>
-                                <th class="text-center"> DiscountAmount (Reference)</th>
-                                <th class="text-center"> DiscountAmount (Bonus Point)</th> 
+                                <th class="text-center"> Reference Discount</th>
+                                <th class="text-center"> Earned Points Discount</th> 
+                                <th class="text-center"> Card Discount</th> 
+                                <th class="text-center"> GP Star Discount</th> 
                             </tr>
                         </thead>                        
                         <tbody>
@@ -102,6 +104,10 @@
                                 <td class="text-center">{{ round($receipt->discount,2)  }}
                                     {{ config('settings.currency_symbol') }}</td>
                                 <td class="text-center">{{ round($receipt->reward_discount,2)  }}
+                                    {{ config('settings.currency_symbol') }}</td>
+                                <td class="text-center">{{ round($receipt->card_discount,2)  }}
+                                    {{ config('settings.currency_symbol') }}</td>
+                                <td class="text-center">{{ round($receipt->gpstar_discount,2)  }}
                                     {{ config('settings.currency_symbol') }}</td>
                             </tr>
                             @endforeach                         

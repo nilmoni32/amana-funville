@@ -60,11 +60,13 @@
                 <input class="form-control" type="text" placeholder="Google Map iframe" name="google_map"
                     id="google_map" value="{{ config('settings.google_map') }}">
             </div>
+            @can('super-admin')
             <div class="form-group">
                 <label class="control-label" for="tax_percentage">Tax Percentage</label>
                 <input class="form-control" type="text" placeholder="Tax Percentage" name="tax_percentage"
                     id="tax_percentage" value="{{ config('settings.tax_percentage') }}">
             </div>
+            @endcan
             <div class="form-group">
                 <label class="control-label" for="tax_percentage">Total Number of Tables in Restaurant</label>
                 <input class="form-control" type="text" placeholder="Total no of tables" name="total_tbls"

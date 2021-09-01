@@ -214,10 +214,10 @@
                     <tr>
                         <th class="text-left"> Receipt No </th>
                         <th class="text-left"> Date</th>
-                        <th class="text-left"> Name </th>
-                        <th class="text-left"> Quantity </th>
-                        <th class="text-left"> Sales Cost</th>
-                        {{-- <th class="text-left"> Remarks</th> --}}
+                        <th class="text-left"> Food </th>
+                        <th class="text-left"> Qty </th>
+                        <th class="text-left"> Cost</th>                        
+                        <th class="text-left"> Notes</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -233,12 +233,12 @@
                             {{ $sale->product_name }}
                         </td>
                         <td class="text-left">
-                            {{ round($sale->total_qty,2) }} {{ config('settings.currency_symbol') }}
+                            {{ round($sale->total_qty,2) }}
                         </td>
                         <td class="text-left">
                             {{ round($sale->salesCost,2) }} {{ config('settings.currency_symbol') }}
                         </td>
-                        {{-- <td class="text-left">{{ $sale->notes }}</td> --}}
+                        <td class="text-left">{{ $sale->notes }}</td>
                     </tr>
                     @endforeach
 

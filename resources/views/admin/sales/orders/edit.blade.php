@@ -32,7 +32,7 @@
                         <p class="h6 text-center mb-2 border-bottom pb-3">[ Placed By: {{ $order->admin->name }} ]
                         </p>
                     </div>
-                    <div class="col-md-9 mx-auto text-center mt-2">
+                    <div class="col-md-8 mx-auto text-center mt-2">
                         <div class="form-group row mt-2">
                             <label class="col-md-4 col-form-label font-weight-bold text-right">Add
                                 Food</label>
@@ -107,26 +107,24 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-2 mx-auto text-center border-left">
-                        <div class="row mt-3 pb-3 border-bottom pl-2">
-                            <label class="col-12  font-weight-bold text-left">Change Order
-                                Status:</label>
-                            {{-- <div class="col-md-6 text-left">
-                                <input type="text" class="form-control" id="product_search" name="product_search"
-                                    placeholder="Find Foods">
-                            </div> --}}
-                            <div class="col-12 font-weight-bold text-left">
+                    <div class="col-md-3 mx-auto text-center border-left">                        
+
+                        <div class="border px-4 rounded pb-3 mb-4 mt-5" style="border-color:rgb(182, 182, 182);">
+                            <a class="btn btn-primary mt-3 text-center d-block text-uppercase" 
+                                href="{{ route('admin.pos.orders.index') }}">Okay</a>
+                        </div>
+
+                        <div class="border px-2 rounded pb-3 mb-4 mt-2" style="border-color:rgb(182, 182, 182);">
+                            <label class="col-12 font-weight-bold text-left text-center mt-2">Change Order
+                                Status:</label>                            
+                            <div class="col-12 font-weight-bold text-center text-uppercase">
                                 <input type="checkbox" data-toggle="toggle" data-on="Order Receive"
                                     data-off="Order Cancel" {{ $order->order_tableNo ? 'checked' : 'disabled'}}
                                     data-onstyle="primary" data-offstyle="danger" data-id={{ $order->id }}
-                                    class="orderStatus px-5" data-height="110%" data-width="132px">
+                                    class="orderStatus" data-height="100%" data-width="100%">
                             </div>
                         </div>
-                        <div class="text-left mt-4 pb-4 pl-2">
-                            <a class="btn btn-primary mt-2" style="display:block; width:130px"
-                                href="{{ route('admin.pos.orders.index') }}">Okay</a>
-                        </div>
-                        <div class="row border-top"></div>
+
                     </div>
                 </div>
             </div>
@@ -345,7 +343,7 @@
         }
 
 
-
+        
   
 
 </script>

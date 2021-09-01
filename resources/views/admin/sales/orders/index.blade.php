@@ -91,14 +91,24 @@
                                         data-target="#userCartModal{{ $order->id }}"><i
                                             class="fa fa-shopping-basket"></i></a>
                                     <!-- User Cart Modal -->
-                                    @include('admin.sales.orders.includes.userCart')
-                                    {{-- <a href="#" class="btn btn-sm btn-warning allprint" data-toggle="modal"
-                                        data-target="#customerPrintModal{{ $order->id }}"
-                                    data-orderId="{{ $order->id }}"><i class="fa fa-print"
-                                        style="font-size:20px"></i></a>
-                                    <!-- User Bank Transaction Modal -->
-                                    @include('admin.sales.orders.includes.print') --}}
+                                    @include('admin.sales.orders.includes.userCart')                               
                                 </div>
+                                <div class="btn-group" role="group" aria-label="Second group">
+                                    @if($order->status == 'cancel' || $order->status == 'delivered')
+                                        <a href="#" class="btn btn-sm btn-secondary allprint" disabled>
+                                            <i class="fa fa-print" style="font-size:15px"></i>
+                                        </a>
+                                    @else
+                                        <!-- POS Print for Customer all orders placed before payments -->
+                                        <a href="#" class="btn btn-sm btn-dark allprint" data-toggle="modal"
+                                            data-target="#customerPrintModal{{ $order->id }}"
+                                            data-orderId="{{ $order->id }}"><i class="fa fa-print"
+                                            style="font-size:16px"></i>
+                                        </a>
+                                        @include('admin.sales.orders.includes.print')
+                                    @endif                                    
+                                </div>
+
                             </td>
                             {{-- <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                 
@@ -117,22 +127,3 @@
 </div>
 @endsection
 
-@push('scripts')
-<script type="text/javascript">
-    var orderId; // store order id when print button is clicked
-
-    //JavaScript iterate through class elements and select the clicked print element
-    var allprint = document.getElementsByClassName("allprint");    
-    function getOrderId() {
-    for(var i = 0; i < allprint.length; i++){
-        if(this == allprint[i]){
-            orderId = allprint[i].getAttribute('data-orderId'); 
-        }
-    }
-    }
-    [].forEach.call(allprint, function(a) {
-    a.addEventListener('click', getOrderId);
-    });
-
-</script>
-@endpush

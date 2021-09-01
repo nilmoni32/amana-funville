@@ -14,8 +14,8 @@
     <div class="pull-right">
         <a href="{{ route('admin.reports.pdfcomplimentarySales', [$start_date, $end_date]) }}" class="btn btn-sm btn-dark"
             target="_blank"><i class="fa fa-file-pdf-o" style="font-size:16px;"></i></a>
-        <a href="#" class="btn btn-sm btn-info"><i
-                class="fa fa-file-excel-o" style="font-size:17px;"></i></a>
+        {{-- <a href="#" class="btn btn-sm btn-info"><i
+                class="fa fa-file-excel-o" style="font-size:17px;"></i></a> --}}
     </div>
 </div>
 <div class="row">
@@ -55,7 +55,7 @@
                                 <th class="text-center"> Date</th>
                                 <th class="text-center"> Name </th>
                                 <th class="text-center"> Quantity </th>
-                                <th class="text-center"> Sales Cost</th>
+                                <th class="text-center"> Cost Price</th>
                                 <th class="text-center"> Remarks</th>
                             </tr>
                         </thead>                        

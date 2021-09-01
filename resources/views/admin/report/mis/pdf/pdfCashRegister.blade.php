@@ -58,6 +58,9 @@
         .text-left{
             text-align: left;
         }
+        .text-right{
+            text-align: right;
+        }
 
         h4,
         h6,
@@ -175,6 +178,7 @@
         .page-number:before {
             content: "Page " counter(page);
         }
+       
         
     </style>
 </head>
@@ -204,19 +208,65 @@
         <div class="invoice-description">
             <div class="invoice-left-top float-left" style="width:100%;">
                 <h5 style="margin-top:5px; text-align: left;">Report: Cash register wise sales</h5>
-                <p style="margin-top:-45px; float:right; font-weight: bold;">From: <span class="font-normal">{{ $start_date }} To: {{ $end_date }}</span></p>
+                <p style="margin-top:-48px; float:right; font-weight: bold;">From: <span class="font-normal">{{ $start_date }} To: {{ $end_date }}</span></p>
             </div>            
             <div class="clearfix"></div>
         </div>
         <div class="mt-5" style="width:100%;">
-            <p class="text-left" style="margin-top:5px;">
-                <span>Reference Discount</span><span style="padding-left: 46px;">:</span>  {{ round($net_ref_discount,2) }} {{ config('settings.currency_symbol') }}<br/>
-                <span>Customer Points Discount</span><span style="padding-left:10px;">:</span>  {{ round($net_points_discount,2) }} {{ config('settings.currency_symbol') }}<br/>
-                <span>Net Total Sales</span><span style="padding-left: 72px;">:</span>  {{ round($net_sales,2) }} {{ config('settings.currency_symbol') }}<br/>
-                <span>Net Cash Sales</span><span style="padding-left: 71px;">:</span>  {{ round($net_cash_sales,2) }} {{ config('settings.currency_symbol') }}<br/>
-                <span>Net Card Sales</span><span style="padding-left: 73px;">:</span>  {{ round($net_card_sales,2) }} {{ config('settings.currency_symbol') }}<br/>
-                <span>Net Mobile Bank Sales</span><span style="padding-left: 30px;">:</span>  {{ round($net_mobile_sales,2) }} {{ config('settings.currency_symbol') }}<br/>
-            </p>
+            <div class="text-left" style="margin-top:5px; width:60%; float:left;">                
+                <div style="line-height: 20px; font-weight:bold">
+                    <span>Net Total Sales</span><span style="padding-left: 68px;">:</span>  {{ round($net_sales,2) }} {{ config('settings.currency_symbol') }}
+                </div>
+                <div style="line-height: 20px;">
+                    <span>Net Cash Sales</span><span style="padding-left: 71px;">:</span>  {{ round($net_cash_sales,2) }} {{ config('settings.currency_symbol') }}
+                </div>
+                <div style="line-height: 20px;">
+                    <span>Net Card Sales</span><span style="padding-left: 73px;">:</span>  {{ round($net_card_sales,2) }} {{ config('settings.currency_symbol') }}
+                </div>
+                <div style="line-height: 20px;">
+                    <span>Net Mobile Bank Sales</span><span style="padding-left: 30px;">:</span>  {{ round($net_mobile_sales,2) }} {{ config('settings.currency_symbol') }}
+                </div>
+            </div>
+            <div class="text-right" style="margin-top:-1px; float:right; width:40%;">  
+                <table style='border: none; margin-top:-1px; cellspacing="0" cellpadding="0"; padding-bottom:20px;'>
+                    <tr style="font-weight:bold;">
+                        <td style="width:60%;text-align:left; height:20px;">Net Total Discount</td>
+                        <td style="width:40%;text-align:left; height:20px;"><span style="padding-left: -5px;">:</span>
+                            {{ round(($net_ref_discount + $net_points_discount + $net_card_discount + $net_gpstar_discount + $net_fraction_discount) ,2) }} 
+                            {{ config('settings.currency_symbol') }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:60%;text-align:left; height:20px;">Reference Discount</td>
+                        <td style="width:40%;text-align:left; height:20px;"><span style="padding-left: -5px;">:</span>
+                            {{ round($net_ref_discount,2) }} {{ config('settings.currency_symbol') }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:60%;text-align:left; height:20px;">Customer Points Discount</td>
+                        <td style="width:40%;text-align:left; height:20px;"><span style="padding-left: -5px;">:</span>
+                            {{ round($net_points_discount,2) }} {{ config('settings.currency_symbol') }}
+                        </td>
+                    </tr><tr>
+                        <td style="width:60%;text-align:left; height:20px;">Card Discount</td>
+                        <td style="width:40%;text-align:left; height:20px;"><span style="padding-left: -5px;">:</span>
+                            {{ round($net_card_discount,2) }} {{ config('settings.currency_symbol') }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:60%;text-align:left; height:20px;">GP Star Discount</td>
+                        <td style="width:40%;text-align:left; height:20px;"><span style="padding-left: -5px;">:</span>
+                            {{ round($net_gpstar_discount,2) }} {{ config('settings.currency_symbol') }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:60%;text-align:left; height:20px;">Fraction Discount</td>
+                        <td style="width:40%;text-align:left; height:20px;"><span style="padding-left: -5px;">:</span>
+                            {{ round($net_fraction_discount,2) }} {{ config('settings.currency_symbol') }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
             <div class="clearfix"></div>
         </div>
         
@@ -228,12 +278,12 @@
                         <th class="text-left"> Time</th>                                                     
                         <th class="text-left"> Payment Method </th>
                         <th class="text-left"> Received Amount </th> 
-                        <th class="text-left"> Reference Discount </th>
-                        <th class="text-left"> Points Discount </th>  
+                        <th class="text-left"> Total Discount </th>                         
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($cash_register as $cash)                   
+                    @foreach($cash_register as $cash)  
+                    @php $total_discount = $cash->discount + $cash->reward_discount + $cash->card_discount + $cash->gpstar_discount + $cash->fraction_discount;  @endphp                 
                     <tr>
                         <td>
                             {{ $cash->order_number }}
@@ -248,11 +298,8 @@
                             {{ round($cash->grand_total,2) }} {{ config('settings.currency_symbol') }}
                         </td>
                         <td>
-                            {{ round( $cash->discount,2) }} {{ config('settings.currency_symbol') }}
-                        </td>
-                        <td>
-                            {{ round( $cash->reward_discount,2) }} {{ config('settings.currency_symbol') }}
-                        </td>
+                            {{ round( $total_discount,2) }} {{ config('settings.currency_symbol') }}
+                        </td>                       
                     </tr>
                     @endforeach
 

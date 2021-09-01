@@ -1493,7 +1493,7 @@
             cmds += newLine;
             cmds += esc + '!' + '\x08'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex            
             cmds += newLine;
-            cmds += "{{ __('The best Restaurant, Party center and Kids zone in Rajshahi.') }}"; //text to print site title
+            cmds += "{{ __('The Best Restaurant, Party center and Kids zone in Rajshahi.') }}"; //text to print site title
             cmds += newLine;
             cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
             cmds += "---------------------------------------";

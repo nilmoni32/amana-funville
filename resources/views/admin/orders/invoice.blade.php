@@ -27,7 +27,7 @@
         }
 
         h4 {
-            font-size: 1.25rem;
+            font-size: 1.22rem;
             text-transform: inherit;
         }
 
@@ -164,7 +164,7 @@
                 <img src="{{ asset('backend/images') }}/logo_funville.png" alt="Funville" ;>
             </div>
             <div class="funville-address float-right">
-                <h4 class="text-uppercase">{{ config('app.name', 'Funville') }} Restaurant
+                <h4 class="text-uppercase">{{ config('app.name', 'Funville') }} Limited
                 </h4>
                 <p><span class="font-normal">{{ config('settings.contact_address') }}</span></p>
                 <p style="margin-top:-5px;">Phone: <span class="font-normal">{{ config('settings.phone_no') }}</span>

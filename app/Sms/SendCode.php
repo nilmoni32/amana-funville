@@ -22,9 +22,24 @@ class SendCode{
         // $mobile = '880'. (int) $mobile;
         // $sender_id = '8801552146120';
 
-        // $client = new Client(['base_uri' => 'https://portal.smsinbd.com/smsapi']);
-        // $response = $client->request('GET', '?api_key='.$api.'&type=text&senderid='.$sender_id.'&contacts='.$mobile.'&msg=Verification+Code%3A+'.$code.'&method=api');
+        // $client = new Client();
+        // $url = "https://gpcmp.grameenphone.com/ecmapigw/webresources/ecmapigw.v2";
+        // $headers =  [ 'Accept' => 'application/json', 'Content-Type' => 'application/json'];
+        // $params = [
+        //          'username' => 'AGLAdmin_4548',
+        //          'password' => 'Amana@2010',
+        //          'apicode'  =>  '1',
+        //          'msisdn'   =>  $mobile,
+        //          'countrycode' =>  '880',
+        //          'cli'       =>  'FUNVILLE',
+        //          'messagetype'=>  '1',
+        //          'message'    =>  'verification code: '. $code,
+        //          'messageid'  =>  '0',
+        //  ];
 
+        //  $response = $client->request('POST', $url, ["headers" => $headers, "json" => $params]);
+        //  $result = json_decode($response->getBody());
+        // dd($result);
         
 
 

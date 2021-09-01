@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Order;
-use App\Http\Controllers\BaseController;
 use PDF;
-use Carbon\Carbon;
-use DateTime;
-use App\Models\Cart;
-use App\Models\Recipe;
-use App\Models\Unit;
 use Auth;
+use DateTime;
+use Carbon\Carbon;
+use App\Models\Cart;
+use App\Models\Unit;
+use App\Models\Order;
+use App\Models\Recipe;
+use App\Models\Ingredient;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseController;
 
 class OrderController extends BaseController
 {
@@ -37,11 +38,25 @@ class OrderController extends BaseController
                 $this->setFlashMessage(" You might forget to add '". $cart->product->name ."' food recipe which you want to sale", 'error');    
                 $this->showFlashMessages(); 
                 return redirect()->back();             
-                }elseif(!Recipe::where('product_id', $cart->product_id)->first()->recipeingredients->count()){
-                     // setting flash message using trait
+                }
+            elseif(!Recipe::where('product_id', $cart->product_id)->first()->recipeingredients->count()){
+                // setting flash message using trait
                 $this->setFlashMessage(" You might forget to add '". $cart->product->name ."' food recipe ingredients which you want to sale", 'error');    
                 $this->showFlashMessages(); 
                 return redirect()->back(); 
+                }
+            else{
+                //when stock ingredient total quantity is zero or negative after sales.
+                foreach(Recipe::where('product_id', $cart->product_id)->first()->recipeingredients as $ingredient){
+                    if(Ingredient::where('id', $ingredient->ingredient_id)->first()->total_quantity <= 0){
+                        // setting flash message using trait
+                        $this->setFlashMessage("Please add purchase record for ingredient '". 
+                        Ingredient::where('id', $ingredient->ingredient_id)->first()->name ."' of food '". $request->foodName ."' before sale.", 'error');    
+                        $this->showFlashMessages(); 
+                        return redirect()->back(); 
+                    }
+                }
+                    
                 }
         }
         

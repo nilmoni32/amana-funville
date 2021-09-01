@@ -49,10 +49,10 @@
                                 <div class="btn-group" role="group" aria-label="Second group">
                                     <a href="{{ route('admin.recipe.edit', $recipe->id) }}"
                                         class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
-                                    <a href="{{ route('admin.recipe.delete', $recipe->id) }}"
+                                    {{-- <a href="{{ route('admin.recipe.delete', $recipe->id) }}"
                                         class="btn btn-sm btn-danger delete-confirm {{
                                             App\Models\RecipeIngredient::where('recipe_id', $recipe->id)->count()
-                                            ? 'disabled' :'' }}"><i class="fa fa-trash"></i></a>
+                                            ? 'disabled' :'' }}"><i class="fa fa-trash"></i></a> --}}
                                 </div>
                             </td>
                         </tr>

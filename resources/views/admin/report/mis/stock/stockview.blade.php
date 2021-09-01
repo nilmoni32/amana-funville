@@ -14,8 +14,8 @@
     <div class="pull-right">
         <a href="{{ route('admin.reports.pdfstock', 'product') }}" class="btn btn-sm btn-dark"
             target="_blank"><i class="fa fa-file-pdf-o" style="font-size:16px;"></i></a>
-        <a href="#" class="btn btn-sm btn-info"><i
-                class="fa fa-file-excel-o" style="font-size:17px;"></i></a>
+        {{-- <a href="#" class="btn btn-sm btn-info"><i
+                class="fa fa-file-excel-o" style="font-size:17px;"></i></a> --}}
     </div>
 </div>
 <div class="row">
@@ -71,21 +71,21 @@
                         <thead>
                             <tr>
                                 <th class="text-center"> # </th>
-                                <th class="text-center"> Product Name </th>
+                                <th class="text-center"> Product Name </th>                                
                                 <th class="text-center"> Qty</th>
-                                <th class="text-center"> Threshold Qty</th>
-                                <th class="text-center"> Unit </th>
-                                <th class="text-center"> Amount </th>
+                                <th class="text-center"> Threshold Qty</th> 
+                                <th class="text-center"> Unit </th>                               
+                                <th class="text-center"> Total Cost </th>
                             </tr>
                         </thead>                        
                         <tbody>                           
                             @foreach($ingredients as $ingredient)
                             <tr>
                                 <td class="text-center">{{ $loop->index + 1  }}</td>
-                                <td class="text-center">{{ $ingredient->name }}</td>
-                                <td class="text-center">{{ round($ingredient->total_quantity,2) }}</td>
-                                <td class="text-center">{{ round($ingredient->alert_quantity,2) }}</td>
-                                <td class="text-center">{{ $ingredient->measurement_unit }}</td>
+                                <td class="text-center">{{ $ingredient->name }} </td>                                
+                                <td class="text-center">{{ round($ingredient->total_quantity,2) }} {{ $ingredient->measurement_unit }}</td>
+                                <td class="text-center">{{ round($ingredient->alert_quantity,2) }} {{ $ingredient->measurement_unit }}</td>  
+                                <td class="text-center">{{ $ingredient->measurement_unit }}</td>                              
                                 <td class="text-center">{{ round($ingredient->total_price, 2)}} {{ config('settings.currency_symbol') }}</td>
                             </tr>
                             @endforeach

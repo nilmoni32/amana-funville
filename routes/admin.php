@@ -195,6 +195,13 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             Route::get('/reports/bonus-point', 'MISReportController@bonusPoint')->name('reports.bonusPoint');
             Route::get('/reports/stock', 'MISReportController@stock')->name('reports.stock');
             Route::post('/reports/stock', 'MISReportController@getstock')->name('reports.getstock');
+            Route::get('/reports/digital/payments', 'MISReportController@digitalPayments')->name('reports.digitalPayments');
+            Route::post('/reports/digital/payments', 'MISReportController@getdigitalPayments')->name('reports.getdigitalPayments'); 
+            Route::get('/reports/ingredient/purchase', 'MISReportController@ingredientPurchase')->name('reports.ingredientPurchase'); 
+            Route::post('/reports/ingredient/purchase', 'MISReportController@getingredientPurchase')->name('reports.getingredientPurchase');
+            Route::get('/reports/kot/ref-discount', 'MISReportController@refDiscount')->name('reports.refDiscount'); 
+            Route::post('/reports/kot/ref-discount', 'MISReportController@getrefDiscount')->name('reports.getrefDiscount');
+
             //ajax call to search customer via select2.
             Route::post('/reports/getclients/', 'MISReportController@getClients')->name('reports.getClients');
             //MIS PDF reports
@@ -205,6 +212,9 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             Route::get('/reports/pdf/profit-loss/{date1}/{date2}/{op}', 'MISReportController@pdfgetprofitloss')->name('reports.pdfgetprofitloss');
             Route::get('/reports/pdf/sales-complimentary/{date1}/{date2}', 'MISReportController@pdfcomplimentarySales')->name('reports.pdfcomplimentarySales');
             Route::get('/report/pdf/stock/{op}', 'MISReportController@pdfstock')->name('reports.pdfstock');
+            Route::get('/reports/pdf/digital-payments/{date1}/{date2}/{op}', 'MISReportController@pdfgetDigitalPayment')->name('reports.pdfgetDigitalPayment');
+            Route::get('/reports/pdf/ingredient/purchase/{date1}/{date2}', 'MISReportController@pdfgetingredient')->name('reports.pdfgetingredient');
+            Route::get('/reports/pdf/kot/ref-discount/{date1}/{date2}', 'MISReportController@pdfrefDiscount')->name('reports.pdfrefDiscount');
         });
 
         //admin role
@@ -309,7 +319,7 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             });
 
             //Recipe Ingredients
-            Route::group(['prefix' => 'recipe/ingredients'], function(){
+            Route::group(['prefix' => 'recipe/ingredients'], function(){                
                 Route::get('/{id}', 'RecipeIngredientController@index')->name('recipe.ingredient.index');
                 Route::get('/{id}/create', 'RecipeIngredientController@create')->name('recipe.ingredient.create');
                 Route::post('/store', 'RecipeIngredientController@store')->name('recipe.ingredient.store');

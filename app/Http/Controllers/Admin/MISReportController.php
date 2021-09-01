@@ -155,6 +155,10 @@ class MISReportController extends BaseController
 
         $net_ref_discount = 0.0;
         $net_points_discount = 0.0;
+        $net_card_discount = 0.0;
+        $net_gpstar_discount = 0.0;
+        $net_fraction_discount = 0.0;
+
         $net_sales = 0.0;
         $net_cash_sales = 0.0;
         $net_card_sales = 0.0;
@@ -162,7 +166,8 @@ class MISReportController extends BaseController
        
         //cash register wise report
         $cashRegister = DB::table('ordersales')
-        ->select('order_number','grand_total','order_date', 'payment_method', 'discount','reward_discount','cash_pay', 'card_pay', 'mobile_banking_pay')
+        ->select('order_number','grand_total','order_date', 'payment_method', 'discount','reward_discount', 'card_discount', 'gpstar_discount', 'fraction_discount',
+        'cash_pay', 'card_pay', 'mobile_banking_pay')
         ->whereRaw('order_tableNo is NULL')
         ->whereDate('created_at', '>=', $start_date)
         ->whereDate('created_at', '<=', $end_date)
@@ -173,6 +178,9 @@ class MISReportController extends BaseController
         foreach($cashRegister as $cash){
             $net_ref_discount += $cash->discount;
             $net_points_discount += $cash->reward_discount;
+            $net_card_discount += $cash->card_discount;
+            $net_gpstar_discount += $cash->gpstar_discount;
+            $net_fraction_discount += $cash->fraction_discount;
             $net_sales += $cash->grand_total;
             $net_cash_sales += $cash->cash_pay;
             $net_card_sales += $cash->card_pay;
@@ -187,6 +195,9 @@ class MISReportController extends BaseController
             'end_date'  => $end_date,
             'net_ref_discount' => $net_ref_discount,
             'net_points_discount' => $net_points_discount,
+            'net_card_discount' => $net_card_discount,
+            'net_gpstar_discount' => $net_gpstar_discount,
+            'net_fraction_discount' => $net_fraction_discount,
             'net_sales' => $net_sales,
             'net_cash_sales' => $net_cash_sales,
             'net_card_sales' => $net_card_sales,
@@ -199,6 +210,9 @@ class MISReportController extends BaseController
         
         $net_ref_discount = 0.0;
         $net_points_discount = 0.0;
+        $net_card_discount = 0.0;
+        $net_gpstar_discount = 0.0;
+        $net_fraction_discount = 0.0;
         $net_sales = 0.0;
         $net_cash_sales = 0.0;
         $net_card_sales = 0.0;
@@ -206,7 +220,8 @@ class MISReportController extends BaseController
        
         //cash register wise report
         $cash_register = DB::table('ordersales')
-        ->select('order_number','grand_total','order_date', 'payment_method', 'discount','reward_discount','cash_pay', 'card_pay', 'mobile_banking_pay')
+        ->select('order_number','grand_total','order_date', 'payment_method', 'discount','reward_discount','card_discount', 'gpstar_discount', 'fraction_discount',
+        'cash_pay', 'card_pay', 'mobile_banking_pay')
         ->whereRaw('order_tableNo is NULL')
         ->whereDate('created_at', '>=', $start_date)
         ->whereDate('created_at', '<=', $end_date)
@@ -217,6 +232,9 @@ class MISReportController extends BaseController
         foreach($cash_register as $cash){
             $net_ref_discount += $cash->discount;
             $net_points_discount += $cash->reward_discount;
+            $net_card_discount += $cash->card_discount;
+            $net_gpstar_discount += $cash->gpstar_discount;
+            $net_fraction_discount += $cash->fraction_discount;
             $net_sales += $cash->grand_total;
             $net_cash_sales += $cash->cash_pay;
             $net_card_sales += $cash->card_pay;
@@ -224,9 +242,175 @@ class MISReportController extends BaseController
         }
 
         $pdf = PDF::loadView('admin.report.mis.pdf.pdfCashRegister', compact('cash_register', 'start_date', 'end_date', 
-        'net_ref_discount', 'net_points_discount', 'net_sales', 'net_cash_sales', 'net_card_sales', 'net_mobile_sales'))
+        'net_ref_discount', 'net_points_discount', 'net_card_discount', 'net_gpstar_discount', 'net_fraction_discount',
+         'net_sales', 'net_cash_sales', 'net_card_sales', 'net_mobile_sales'))
         ->setPaper('a4', 'potrait');
         return $pdf->stream('pdfCashRegister.pdf');
+    }
+
+    public function digitalPayments(){
+        // Attaching pagetitle and subtitle to view.
+        view()->share(['pageTitle' => 'MIS Report', 'subTitle' => 'Digital Payment Details (Card, Mobile Banking)' ]);        
+        return view('admin.report.mis.digitalPayments.digitalpayment');
+    }
+
+    public function getdigitalPayments(Request $request){
+
+        //converting date format from m-d-Y to Y-m-d as database stroes date in 'Y-m-d' format
+        $start_date = Carbon::createFromFormat('d-m-Y', $request->start_date)->format('Y-m-d');
+        $end_date = Carbon::createFromFormat('d-m-Y', $request->end_date)->format('Y-m-d');
+
+        // digital payments: card payment details
+        if('card'== $request->digitalPayOption){ 
+            $card_sales = DB::table('ordersalepayments')                          
+                ->select(DB::raw('bank_name, SUM(store_paidamount) as card_paid, SUM(card_discount) as card_discount')) 
+                ->where('payment_method', 'card')
+                ->whereDate('created_at', '>=', $start_date)                
+                ->whereDate('created_at', '<=', $end_date)                
+                ->groupBy('bank_name')->get();
+
+            // Attaching pagetitle and subtitle to view.
+            view()->share(['pageTitle' => 'MIS Report', 'subTitle' => 'Digital Payment Details (Card, Mobile Banking)' ]);
+            return view('admin.report.mis.digitalPayments.digitalpaymentcard')->with([
+                'card_sales' => $card_sales,
+                'start_date' => $start_date,
+                'end_date'  => $end_date,              
+                'card'=> 1, // card payment true
+            ]);
+          
+           
+        }else{ // digital payments: Mobile payment details
+
+            $mobile_sales = DB::table('ordersalepayments')                          
+                ->select(DB::raw('bank_name, SUM(store_paidamount) as mobile_paid, SUM(mobile_discount) as mobile_discount')) 
+                ->where('payment_method', 'mobile')
+                ->whereDate('created_at', '>=', $start_date)                
+                ->whereDate('created_at', '<=', $end_date)                
+                ->groupBy('bank_name')->get();
+
+            // Attaching pagetitle and subtitle to view.
+            view()->share(['pageTitle' => 'MIS Report', 'subTitle' => 'Digital Payment Details (Card, Mobile Banking)' ]);
+            return view('admin.report.mis.digitalPayments.digitalpaymentmobile')->with([
+                'mobile_sales' => $mobile_sales,
+                'start_date' => $start_date,
+                'end_date'  => $end_date,              
+                'mobile'=> 1, // mobile payment true
+            ]);
+            
+        }
+    }
+
+    public function pdfgetDigitalPayment($start_date, $end_date, $option){       
+        
+        if('card'== $option){ // card payments details report            
+            $card_sales = DB::table('ordersalepayments')                          
+                ->select(DB::raw('bank_name, SUM(store_paidamount) as card_paid, SUM(card_discount) as card_discount')) 
+                ->where('payment_method', 'card')
+                ->whereDate('created_at', '>=', $start_date)                
+                ->whereDate('created_at', '<=', $end_date)                
+                ->groupBy('bank_name')->get();
+
+            $pdf = PDF::loadView('admin.report.mis.pdf.pdfdigitalcardpayment', compact('card_sales', 'start_date', 'end_date'))->setPaper('a4', 'potrait');
+            return $pdf->stream('pdfdigitalcardpayment.pdf');
+
+        }else{ // mobile payments details report
+
+            $mobile_sales = DB::table('ordersalepayments')                          
+            ->select(DB::raw('bank_name, SUM(store_paidamount) as mobile_paid, SUM(mobile_discount) as mobile_discount')) 
+            ->where('payment_method', 'mobile')
+            ->whereDate('created_at', '>=', $start_date)                
+            ->whereDate('created_at', '<=', $end_date)                
+            ->groupBy('bank_name')->get();
+
+            $pdf = PDF::loadView('admin.report.mis.pdf.pdfdigitalmobilepayment', compact('mobile_sales', 'start_date', 'end_date'))->setPaper('a4', 'potrait');
+            return $pdf->stream('pdfdigitalmobilepayment.pdf');
+        }
+    }
+
+    public function ingredientPurchase(){
+        // Attaching pagetitle and subtitle to view.
+        view()->share(['pageTitle' => 'MIS Report', 'subTitle' => 'Ingredient Purchase Details']);        
+        return view('admin.report.mis.purchase.ingredient');
+    }
+
+    public function getingredientPurchase(Request $request){
+
+        //converting date format from m-d-Y to Y-m-d as database stroes date in 'Y-m-d' format
+        $start_date = Carbon::createFromFormat('d-m-Y', $request->start_date)->format('Y-m-d');
+        $end_date = Carbon::createFromFormat('d-m-Y', $request->end_date)->format('Y-m-d');
+       
+        //Ingredient purchase details report
+        $ingredient_purchase = DB::table('ingredients')
+                ->join('ingredient_purchases', 'ingredient_purchases.ingredient_id', '=', 'ingredients.id')            
+                ->select('typeingredient_id', 'ingredients.name', 'unit', 'price', DB::raw('SUM(quantity) as qty'))                
+                ->whereDate('ingredient_purchases.created_at', '>=', $start_date)
+                ->whereDate('ingredient_purchases.created_at', '<=', $end_date)                
+                ->groupBy('typeingredient_id','price', 'quantity', 'ingredients.name', 'unit')->get();
+       
+        // Attaching pagetitle and subtitle to view.
+        view()->share(['pageTitle' => 'MIS Report', 'subTitle' => 'Ingredient Purchase Details' ]);
+        return view('admin.report.mis.purchase.ingredientDetail')->with([
+            'ingredient_purchase' => $ingredient_purchase,
+            'start_date' => $start_date,
+            'end_date'  => $end_date,
+        ]);
+    }
+
+    public function pdfgetingredient($start_date, $end_date){
+        //Ingredient purchase details report
+        $ingredient_purchase = DB::table('ingredients')
+                ->join('ingredient_purchases', 'ingredient_purchases.ingredient_id', '=', 'ingredients.id')            
+                ->select('typeingredient_id', 'ingredients.name', 'unit', 'price', DB::raw('SUM(quantity) as qty'))                
+                ->whereDate('ingredient_purchases.created_at', '>=', $start_date)
+                ->whereDate('ingredient_purchases.created_at', '<=', $end_date)                
+                ->groupBy('typeingredient_id','price', 'quantity', 'ingredients.name', 'unit')->get();
+
+            $pdf = PDF::loadView('admin.report.mis.pdf.pdfingredientpurchase', compact('ingredient_purchase', 'start_date', 'end_date'))->setPaper('a4', 'potrait');
+            return $pdf->stream('pdfingredientpurchase.pdf');
+    }
+
+    public function refDiscount(){
+        // Attaching pagetitle and subtitle to view.
+        view()->share(['pageTitle' => 'MIS Report', 'subTitle' => 'KOT Reference Discount Details']);        
+        return view('admin.report.mis.ref.discount');
+    }
+
+    public function getrefDiscount(Request $request){
+
+        //converting date format from m-d-Y to Y-m-d as database stroes date in 'Y-m-d' format
+        $start_date = Carbon::createFromFormat('d-m-Y', $request->start_date)->format('Y-m-d');
+        $end_date = Carbon::createFromFormat('d-m-Y', $request->end_date)->format('Y-m-d');
+       
+        //KOT Reference Discount details report
+        $ref_orders = DB::table('ordersales')
+                ->select('director_id',  DB::raw('sum(grand_total) as grand_total, sum(discount) as ref_discount, sum(reward_discount) as reward_discount, 
+                sum(card_discount) as card_discount, sum(fraction_discount) as fraction_discount, sum(gpstar_discount) as gpstar_discount'))
+                ->whereNotNull('discount')                
+                ->whereDate('created_at', '>=', $start_date)
+                ->whereDate('created_at', '<=', $end_date)                
+                ->groupBy('director_id')->get();
+               
+        // Attaching pagetitle and subtitle to view.
+        view()->share(['pageTitle' => 'MIS Report', 'subTitle' => 'KOT Reference Discount Details' ]);
+        return view('admin.report.mis.ref.discountDetail')->with([
+            'ref_orders' => $ref_orders,
+            'start_date' => $start_date,
+            'end_date'  => $end_date,
+        ]);
+    }
+
+    public function pdfrefDiscount($start_date, $end_date){
+         //KOT Reference Discount details report
+         $ref_orders = DB::table('ordersales')
+            ->select('director_id',  DB::raw('sum(grand_total) as grand_total, sum(discount) as ref_discount, sum(reward_discount) as reward_discount, 
+            sum(card_discount) as card_discount, sum(fraction_discount) as fraction_discount, sum(gpstar_discount) as gpstar_discount'))
+            ->whereNotNull('discount')                
+            ->whereDate('created_at', '>=', $start_date)
+            ->whereDate('created_at', '<=', $end_date)                
+            ->groupBy('director_id')->get();
+
+            $pdf = PDF::loadView('admin.report.mis.pdf.pdfrefDiscount', compact('ref_orders', 'start_date', 'end_date'))->setPaper('a4', 'potrait');
+            return $pdf->stream('pdfrefDiscount.pdf');
     }
 
     public function customerSales(){
@@ -276,7 +460,7 @@ class MISReportController extends BaseController
 
        //customer wise sales report
        $customerReceipt = DB::table('ordersales')
-       ->select('order_number','grand_total', 'discount','reward_discount')
+       ->select('order_number','grand_total', 'discount','reward_discount','card_discount', 'gpstar_discount')
        ->where('client_id', $request->customer)
        ->whereDate('created_at', '>=', $start_date)
        ->whereDate('created_at', '<=', $end_date)
@@ -303,7 +487,7 @@ class MISReportController extends BaseController
 
         //customer wise sales report
         $customer_receipts = DB::table('ordersales')
-        ->select('order_number','grand_total', 'discount','reward_discount')
+        ->select('order_number','grand_total', 'discount','reward_discount','card_discount', 'gpstar_discount')
         ->where('client_id', $clientId)
         ->whereDate('created_at', '>=', $start_date)
         ->whereDate('created_at', '<=', $end_date)

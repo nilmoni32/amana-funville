@@ -337,7 +337,13 @@ class SalesController extends BaseController
         //calculating cash_pay, card_pay & mobile_banking_pay for the current order.       
         $cash_pay = 0; $card_pay = 0; $mobile_banking_pay = 0;
         //Convert JSON String to PHP Array     
-        $order_payments = json_decode($request->payment_details, true);
+        $order_payments = json_decode($request->payment_details, true);        
+        if(empty($order_payments) || empty($order_payments[0]['customerPaid'])) {
+            // setting flash message using trait
+            $this->setFlashMessage("Order payments can't be null", 'error');    
+            $this->showFlashMessages();
+            return redirect()->back(); 
+        }
 
         foreach($order_payments as $single_payment_details){
             //creating a new instance of ordersalepayments table          
@@ -498,35 +504,35 @@ class SalesController extends BaseController
 
         
         //sending email discount notification to the authority [Director, Asst. Director, etc].
-        if($order->director_id){
-            $referee = Director::where('id', $order->director_id)->first();
+        // if($order->director_id){
+        //     $referee = Director::where('id', $order->director_id)->first();
             
-            //creating reference array.
-            $ref_data = array( 
-                'date' => $order->order_date, 
-                'order_no' => $order->order_number, 
-                'name' => $referee->name, 
-                'type' => $referee->ref_type, 
-                'discount' => $order->discount,
-                'discount_limit' => $referee->discount_upper_limit,
-            );
+        //     //creating reference array.
+        //     $ref_data = array( 
+        //         'date' => $order->order_date, 
+        //         'order_no' => $order->order_number, 
+        //         'name' => $referee->name, 
+        //         'type' => $referee->ref_type, 
+        //         'discount' => $order->discount,
+        //         'discount_limit' => $referee->discount_upper_limit,
+        //     );
             
-            //getting backend email recipients
-            $email_recipients = explode(',', str_replace(' ', '', config('settings.ref_email_recipient'))); 
-            $cc=[];
-            for($i=0; $i< count($email_recipients); $i++){
-                //elementing the empty array data fields
-                if($email_recipients[$i]){
-                    $cc[] = $email_recipients[$i]; 
-                }
-            }
+        //     //getting backend email recipients
+        //     $email_recipients = explode(',', str_replace(' ', '', config('settings.ref_email_recipient'))); 
+        //     $cc=[];
+        //     for($i=0; $i< count($email_recipients); $i++){
+        //         //elementing the empty array data fields
+        //         if($email_recipients[$i]){
+        //             $cc[] = $email_recipients[$i]; 
+        //         }
+        //     }
 
-            //sending mail to mailable class ReferenceAuthority to update about reference details.
-            \Mail::to(config('settings.default_email_address'))->cc($cc)->send(new ReferenceAuthority($ref_data));
+        //     //sending mail to mailable class ReferenceAuthority to update about reference details.
+        //     \Mail::to(config('settings.default_email_address'))->cc($cc)->send(new ReferenceAuthority($ref_data));
             
-            //sending sms
-            //SendCode::sendDiscountAmount($reference_mobile, $order_no, $reference_discount_limit, $reference_discount);
-        }
+        //     //sending sms
+        //     //SendCode::sendDiscountAmount($reference_mobile, $order_no, $reference_discount_limit, $reference_discount);
+        // }
         /**
          * Avoided due to slow the payment process.
          */

@@ -14,8 +14,8 @@
     <div class="pull-right">
         <a href="{{ route('admin.reports.pdfgetCashRegister', [$start_date, $end_date]) }}" class="btn btn-sm btn-dark"
             target="_blank"><i class="fa fa-file-pdf-o" style="font-size:16px;"></i></a>
-        <a href="#" class="btn btn-sm btn-info"><i
-                class="fa fa-file-excel-o" style="font-size:17px;"></i></a>
+        {{-- <a href="#" class="btn btn-sm btn-info"><i
+                class="fa fa-file-excel-o" style="font-size:17px;"></i></a> --}}
     </div>
 </div>
 <div class="row">
@@ -46,44 +46,74 @@
                         </form>
                     </div>
                 </div>
-                <div class="row mx-1 py-2 border border-bottom-0"> 
-                    <div class="col-12">
-                        <div class="row pt-3 h6">
-                            <div class="col-6 text-right">Net Reference Discount  :</div>
-                            <div class="col-6 pl-0 text-left"><span>{{ round($net_ref_discount,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                <div class="row mx-1 py-2 border border-bottom-0">
+                    <div class="offset-md-2"></div>                    
+                    <div class="col-md-4 col-12 py-3">
+                        <div class="col-12">
+                            <div class="row h5">
+                                <div class="col-7 text-right">Net Total Sales  :</div>
+                                <div class="col-5 pl-0 text-left"><span>{{ round($net_sales,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                            </div>
                         </div>
-                    </div>                    
-                    <div class="col-12">
-                        <div class="row pt-1 h6">
-                            <div class="col-6 text-right">Net Customer Points Discount  :</div>
-                            <div class="col-6 pl-0 text-left"><span>{{ round($net_points_discount,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                        <div class="col-12">
+                            <div class="row pt-1 h6">
+                                <div class="col-7 text-right">Net Cash Sales  :</div>
+                                <div class="col-5 pl-0 text-left"><span>{{ round($net_cash_sales,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="row pt-1 h6">
-                            <div class="col-6 text-right">Net Total Sales  :</div>
-                            <div class="col-6 pl-0 text-left"><span>{{ round($net_sales,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                        <div class="col-12">
+                            <div class="row pt-1 h6">
+                                <div class="col-7 text-right">Net Card Sales  :</div>
+                                <div class="col-5 pl-0 text-left"><span>{{ round($net_card_sales,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="row pt-1 h6">
-                            <div class="col-6 text-right">Net Cash Sales  :</div>
-                            <div class="col-6 pl-0 text-left"><span>{{ round($net_cash_sales,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                        <div class="col-12">
+                            <div class="row pt-1 pb-2 h6">
+                                <div class="col-7 text-right">Net Mobile Bank Sales  :</div>
+                                <div class="col-5 pl-0 text-left"><span>{{ round($net_mobile_sales,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="row pt-1 h6">
-                            <div class="col-6 text-right">Net Card Sales  :</div>
-                            <div class="col-6 pl-0 text-left"><span>{{ round($net_card_sales,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                    </div>                     
+                    <div class="col-md-4 col-12 py-3">
+                        <div class="col-12">
+                            <div class="row h5">
+                                <div class="col-8 text-right">Net Total Discount  :</div>
+                                <div class="col-4 pl-0 text-left"><span>{{ round(($net_ref_discount + $net_points_discount
+                                + $net_card_discount + $net_gpstar_discount + $net_fraction_discount) ,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="row pt-1 pb-2 h6">
-                            <div class="col-6 text-right">Net Mobile Bank Sales  :</div>
-                            <div class="col-6 pl-0 text-left"><span>{{ round($net_mobile_sales,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                        <div class="col-12">
+                            <div class="row pt-1 h6">
+                                <div class="col-8 text-right">Net Reference Discount  :</div>
+                                <div class="col-4 pl-0 text-left"><span>{{ round($net_ref_discount,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                            </div>
+                        </div>                    
+                        <div class="col-12">
+                            <div class="row pt-1 h6">
+                                <div class="col-8 text-right">Net Customer Points Discount  :</div>
+                                <div class="col-4 pl-0 text-left"><span>{{ round($net_points_discount,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                            </div>
                         </div>
-                    </div>
-                    
+                        <div class="col-12">
+                            <div class="row pt-1 h6">
+                                <div class="col-8 text-right">Net Card Discount  :</div>
+                                <div class="col-4 pl-0 text-left"><span>{{ round($net_card_discount,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="row pt-1 h6">
+                                <div class="col-8 text-right">Net GP Star Discount  :</div>
+                                <div class="col-4 pl-0 text-left"><span>{{ round($net_gpstar_discount,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="row pt-1 h6">
+                                <div class="col-8 text-right">Net Fraction Discount  :</div>
+                                <div class="col-4 pl-0 text-left"><span>{{ round($net_fraction_discount,2) }} {{ config('settings.currency_symbol') }}</span></div>                        
+                            </div>
+                        </div>                            
+                    </div> 
+                    <div class="offset-md-2"></div>                   
                 </div>
                 @if($cash_register->count() > 0)
                 <div class="row mx-1 border p-3">              
@@ -95,12 +125,12 @@
                                 <th class="text-center"> Time</th>                                                     
                                 <th class="text-center"> Payment Method </th>
                                 <th class="text-center"> Received Amount </th> 
-                                <th class="text-center"> Reference Discount </th>
-                                <th class="text-center"> Points Discount </th>  
+                                <th class="text-center"> Total Discount </th>                                
                             </tr>
                         </thead>                        
                         <tbody>
                             @foreach($cash_register as $cash)
+                            @php $total_discount = $cash->discount + $cash->reward_discount + $cash->card_discount + $cash->gpstar_discount + $cash->fraction_discount;  @endphp
                             <tr>
                                 <td class="text-center">{{ $loop->index + 1  }}</td>
                                 <td class="text-center">{{ $cash->order_number }}</td>
@@ -109,12 +139,9 @@
                                 </td>
                                 <td class="text-center">{{ $cash->payment_method }}</td>
                                 <td class="text-center">{{ round($cash->grand_total,2) }} {{ config('settings.currency_symbol') }}</td>
-                                <td class="text-center">{{ round( $cash->discount,2) }}
+                                <td class="text-center">{{ round($total_discount,2) }}
                                     {{ config('settings.currency_symbol') }}
-                                </td>
-                                <td class="text-center">{{ round( $cash->reward_discount,2) }}
-                                    {{ config('settings.currency_symbol') }}
-                                </td>
+                                </td>                                
                             </tr>
                             @endforeach
                         </tbody>

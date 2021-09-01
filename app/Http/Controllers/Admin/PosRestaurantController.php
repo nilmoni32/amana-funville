@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Category;
-use App\Models\Product;
-use App\Models\Sale;
-use App\Models\Ordersale;
 use Auth;
-use App\Traits\FlashMessages; 
-use App\Models\Recipe;
+use App\Models\Sale;
 use App\Models\Unit;
+use App\Models\Recipe;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\Ordersale;
+use App\Models\Ingredient;
+use Illuminate\Http\Request;
+use App\Traits\FlashMessages; 
+use App\Http\Controllers\Controller;
 
 class PosRestaurantController extends Controller
 {
@@ -61,13 +62,22 @@ class PosRestaurantController extends Controller
         }else{
             $sale_price = $product->price;
         }
-
         // checking the food is added to the recipe
         if(!Recipe::where('product_id', $request->foodId)->first()){
             return json_encode([ 'status' => 'info', 'message' => "Please add '". $request->foodName ."' food recipe before you sale." ]);           
-         }// redipe is added but recipe ingredients is not added for the food
+         }// recipe is added but recipe ingredients is not added for the food
          elseif(!Recipe::where('product_id', $request->foodId)->first()->recipeingredients->count()){          
              return json_encode([ 'status' => 'info', 'message' => "Please add '". $request->foodName ."' food recipe ingredients before you  sale." ]);
+         }
+         else{
+            //when stock ingredient total quantity is zero or negative after sales.
+            foreach(Recipe::where('product_id', $request->foodId)->first()->recipeingredients as $ingredient){
+               if(Ingredient::where('id', $ingredient->ingredient_id)->first()->total_quantity <= 0){
+                    return json_encode([ 'status' => 'info', 'message' => "Please add purchase record for ingredient '". 
+                    Ingredient::where('id', $ingredient->ingredient_id)->first()->name ."' of food '". $request->foodName ."' before sale." ]);
+                }
+            }
+            
          }
 
         //checking the product whether it is already added to the sale cart, if so we sent the message this product is already added to the cart.

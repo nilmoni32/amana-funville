@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Product;
-use App\Models\Complimentarysale;
-use App\Models\ComplimentaryOrdersale;
-use App\Traits\FlashMessages; 
-use Carbon\Carbon;
-use DateTime;
 use Auth;
-use App\Models\Recipe;
+use DateTime;
+use Carbon\Carbon;
 use App\Models\Unit;
+use App\Models\Recipe;
+use App\Models\Product;
+use App\Models\Ingredient;
+use Illuminate\Http\Request;
+use App\Traits\FlashMessages; 
+use App\Models\Complimentarysale;
+use App\Http\Controllers\Controller;
+use App\Models\ComplimentaryOrdersale;
 
 class ComplimentarySaleController extends Controller
 {
@@ -70,6 +71,17 @@ class ComplimentarySaleController extends Controller
          elseif(!Recipe::where('product_id', $request->foodId)->first()->recipeingredients->count()){          
              return json_encode([ 'status' => 'info', 'message' => "Please add '". $request->foodName ."' food recipe ingredients before you  sale." ]);
          }
+         else{
+            //when stock ingredient total quantity is zero or negative after sales.
+            foreach(Recipe::where('product_id', $request->foodId)->first()->recipeingredients as $ingredient){
+               if(Ingredient::where('id', $ingredient->ingredient_id)->first()->total_quantity <= 0){
+                    return json_encode([ 'status' => 'info', 'message' => "Please add purchase record for ingredient '". 
+                    Ingredient::where('id', $ingredient->ingredient_id)->first()->name ."' of food '". $request->foodName ."' before sale." ]);
+                }
+            }
+            
+         }
+         
 
         //checking the product whether it is already added to the sale cart, if so we sent the message this product is already added to the cart.
         $sale = Complimentarysale::where('admin_id', Auth::id())

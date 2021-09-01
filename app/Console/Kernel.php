@@ -33,6 +33,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('sitemap:generate')->dailyAt('2:00'); 
         //for ingredient scheduler
         $schedule->command('daily:ingredientUpdate')->dailyAt('0:15');
+        //for reference discount
+        $schedule->command('KOT:refdiscount')->dailyAt('6:00');
     }
 
     /**

@@ -101,7 +101,7 @@
                     <div class="col-md-4 mt-2">
                         <!--pos printing-->
 
-                        <div class="border px-4 rounded pb-4 mb-4" style="border-color:rgb(182, 182, 182);">
+                        {{-- <div class="border px-4 rounded pb-4 mb-4" style="border-color:rgb(182, 182, 182);">
                             <h4 class="text-center mt-3 mb-4">Restaurant Print Receipt</h4>
                             <div class="text-center">
                                 <label class="checkbox">
@@ -121,7 +121,7 @@
                                     style="display:block; width:100%;" {{ $order_id ? '' : 'disabled' }}>Print
                                     Receipt</button>
                             </div>
-                        </div>
+                        </div>                                                               --}}
 
                         <!--end of pos print using javascript-->
                         <form method="POST" action="{{ route('admin.restaurant.sales.orderplace') }}">

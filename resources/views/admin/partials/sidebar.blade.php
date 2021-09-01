@@ -83,7 +83,13 @@
             Route::currentRouteName() == 'admin.reports.getcomplimentarySales' ||
             Route::currentRouteName() == 'admin.reports.bonusPoint' ||
             Route::currentRouteName() == 'admin.reports.stock' ||
-            Route::currentRouteName() == 'admin.reports.getstock'){
+            Route::currentRouteName() == 'admin.reports.getstock' ||
+            Route::currentRouteName() == 'admin.reports.digitalPayments' ||
+            Route::currentRouteName() == 'admin.reports.getdigitalPayments' ||
+            Route::currentRouteName() == 'admin.reports.ingredientPurchase' ||
+            Route::currentRouteName() == 'admin.reports.getingredientPurchase' ||
+            Route::currentRouteName() == 'admin.reports.refDiscount' ||
+            Route::currentRouteName() == 'admin.reports.getrefDiscount'){
     $flag = 1;
     }else{
     $flag = 0;
@@ -112,6 +118,24 @@
           Route::currentRouteName() == 'admin.reports.getCashRegister' ? 'active' : '' }}"
             href="{{ route('admin.reports.cashRegister') }}">
             <i class="icon fa fa-dot-circle-o"></i>Cash Register Wise Sales</a>
+        </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.reports.digitalPayments' || 
+            Route::currentRouteName() == 'admin.reports.getdigitalPayments' ? 'active' : '' }}" 
+            href="{{ route('admin.reports.digitalPayments') }}">
+            <i class="icon fa fa-dot-circle-o"></i>Digital Payment Details</a>
+        </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.reports.ingredientPurchase' || 
+            Route::currentRouteName() == 'admin.reports.getingredientPurchase' ? 'active' : '' }}" 
+            href="{{ route('admin.reports.ingredientPurchase') }}">
+            <i class="icon fa fa-dot-circle-o"></i>Ingredient Purchase Details</a>
+        </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.reports.refDiscount' || 
+            Route::currentRouteName() == 'admin.reports.getrefDiscount' ? 'active' : '' }}" 
+            href="{{ route('admin.reports.refDiscount') }}">
+            <i class="icon fa fa-dot-circle-o"></i>Reference Discount Details</a>
         </li>
         <li>
           <a class="treeview-item {{ Route::currentRouteName() == 'admin.reports.customerSales' ||
