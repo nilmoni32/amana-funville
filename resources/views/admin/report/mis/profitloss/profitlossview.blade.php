@@ -89,12 +89,12 @@
                                 <td class="text-center">{{ round(($cart->sales + ($cart->sales * (config('settings.tax_percentage')/100))), 2)  }}
                                 {{ config('settings.currency_symbol') }}</td> 
                                 @endif                                 
-                                <td class="text-center">{{ App\Models\Recipe::where('product_id',$cart->product_id)->first()->production_food_cost * $cart->total_qty  }}
+                                <td class="text-center">{{ round($cart->food_cost,2)  }}
                                     {{ config('settings.currency_symbol') }}
-                                    @php $total_costSale += App\Models\Recipe::where('product_id',$cart->product_id)->first()->production_food_cost * $cart->total_qty; @endphp
+                                    @php $total_costSale += $cart->food_cost; @endphp
                                 </td>
                                 <td class="text-center">
-                                    {{ round(($cart->sales - (App\Models\Recipe::where('product_id',$cart->product_id)->first()->production_food_cost * $cart->total_qty)),2) }}
+                                    {{ round(($cart->sales - $cart->food_cost),2) }}
                                     {{ config('settings.currency_symbol') }}
                                 </td>
                             </tr>

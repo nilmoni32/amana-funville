@@ -243,11 +243,12 @@
                     @foreach($ingredient_purchase as $ingredient)                           
                     <tr>
                         <td class="text-center">{{ $loop->index + 1  }}</td>
-                        <td class="text-center">{{ $ingredient->name }}</td>
+                        <td class="text-center">{{ App\Models\Ingredient::find($ingredient->ingredient_id)->name}}</td>
                         <td class="text-center">
-                           {{ App\Models\Typeingredient::find($ingredient->typeingredient_id)->name}}
+                            {{ App\Models\Typeingredient::find(App\Models\Ingredient::find($ingredient->ingredient_id)->typeingredient_id)->name}}
                         </td>
-                        <td class="text-center">{{  round($ingredient->qty,0) }} {{ $ingredient->unit }}</td>
+                        <td class="text-center">{{ $ingredient->unit == 'kg' || $ingredient->unit == 'Kg' || $ingredient->unit == 'liter' ? round($ingredient->qty/1000, 2) : round($ingredient->qty,2)  }}   
+                            {{ App\Models\Ingredient::find($ingredient->ingredient_id)->measurement_unit }}</td>
                         <td class="text-center">{{ round($ingredient->price,2) }} {{ config('settings.currency_symbol') }}</td>                                                            
                     </tr>
                     @endforeach

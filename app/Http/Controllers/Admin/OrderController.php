@@ -113,9 +113,10 @@ class OrderController extends BaseController
         if($request->status == 'cancel' || $order->status == 'delivered'){
 
             //BACKUP of e-commerce cart: Making ecommerce cart backup to cartbackups
-            $ecommCartBackup = [];
+            $ecommCartBackup = [];           
             foreach(Cart::where('order_id',
             $order->id)->get() as $cart){
+                
                 $cart_backup = [
                     'product_id' => $cart->product_id,
                     'user_id' => $cart->user_id,
@@ -126,7 +127,7 @@ class OrderController extends BaseController
                     'has_attribute' => $cart->has_attribute,
                     'unit_price' => $cart->unit_price,
                     'order_cancel' => $cart->order_cancel,
-                    'production_food_cost' => $cart->production_food_cost,
+                    'production_food_cost' => $cart->production_food_cost == NULL ? Recipe::where('product_id',$cart->product_id)->first()->production_food_cost : 0,
                     'created_at' => $cart->created_at,
                     'updated_at' => $cart->updated_at,
                 ];            

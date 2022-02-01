@@ -477,7 +477,7 @@ class SalesController extends BaseController
         }
 
 	//BACKUP of POS sales: Making pos sale backup to Salebackup table 
-        $saleCartBackup = [];
+        $saleCartBackup = [];        
         foreach(Sale::where('ordersale_id',
         $order->id)->get() as $saleCart){
             $cart_backup = [
@@ -487,7 +487,7 @@ class SalesController extends BaseController
                 'product_name' => $saleCart->product_name,
                 'product_quantity' => $saleCart->product_quantity,
                 'unit_price' => $saleCart->unit_price,
-                'production_food_cost' => $saleCart->production_food_cost,
+                'production_food_cost' => $saleCart->production_food_cost == NULL ? Recipe::where('product_id',$saleCart->product_id)->first()->production_food_cost : 0,
                 'order_cancel' => $saleCart->order_cancel,
                 'order_tbl_no' => $saleCart->order_tbl_no,
                 'created_at' => $saleCart->created_at,

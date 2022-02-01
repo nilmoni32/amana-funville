@@ -28,11 +28,11 @@ class MISReportController extends BaseController
         // profit-loss calculation
         if('productwise'== $request->profitLossOption){ // productwise profit-loss report
             $time_sales = DB::table('salebackups')
-                ->select('product_id', 'product_name', DB::raw('SUM(product_quantity) as total_qty, unit_price * SUM(product_quantity) as sales')) 
+                ->select('product_id', 'product_name', DB::raw('SUM(product_quantity) as total_qty, unit_price * SUM(product_quantity) as sales, production_food_cost * SUM(product_quantity) as food_cost')) 
                 ->whereRaw('order_cancel = 0')
                 ->whereDate('created_at', '>=', $start_date)
                 ->whereDate('created_at', '<=', $end_date)
-                ->groupBy('product_id', 'product_name', 'unit_price')               
+                ->groupBy('product_id', 'product_name', 'unit_price', 'production_food_cost')               
                 ->get();
 
             // Attaching pagetitle and subtitle to view.
@@ -47,13 +47,12 @@ class MISReportController extends BaseController
                 'productwise'=> 1, // productwise true
             ]);
         }else{ // summary profit-loss report 
-            $time_sales = DB::table('salebackups')
-                ->join('recipes', 'salebackups.product_id', '=', 'recipes.product_id')            
-                ->select(DB::raw('unit_price * SUM(product_quantity) as sales, recipes.production_food_cost*SUM(product_quantity) as salesCost')) 
+            $time_sales = DB::table('salebackups')                        
+                ->select(DB::raw('unit_price * SUM(product_quantity) as sales, production_food_cost * SUM(product_quantity) as salesCost')) 
                 ->whereRaw('order_cancel = 0')
                 ->whereDate('salebackups.created_at', '>=', $start_date)
                 ->whereDate('salebackups.created_at', '<=', $end_date)                
-                ->groupBy('unit_price', 'recipes.production_food_cost')->get();
+                ->groupBy('unit_price', 'production_food_cost')->get();
 
             // Attaching pagetitle and subtitle to view.
             view()->share(['pageTitle' => 'MIS Report', 'subTitle' => 'Profit and Loss Report' ]);
@@ -112,13 +111,12 @@ class MISReportController extends BaseController
         $complimentary_sales_cost = $this->Complimentary($start_date, $end_date);
         
         if('product'== $option){ // productwise profit-loss report
-            $time_sales = DB::table('salebackups')
-                ->join('recipes', 'salebackups.product_id', '=', 'recipes.product_id')
-                ->select('product_name', DB::raw('SUM(product_quantity) as qty, unit_price * SUM(product_quantity) as sales, recipes.production_food_cost*SUM(product_quantity) as salesCost')) 
+            $time_sales = DB::table('salebackups')                
+                ->select('product_name', DB::raw('SUM(product_quantity) as qty, unit_price * SUM(product_quantity) as sales, production_food_cost * SUM(product_quantity) as salesCost')) 
                 ->whereRaw('order_cancel = 0')
                 ->whereDate('salebackups.created_at', '>=', $start_date)
                 ->whereDate('salebackups.created_at', '<=', $end_date)
-                ->groupBy('recipes.production_food_cost', 'product_name', 'unit_price')               
+                ->groupBy('production_food_cost', 'product_name', 'unit_price')               
                 ->get();
 
             $pdf = PDF::loadView('admin.report.mis.pdf.pdfproductprofitloss', compact('time_sales', 'start_date', 'end_date','discount','complimentary_sales_cost'))
@@ -126,13 +124,12 @@ class MISReportController extends BaseController
             return $pdf->stream('pdfproductprofitloss.pdf');
 
         }else{ // summarywise profit-loss report
-            $time_sales = DB::table('salebackups')
-                ->join('recipes', 'salebackups.product_id', '=', 'recipes.product_id')            
-                ->select(DB::raw('unit_price * SUM(product_quantity) as sales, recipes.production_food_cost*SUM(product_quantity) as salesCost')) 
+            $time_sales = DB::table('salebackups')                           
+                ->select(DB::raw('unit_price * SUM(product_quantity) as sales, production_food_cost*SUM(product_quantity) as salesCost')) 
                 ->whereRaw('order_cancel = 0')
                 ->whereDate('salebackups.created_at', '>=', $start_date)
                 ->whereDate('salebackups.created_at', '<=', $end_date)                
-                ->groupBy('unit_price', 'recipes.production_food_cost')->get();
+                ->groupBy('unit_price', 'production_food_cost')->get();
             
             $pdf = PDF::loadView('admin.report.mis.pdf.pdfsummaryprofitloss', compact('time_sales', 'start_date', 'end_date','discount','complimentary_sales_cost'))
             ->setPaper('a4', 'potrait');
@@ -340,13 +337,20 @@ class MISReportController extends BaseController
         $end_date = Carbon::createFromFormat('d-m-Y', $request->end_date)->format('Y-m-d');
        
         //Ingredient purchase details report
-        $ingredient_purchase = DB::table('ingredients')
-                ->join('ingredient_purchases', 'ingredient_purchases.ingredient_id', '=', 'ingredients.id')            
-                ->select('typeingredient_id', 'ingredients.name', 'unit', 'price', DB::raw('SUM(quantity) as qty'))                
-                ->whereDate('ingredient_purchases.created_at', '>=', $start_date)
-                ->whereDate('ingredient_purchases.created_at', '<=', $end_date)                
-                ->groupBy('typeingredient_id','price', 'quantity', 'ingredients.name', 'unit')->get();
-       
+        $ingredient_purchase = DB::table('ingredient_purchases')                           
+                ->select('ingredient_id', 'unit', DB::raw('SUM(price) as price,  
+                 SUM(
+                     CASE unit 
+                        WHEN "kg" THEN  quantity * 1000 
+                        WHEN "liter" THEN  quantity * 1000
+                        WHEN "gm" THEN  quantity 
+                        WHEN "pcs" THEN  quantity 
+                        WHEN "ml" THEN  quantity                        
+                     END                     
+                    ) as qty'))                
+                ->whereDate('created_at', '>=', $start_date)
+                ->whereDate('created_at', '<=', $end_date)                
+                ->groupBy('ingredient_id','unit')->get();        
         // Attaching pagetitle and subtitle to view.
         view()->share(['pageTitle' => 'MIS Report', 'subTitle' => 'Ingredient Purchase Details' ]);
         return view('admin.report.mis.purchase.ingredientDetail')->with([
@@ -358,12 +362,20 @@ class MISReportController extends BaseController
 
     public function pdfgetingredient($start_date, $end_date){
         //Ingredient purchase details report
-        $ingredient_purchase = DB::table('ingredients')
-                ->join('ingredient_purchases', 'ingredient_purchases.ingredient_id', '=', 'ingredients.id')            
-                ->select('typeingredient_id', 'ingredients.name', 'unit', 'price', DB::raw('SUM(quantity) as qty'))                
-                ->whereDate('ingredient_purchases.created_at', '>=', $start_date)
-                ->whereDate('ingredient_purchases.created_at', '<=', $end_date)                
-                ->groupBy('typeingredient_id','price', 'quantity', 'ingredients.name', 'unit')->get();
+        $ingredient_purchase = DB::table('ingredient_purchases')                           
+                ->select('ingredient_id', 'unit', DB::raw('SUM(price) as price,  
+                 SUM(
+                     CASE unit 
+                        WHEN "kg" THEN  quantity * 1000 
+                        WHEN "liter" THEN  quantity * 1000
+                        WHEN "gm" THEN  quantity 
+                        WHEN "pcs" THEN  quantity 
+                        WHEN "ml" THEN  quantity                        
+                     END                     
+                    ) as qty'))                
+                ->whereDate('created_at', '>=', $start_date)
+                ->whereDate('created_at', '<=', $end_date)                
+                ->groupBy('ingredient_id','unit')->get();  
 
             $pdf = PDF::loadView('admin.report.mis.pdf.pdfingredientpurchase', compact('ingredient_purchase', 'start_date', 'end_date'))->setPaper('a4', 'potrait');
             return $pdf->stream('pdfingredientpurchase.pdf');
@@ -643,23 +655,21 @@ class MISReportController extends BaseController
         $end_date = Carbon::createFromFormat('d-m-Y', $request->end_date)->format('Y-m-d');
              
         //e-commerce profit-loss
-        $ecom_sales = DB::table('cartbackups')
-            ->join('recipes', 'cartbackups.product_id', '=', 'recipes.product_id') 
+        $ecom_sales = DB::table('cartbackups')           
             ->join('orders', 'orders.id', '=', 'cartbackups.order_id')            
-            ->select(DB::raw('unit_price * SUM(product_quantity) as sales, recipes.production_food_cost*SUM(product_quantity) as salesCost')) 
+            ->select(DB::raw('unit_price * SUM(product_quantity) as sales, production_food_cost*SUM(product_quantity) as salesCost')) 
             ->where('orders.status', 'delivered')
             ->whereDate('cartbackups.created_at', '>=', $start_date)
             ->whereDate('cartbackups.created_at', '<=', $end_date)                
-            ->groupBy('unit_price', 'recipes.production_food_cost')->get();        
+            ->groupBy('unit_price', 'production_food_cost')->get();        
 
         //KOT/MIS profit-loss
-        $kot_sales = DB::table('salebackups')
-            ->join('recipes', 'salebackups.product_id', '=', 'recipes.product_id')            
-            ->select(DB::raw('unit_price * SUM(product_quantity) as sales, recipes.production_food_cost*SUM(product_quantity) as salesCost')) 
+        $kot_sales = DB::table('salebackups')                      
+            ->select(DB::raw('unit_price * SUM(product_quantity) as sales, production_food_cost*SUM(product_quantity) as salesCost')) 
             ->whereRaw('order_cancel = 0')
             ->whereDate('salebackups.created_at', '>=', $start_date)
             ->whereDate('salebackups.created_at', '<=', $end_date)                
-            ->groupBy('unit_price', 'recipes.production_food_cost')->get();
+            ->groupBy('unit_price', 'production_food_cost')->get();
 
         // Attaching pagetitle and subtitle to view.
         view()->share(['pageTitle' => 'MIS Reports', 'subTitle' => 'Combined Profit and Loss Report' ]);
@@ -678,10 +688,9 @@ class MISReportController extends BaseController
     }
 
     //Getting grand total of e-commerce orders
-    public function getGrandTotal($start_date, $end_date){
-
+    public function getGrandTotal($start_date, $end_date){        
         $grandTotal = DB::table('orders')
-        ->select(DB::raw('SUM(grand_total) as total_sales'))
+        ->select(DB::raw('SUM(grand_total-'.config('settings.delivery_charge').') as total_sales'))
         ->where('orders.status', 'delivered')
         ->whereDate('created_at', '>=', $start_date)
         ->whereDate('created_at', '<=', $end_date)
@@ -693,23 +702,21 @@ class MISReportController extends BaseController
     public function pdfcombinedgetprofitloss($start_date, $end_date){
        
         //e-commerce profit-loss
-        $ecom_sales = DB::table('cartbackups')
-            ->join('recipes', 'cartbackups.product_id', '=', 'recipes.product_id') 
+        $ecom_sales = DB::table('cartbackups')           
             ->join('orders', 'orders.id', '=', 'cartbackups.order_id')            
-            ->select(DB::raw('unit_price * SUM(product_quantity) as sales, recipes.production_food_cost*SUM(product_quantity) as salesCost')) 
+            ->select(DB::raw('unit_price * SUM(product_quantity) as sales, production_food_cost*SUM(product_quantity) as salesCost')) 
             ->where('orders.status', 'delivered')
             ->whereDate('cartbackups.created_at', '>=', $start_date)
             ->whereDate('cartbackups.created_at', '<=', $end_date)                
-            ->groupBy('unit_price', 'recipes.production_food_cost')->get();        
+            ->groupBy('unit_price', 'production_food_cost')->get();        
 
         //KOT/MIS profit-loss
-        $kot_sales = DB::table('salebackups')
-            ->join('recipes', 'salebackups.product_id', '=', 'recipes.product_id')            
-            ->select(DB::raw('unit_price * SUM(product_quantity) as sales, recipes.production_food_cost*SUM(product_quantity) as salesCost')) 
+        $kot_sales = DB::table('salebackups')                    
+            ->select(DB::raw('unit_price * SUM(product_quantity) as sales, production_food_cost*SUM(product_quantity) as salesCost')) 
             ->whereRaw('order_cancel = 0')
             ->whereDate('salebackups.created_at', '>=', $start_date)
             ->whereDate('salebackups.created_at', '<=', $end_date)                
-            ->groupBy('unit_price', 'recipes.production_food_cost')->get();
+            ->groupBy('unit_price', 'production_food_cost')->get();
         
         // Getting e-commerce grand totals of total orders of the specified date.
         $ecom_total_sales = $this->getGrandTotal($start_date, $end_date)->total_sales;

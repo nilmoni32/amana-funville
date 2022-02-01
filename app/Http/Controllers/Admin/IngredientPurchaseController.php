@@ -24,7 +24,7 @@ class IngredientPurchaseController extends BaseController
     public function index($id){
         //getting the ingredient        
         $ingredient = Ingredient::find($id);
-        //listing all the purchaes for the current ingredient.       
+        //listing all the purchases for the current ingredient.       
         $purchases =  IngredientPurchase::orderBy('created_at', 'DESC')->where('ingredient_id', $ingredient->id)->take(200)->get(); 
         // Attaching pagetitle and subtitle to view.
         view()->share(['pageTitle' => 'Ingredient Purchase', 'subTitle' => 'Ingredient all purchases list' ]);
@@ -69,7 +69,7 @@ class IngredientPurchaseController extends BaseController
         ]);
       
 
-        //getting the ingredient details       
+        // getting the ingredient details       
         $ingredient = Ingredient::find($request->ingredient_id);
         // Setting ingredient total quantity, total price, per unit cost price 
         $ingredient_total_quantity = $ingredient->total_quantity;
@@ -86,19 +86,26 @@ class IngredientPurchaseController extends BaseController
             $unit = Unit::where('smallest_measurement_unit', $ingredientPurchase->unit)->first();            
             $unit_conversion = $unit->unit_conversion; 
             $ingredient_total_quantity += ($ingredientPurchase->quantity/$unit_conversion); 
-        }  
-
-        //when ingredient total qty is negative i.e more sales results ingredient qty become negative in the stock.
-        if($ingredient->total_quantity < 0){            
-            //now calculating stock ingredient total price.
-            //now calculating stock ingredient total price.
-            $unit = Unit::where('smallest_measurement_unit', $ingredient->smallest_unit)->first();            
-            $unit_convertor = $unit->unit_conversion;
-            // we are considering here the previous stock ingredient avg unit price.
-            $ingredient_total_price = ($ingredient_total_quantity * $unit_convertor) * $ingredient_smallest_unit_price;
-        }else{            
+        } 
+        //when ingredient total qty is negative i.e more sales results ingredient qty become negative in the stock.        
+        if($ingredient->total_quantity < 0){             
+            // calculating ingredient smallest unit price when $ingredient->total_price & $ingredient->total_quantity both are negative.
+            if($ingredient->total_price < 0){
+                if($ingredient->measurement_unit == $ingredientPurchase->unit){ 
+                    $negative_ingredient_total_quantity = $ingredient->total_quantity - $ingredientPurchase->quantity;
+                }else{
+                    $negative_ingredient_total_quantity = $ingredient->total_quantity - ($ingredientPurchase->quantity/$unit_conversion);
+                }                                
+                $negative_ingredient_total_price = $ingredient->total_price - $ingredientPurchase->price;
+                $ingredient_smallest_unit_price = abs($negative_ingredient_total_price/($negative_ingredient_total_quantity * $unit_conversion));
+            } 
+                       
+            // when $ingredient->total_price = 0 after sales, considering the old $ingredient_smallest_unit_price
+            // Now calculating stock ingredient total price. 
+            $ingredient_total_price = ($ingredient_total_quantity * $unit_conversion)* $ingredient_smallest_unit_price;            
+        }else{ 
             //calculating total ingredient price 
-            $ingredient_total_price += $ingredientPurchase->price; 
+            $ingredient_total_price += $ingredientPurchase->price;  
             //calculating ingredient unit price
             $ingredient_smallest_unit_price = $ingredient_total_price/($ingredient_total_quantity * $unit_conversion);
         }  
@@ -184,9 +191,9 @@ class IngredientPurchaseController extends BaseController
         //saving log for the changing ingredient purchase price up & down. 
         $old_price = $ingredientPurchase->price;
         $new_price = $request->price;
-        $name = $request->name;
+        $name = $request->name;        
         //saving log for the changing ingredient purchase price up & down.
-        if($old_price != $new_price ){
+        if($old_price != $new_price ){            
             Userlog::Ingredient_purchase_price_up_down($name, $request->purchase_id, $old_price, $new_price);
         } 
         
@@ -212,25 +219,38 @@ class IngredientPurchaseController extends BaseController
         $ingredientPurchase->expire_date = $expire_date;
         $ingredientPurchase->save();
         
-        //when ingredient total qty is negative i.e more sales results ingredient qty become negative in the stock.
-        if($ingredient_total_quantity < 0){            
-                        
-            // now calculating stock ingredient quantity 
+        //when ingredient total qty is negative i.e more sales results ingredient qty become negative in the stock.        
+        if($ingredient_total_quantity < 0){ 
+            $unit_conversion =0;
+            // calculating unit version 
             if($ingredient->measurement_unit == $ingredientPurchase->unit){
                 $unit = Unit::where('measurement_unit', $ingredientPurchase->unit)->first();            
-                $unit_conversion = $unit->unit_conversion;
-                $ingredient_total_quantity += $ingredientPurchase->quantity; 
+                $unit_conversion = $unit->unit_conversion;                
             }else{
                 $unit = Unit::where('smallest_measurement_unit', $ingredientPurchase->unit)->first();            
-                $unit_conversion = $unit->unit_conversion; 
+                $unit_conversion = $unit->unit_conversion;                
+            }  
+            
+            // calculating ingredient smallest unit price when $ingredient->total_price & $ingredient->total_quantity both are negative.
+            if($ingredient_total_price < 0){
+                if($ingredient->measurement_unit == $ingredientPurchase->unit){ 
+                    $negative_ingredient_total_quantity = $ingredient_total_quantity - $ingredientPurchase->quantity;
+                }else{
+                    $negative_ingredient_total_quantity = $ingredient_total_quantity - ($ingredientPurchase->quantity/$unit_conversion);
+                }                                
+                $negative_ingredient_total_price = $ingredient_total_price - $ingredientPurchase->price;
+                $ingredient_smallest_unit_price = abs($negative_ingredient_total_price/($negative_ingredient_total_quantity * $unit_conversion));
+            }
+
+            // now calculating stock ingredient quantity 
+            if($ingredient->measurement_unit == $ingredientPurchase->unit){                
+                $ingredient_total_quantity += $ingredientPurchase->quantity; 
+            }else{
                 $ingredient_total_quantity += ($ingredientPurchase->quantity/$unit_conversion); 
             }
             
-            $unit = Unit::where('smallest_measurement_unit', $ingredient->smallest_unit)->first();            
-            $unit_convertor = $unit->unit_conversion;
-            // we are considering here the previous stock ingredient avg unit price. 
-            //now calculating stock ingredient total price.
-            $ingredient_total_price = ($ingredient_total_quantity * $unit_convertor) * $ingredient_smallest_unit_price;
+             //now calculating stock ingredient total price.        
+            $ingredient_total_price = ($ingredient_total_quantity * $unit_conversion)* $ingredient_smallest_unit_price;
         }else{            
             //calculating total ingredient price 
             $ingredient_total_price += $ingredientPurchase->price; 
@@ -247,7 +267,7 @@ class IngredientPurchaseController extends BaseController
                 $unit_conversion = $unit->unit_conversion; 
                 $ingredient_total_quantity += ($ingredientPurchase->quantity/$unit_conversion); 
                 //calculating ingredient unit price
-                 $ingredient_smallest_unit_price = $ingredient_total_price/($ingredient_total_quantity * $unit_conversion);
+                $ingredient_smallest_unit_price = $ingredient_total_price/($ingredient_total_quantity * $unit_conversion);
             }
             
         }        

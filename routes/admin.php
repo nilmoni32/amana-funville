@@ -366,6 +366,44 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 //end of ajax route.
             });
 
+            //only admin privileges users can sell foods in dues
+            //POS/KOT route for restaurant print receipt
+            Route::group(['prefix' => 'kot'], function(){
+                Route::get('/due/sells', 'DuePosSalesController@index')->name('due.sales.index'); 
+                //pos due order place
+                Route::post('/order-place', 'DuePosSalesController@orderplace')->name('due.sales.orderplace'); 
+            });
+
+            //POS/KOT Due Orders Management [list of all due kot/pos orders]
+            Route::group(['prefix' => 'kot/orders'], function () {
+                Route::get('/', 'DuePosSalesController@orderLists')->name('due.orders.lists');
+                Route::get('/edit/{id}', 'DuePosSalesController@editDueOrder')->name('due.orders.edit');                
+                Route::get('/search', 'DuePosSalesController@search')->name('due.orders.search');
+                //ajax method for update order status
+                Route::post('/status', 'DuePosSalesController@orderStatusUpdate');                                          
+                Route::post('/searchfoods','DuePosSalesController@getFoods')->name('due.sales.getfoods');
+                Route::post('/searchfoods/addsales','DuePosSalesController@addToSales')->name('due.sales.addtosales');                
+                Route::post('/duesale-cart/update', 'DuePosSalesController@update')->name('due.sales.saleCartUpdate');
+                Route::post('/duesale-cart/delete', 'DuePosSalesController@destroy')->name('due.sales.saleCartDelete');
+                //end of ajax route for pos sales.
+            });
+
+            //KOT route checkout and orderplacement and  customer print receipt
+            Route::group(['prefix' => 'kot/due'], function(){
+                Route::get('/sales/{id}', 'DuePosSalesController@paymentindex')->name('due.sales.paymentindex'); 
+                //search products using table no.
+                Route::get('/search', 'DuePosSalesController@searchDueCart')->name('due.sales.search');
+                //ajax route for due pos sales.
+                Route::post('/customer/mobile','DuePosSalesController@getMobileNo')->name('due.sales.customermobile');
+                Route::post('/customer/info','DuePosSalesController@addCustomerInfo')->name('due.sales.customerInfo');
+                Route::post('/discount/slab','DuePosSalesController@discountSlab')->name('due.sales.discountSlab');
+                Route::post('/card/discount','DuePosSalesController@cardDiscount')->name('due.sales.card.discount'); 
+                Route::post('/gpstar/discount','DuePosSalesController@gpStarDiscount')->name('due.sales.gpStarDiscount'); 
+                
+                //Route::post('/orderupdate', 'DuePosSalesController@orderupdate')->name('due.sales.orderupdate'); 
+            
+            });
+
 
         });
         //super admin role.

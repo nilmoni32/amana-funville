@@ -202,6 +202,44 @@
         </li>
       </ul>
     </li>
+    @can('all-admin-features')
+    @php if(Route::currentRouteName() == 'admin.due.sales.index' || 
+    Route::currentRouteName() == 'admin.due.orders.lists' || Route::currentRouteName() == 'admin.due.sales.paymentindex' ){
+    $temp7 = 1;
+    }else{
+    $temp7 = 0;
+    }
+    @endphp
+    <li class="{{ $temp7 ? 'treeview is-expanded' : 'treeview' }}">
+      <a class="app-menu__item" href="#" data-toggle="treeview">
+        <i class="app-menu__icon fa fa-adjust"></i><span class="app-menu__label">KOT Due Sells</span>
+        <i class="treeview-indicator fa fa-angle-right"></i>
+      </a>
+      <ul class="treeview-menu">
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.due.sales.index' ? 'active' : '' }}"
+            href="{{ route('admin.due.sales.index') }}">
+            <i class="app-menu__icon fa fa-star-half-o"></i>
+            <span class="app-menu__label">Due Order Placement</span>
+          </a>
+        </li> 
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.due.orders.lists' ? 'active' : '' }}"
+            href="{{ route('admin.due.orders.lists') }}">
+            <i class="app-menu__icon fa fa-bars" aria-hidden="true"></i>
+            <span class="app-menu__label">Due Order Lists</span>
+          </a>
+        </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.due.sales.paymentindex' ? 'active' : '' }}"
+            href="{{ route('admin.due.sales.paymentindex', 0) }}">
+            <i class="app-menu__icon fa fa-calculator"></i>
+            <span class="app-menu__label">Due KOT Checkout</span>
+          </a>
+        </li>       
+      </ul>
+    </li>
+    @endcan
     <li>
       <a class="app-menu__item {{ Route::currentRouteName() == 'admin.orders.index' ? 'active' : '' }}"
         href="{{ route('admin.orders.index') }}">

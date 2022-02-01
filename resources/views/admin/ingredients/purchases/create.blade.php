@@ -30,7 +30,7 @@
                             <div class="form-group">
                                 <label class="control-label" for="name">Product Name</label>
                                 <input class="form-control @error('name') is-invalid @enderror" type="text"
-                                    placeholder="Enter Ingredient name" id="ingredient_search" name="name" />
+                                    id="ingredient_search" name="name" value="{{ $ingredient->name }}"/>
                                 <div class="invalid-feedback active">
                                     <i class="fa fa-exclamation-circle fa-fw"></i> @error('name')
                                     <span>{{ $message }}</span> @enderror

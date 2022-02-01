@@ -60,7 +60,7 @@ class Userlog extends Model
 
         $user_log = new Userlog();
         $user_log->admin_id = auth()->user()->id; 
-        $user_log->product_id = $id;         
+        $user_log->product_id = $id;      //product id   
         $user_log->done_by =  auth()->user()->name;
         $user_log->log_type = "Food Price Change"; 
         $user_log->log_date = \Carbon\Carbon::now()->toDateTimeString();
@@ -75,7 +75,7 @@ class Userlog extends Model
 
         $user_log = new Userlog();
         $user_log->admin_id = auth()->user()->id; 
-        $user_log->product_id = $id;         
+        $user_log->product_id = Null;  // ingredient id       
         $user_log->done_by =  auth()->user()->name;
         $user_log->log_type = "Ingredient Price Change"; 
         $user_log->log_date = \Carbon\Carbon::now()->toDateTimeString();
