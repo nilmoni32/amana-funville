@@ -142,6 +142,10 @@ class SettingsTableSeeder extends Seeder
             'key'   => 'ref_email_recipient',
             'value' => '',
         ],
+        [
+            'key'   => 'due_booking_amount',
+            'value' => '',
+        ],
 
     ];
 

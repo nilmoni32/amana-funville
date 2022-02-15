@@ -66,6 +66,11 @@
                 <input class="form-control" type="text" placeholder="Tax Percentage" name="tax_percentage"
                     id="tax_percentage" value="{{ config('settings.tax_percentage') }}">
             </div>
+            <div class="form-group">
+                <label class="control-label" for="due_booking_amount">Due Sale Advance Payment</label>
+                <input class="form-control" type="text" placeholder="Booking Amount" name="due_booking_amount"
+                    id="due_booking_amount" value="{{ config('settings.due_booking_amount') }}">
+            </div>
             @endcan
             <div class="form-group">
                 <label class="control-label" for="tax_percentage">Total Number of Tables in Restaurant</label>

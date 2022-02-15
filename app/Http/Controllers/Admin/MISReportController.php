@@ -729,4 +729,129 @@ class MISReportController extends BaseController
         compact('ecom_sales', 'kot_sales', 'start_date', 'end_date', 'discount', 'complimentary_sales_cost', 'ecom_total_sales'))->setPaper('a4', 'potrait');        
         return $pdf->stream('pdfcombinedprofitloss.pdf');
     }
+
+
+    public function dueSalesTotal(){
+         // Attaching pagetitle and subtitle to view.        
+         view()->share(['pageTitle' => 'MIS Reports', 'subTitle' => 'KOT Cash Register Due Sales' ]);        
+         return view('admin.report.mis.due.salestotal');
+    }
+
+    public function getDueSalesTotal(Request $request){
+        //dd($request->all());
+        //converting date format from m-d-Y to Y-m-d as database stroes date in 'Y-m-d' format
+        $start_date = Carbon::createFromFormat('d-m-Y', $request->start_date)->format('Y-m-d');
+        $end_date = Carbon::createFromFormat('d-m-Y', $request->end_date)->format('Y-m-d');
+
+        $net_ref_discount = 0.0;
+        $net_points_discount = 0.0;
+        $net_card_discount = 0.0;
+        $net_gpstar_discount = 0.0;
+        $net_fraction_discount = 0.0;
+
+        $net_sales = 0.0;
+        $net_receive = 0.0;
+        $net_due = 0.0;
+        $net_cash_sales = 0.0;
+        $net_card_sales = 0.0;
+        $net_mobile_sales = 0.0;
+        $net_booking_amount = 0.0;
+       
+        //cash register wise report
+        $cashRegister = DB::table('dueordersales')
+        ->select('order_number','order_total','receive_total','due_payable','order_date', 'discount','reward_discount', 'card_discount', 'gpstar_discount', 'fraction_discount',
+        'cash_pay', 'card_pay', 'mobile_banking_pay', 'booked_money')      
+        ->where('status', 'receive') 
+        ->whereDate('created_at', '>=', $start_date)
+        ->whereDate('created_at', '<=', $end_date)
+        ->orderByRaw('order_number DESC')
+        ->get();
+        
+        
+        //accumulating discount, sales,
+        foreach($cashRegister as $cash){
+            $net_ref_discount += $cash->discount;
+            $net_points_discount += $cash->reward_discount;
+            $net_card_discount += $cash->card_discount;
+            $net_gpstar_discount += $cash->gpstar_discount;
+            $net_fraction_discount += $cash->fraction_discount;
+            $net_sales += $cash->order_total;
+            $net_receive += $cash->receive_total;
+            $net_due += $cash->due_payable;
+            $net_cash_sales += $cash->cash_pay;
+            $net_card_sales += $cash->card_pay;
+            $net_mobile_sales += $cash->mobile_banking_pay;
+            $net_booking_amount += $cash->booked_money;
+        }
+        
+        // Attaching pagetitle and subtitle to view.
+        view()->share(['pageTitle' => 'MIS Report', 'subTitle' => 'Due Cash Register Wise Sales Report' ]);
+        return view('admin.report.mis.due.getsalestotal')->with([
+            'cash_register' => $cashRegister,
+            'start_date' => $start_date,
+            'end_date'  => $end_date,
+            'net_ref_discount' => $net_ref_discount,
+            'net_points_discount' => $net_points_discount,
+            'net_card_discount' => $net_card_discount,
+            'net_gpstar_discount' => $net_gpstar_discount,
+            'net_fraction_discount' => $net_fraction_discount,
+            'net_sales' => $net_sales,
+            'net_receive' => $net_receive,
+            'net_due' => $net_due,
+            'net_cash_sales' => $net_cash_sales,
+            'net_card_sales' => $net_card_sales,
+            'net_mobile_sales' => $net_mobile_sales,
+            'net_booking_amount' => $net_booking_amount,
+        ]);
+    }
+
+    public function pdfDueSalesTotal($start_date, $end_date){
+
+        $net_ref_discount = 0.0;
+        $net_points_discount = 0.0;
+        $net_card_discount = 0.0;
+        $net_gpstar_discount = 0.0;
+        $net_fraction_discount = 0.0;
+
+        $net_sales = 0.0;
+        $net_receive = 0.0;
+        $net_due = 0.0;
+        $net_cash_sales = 0.0;
+        $net_card_sales = 0.0;
+        $net_mobile_sales = 0.0;
+        $net_booking_amount = 0.0;
+
+        //cash register wise report
+        $cash_register = DB::table('dueordersales')
+        ->select('order_number','order_total','receive_total','due_payable','order_date', 'discount','reward_discount', 'card_discount', 'gpstar_discount', 'fraction_discount',
+        'cash_pay', 'card_pay', 'mobile_banking_pay', 'booked_money')   
+        ->where('status', 'receive')     
+        ->whereDate('created_at', '>=', $start_date)
+        ->whereDate('created_at', '<=', $end_date)
+        ->orderByRaw('order_number DESC')
+        ->get();
+
+        //accumulating discount, sales,
+        foreach($cash_register as $cash){
+            $net_ref_discount += $cash->discount;
+            $net_points_discount += $cash->reward_discount;
+            $net_card_discount += $cash->card_discount;
+            $net_gpstar_discount += $cash->gpstar_discount;
+            $net_fraction_discount += $cash->fraction_discount;
+            $net_sales += $cash->order_total;
+            $net_receive += $cash->receive_total;
+            $net_due += $cash->due_payable;
+            $net_cash_sales += $cash->cash_pay;
+            $net_card_sales += $cash->card_pay;
+            $net_mobile_sales += $cash->mobile_banking_pay;
+            $net_booking_amount += $cash->booked_money;
+        }        
+
+        $pdf = PDF::loadView('admin.report.mis.pdf.pdfDueCashRegister', compact('cash_register', 'start_date', 'end_date', 
+        'net_ref_discount', 'net_points_discount', 'net_card_discount', 'net_gpstar_discount', 'net_fraction_discount',
+         'net_sales', 'net_receive', 'net_due', 'net_cash_sales', 'net_card_sales', 'net_mobile_sales','net_booking_amount'))
+        ->setPaper('a4', 'potrait');
+        return $pdf->stream('pdfCashRegister.pdf');
+        
+    }
 }

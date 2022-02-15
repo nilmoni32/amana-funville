@@ -89,15 +89,22 @@
                     var esc = '\x1B'; //ESC byte in hex notation
                     var newLine = '\x0A'; //LF byte in hex notation            
                     var cmds = esc + "@"; //Initializes the printer (ESC @)
-                    cmds += esc + '!' + '\x30'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
-                    cmds += "   {{ config('settings.site_name') }}"; //text to print site name
+                    var center = '\x1B' + '\x61' + '\x31'; //center align
+                    var left = '\x1B' + '\x61' + '\x30'; // left align
+                    var right = '\x1B' + '\x61' + '\x32'; // right align
+                    cmds += esc + '!' + '\x22'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
+                    cmds += center;
+                    cmds += '\x1B' + '\x45' + '\x0D'; //bold on
+                    cmds += "{{ strtoupper(config('settings.site_name')) }}"; //text to print site name
                     cmds += newLine;
-                    cmds += esc + '!' + '\x08'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex            
+                    cmds += esc + '!' + '\x08';                            
                     cmds += newLine;
                     cmds += "{{ __('The Best Restaurant, Party center and Kids zone in Rajshahi.') }}"; //text to print site title
                     cmds += newLine;
+                    cmds += '\x1B' + '\x45' + '\x0A';
                     cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
-                    cmds += "---------------------------------------";
+                    cmds += "----------------------------------------";
+                    cmds += left;
                     cmds += newLine;            
                     cmds += "Location: {{ config('settings.contact_address') }}"; //text to print site address
                     cmds += newLine;
@@ -109,12 +116,23 @@
                     cmds += newLine;
                     cmds += "---------------------------------------";
                     cmds += newLine;
-                    cmds += esc + '!' + '\x08'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
-                    cmds += "Customer order Table no: {{ $order->order_tableNo }}"
-                    cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
+                    //cmds += esc + '!' + '\x08'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
+                    cmds += '\x1B' + '\x45' + '\x0D'; //bold on
+                    cmds += 'Customer Order Details';
                     cmds += newLine;
+                    cmds += '\x1B' + '\x45' + '\x0A'; //bold off
                     cmds += "---------------------------------------";
+                    cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)                                        
                     cmds += newLine;
+                    cmds += "Customer Name: {{ $order->client->name }}"
+                    cmds += newLine;
+                    cmds += "Contact No: {{ $order->client->mobile }}"      
+                    cmds += newLine;
+                    cmds += "Order No: {{ $order->order_number }}"                                                                        
+                    @if(App\Models\Duesale::where('dueordersale_id', $order->id)->first())
+                    cmds += newLine; 
+                    cmds += "---------------------------------------"; 
+                    cmds += newLine; 
                     cmds += "#Item     #Qty     #Price     #subtotal";
                     cmds += newLine;
                     cmds += "---------------------------------------";
@@ -141,7 +159,53 @@
                     @endif            
                     cmds += "                          -------------";
                     cmds += '                 Total Amount:          {{ $sub_tot_without_vat + $food_vat }}';
+                    @endif
+                    @php $dueorder_sale = App\Models\Dueordersale::find($order->id); @endphp
+                    cmds += newLine;                    
+                    @if(!$dueorder_sale->grand_total)
+                    cmds += newLine; 
+                    cmds += 'Booking Amount:                {{ round($dueorder_sale->booked_money,2) }}'; 
+                    @endif
                     cmds += newLine;          
+                    cmds += "Paid Amount:                   {{ $dueorder_sale->grand_total ? round($dueorder_sale->grand_total,2) : round($dueorder_sale->booked_money,2)   }}";
+                    cmds += newLine; 
+                    cmds += 'Amount Due:                    {{ App\Models\Duesale::where('dueordersale_id', $order->id)->first() ? round((($sub_tot_without_vat + $food_vat) - ($dueorder_sale->grand_total ?? $dueorder_sale->booked_money)),2) : '' }}';                                                             
+                    @if($order->id && $dueorder_sale->grand_total)
+                    cmds += newLine; 
+                    cmds += newLine;
+                    cmds += 'Payment Mode Details:          ';
+                    cmds += newLine; 
+                    cmds += "---------------------------------------";
+                    cmds += newLine;                    
+                    cmds += 'Booking Amount:                {{ round($dueorder_sale->booked_money,2) }}';
+                    cmds += newLine;
+                    @if((float)App\Models\Dueordersale::find($order->id)->cash_pay)
+                    cmds += 'CASH:                          {{ round($dueorder_sale->cash_pay,2) }}';
+                    cmds += newLine;
+                    @endif
+                    @if((float)App\Models\Dueordersale::find($order->id)->card_pay)
+                    cmds += 'CARD:                          {{ round($dueorder_sale->card_pay,2)  }}';
+                    cmds += newLine;
+                    @endif
+                    @if((float)App\Models\Dueordersale::find($order->id)->mobile_banking_pay)
+                    cmds += 'Mobile Banking:                {{ round($dueorder_sale->mobile_banking_pay,2) }}';
+                    cmds += newLine;
+                    @endif
+                    @php
+                    //calculating total discount amount received.
+                    $discount = App\Models\Dueordersale::find($order->id)->discount + App\Models\Dueordersale::find($order->id)->reward_discount +
+                    App\Models\Dueordersale::find($order->id)->card_discount + App\Models\Dueordersale::find($order->id)->gpstar_discount;
+                    @endphp                  
+                    @if($discount)
+                    cmds += 'Discount:                      {{ $order->id ? round($discount,2) : '' }}';
+                    cmds += newLine;
+                    @endif 
+                    @if((float)App\Models\Dueordersale::find($order->id)->fraction_discount)
+                    cmds += 'Other Discount:                {{ $order->id ? round(App\Models\Dueordersale::find($order->id)->fraction_discount,2) : '' }}';
+                    cmds += newLine;                    
+                    @endif
+                    cmds += "---------------------------------------";                                 
+                    @endif                  
                     cmds += newLine + newLine;
                     cmds += 'Note: Sold food items can not be refunded';
                     cmds += newLine;

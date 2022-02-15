@@ -9,6 +9,7 @@ use App\Models\Recipe;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Dueordersale;
+use App\Models\Ordersale;
 use App\Models\Ingredient;
 use Illuminate\Http\Request;
 use App\Traits\FlashMessages; 
@@ -17,6 +18,7 @@ use App\Models\Client;
 use DateTime;
 use Carbon\Carbon;
 use App\Http\Controllers\BaseController;
+use App\Models\Ordersalepayment;
 
 class DuePosSalesController extends BaseController
 {
@@ -31,8 +33,8 @@ class DuePosSalesController extends BaseController
     public function orderplace(Request $request){
       
         $this->validate($request,[  
-            'order_tableNo'    => 'required|string|max:10',
-            'booked_money'     => 'required|regex:/^\d+(\.\d{1,2})?$/',
+            //'order_tableNo'    => 'required|string|max:10',
+            'booked_money'     => 'required|regex:/^\d+(\.\d{1,2})?$/|gt:'.config('settings.due_booking_amount'),
             // 'payment_date'     => 'required|string',
             'customer_name'     => 'required|string|max:50',             
             'customer_mobile'   => 'required|regex:/(01)[3-9]{1}(\d){8}/|max:11',
@@ -41,12 +43,12 @@ class DuePosSalesController extends BaseController
         ]);
         
         //checking the table no for usability   
-        if(Dueordersale::where('order_tableNo', $request->order_tableNo)->first()){
-            // setting flash message using trait
-            $this->setFlashMessage(" Your selected table '".$request->order_tableNo."' is currently in use, please select another table", 'error');    
-            $this->showFlashMessages(); 
-            return redirect()->back();
-        }
+        // if(Dueordersale::where('order_tableNo', $request->order_tableNo)->first()){
+        //     // setting flash message using trait
+        //     $this->setFlashMessage(" Your selected table '".$request->order_tableNo."' is currently in use, please select another table", 'error');    
+        //     $this->showFlashMessages(); 
+        //     return redirect()->back();
+        // }
 
         //checking if client not exists, we create client here to store client information. 
         $client = Client::where('mobile', $request->customer_mobile)->first() ?? new Client();        
@@ -74,7 +76,7 @@ class DuePosSalesController extends BaseController
         $order->admin_id = auth()->user()->id;     
         $order->order_number = $ord_id;         
         $order->order_date = \Carbon\Carbon::now()->toDateTimeString();         
-        $order->order_tableNo = $request->order_tableNo;
+        //$order->order_tableNo = $request->order_tableNo;
         $order->booked_money = $request->booked_money;
         $order->receive_total = $request->booked_money; // initial receive total amount
         $order->payment_date = \Carbon\Carbon::now()->toDateTimeString();  
@@ -282,7 +284,8 @@ class DuePosSalesController extends BaseController
         // relationship with client
        // search criteria.      
         $orders = Dueordersale::orWhere('order_number', 'like', '%'.$search.'%') 
-                ->orWhere('order_tableNo', 'like', '%'.$search.'%')  
+                ->orWhere('payment_date', 'like', '%'. ($this->validateDateTime($search) ? Carbon::createFromFormat('d-m-Y H:i:s', $search)->format('Y-m-d H:i:s') : $search).'%')   
+                ->orWhere('payment_date', 'like', '%'. ($this->validateDate($search) ? Carbon::createFromFormat('d-m-Y', $search)->format('Y-m-d') : $search).'%') 
                 ->orWhere('order_date', 'like', '%'. ($this->validateDateTime($search) ? Carbon::createFromFormat('d-m-Y H:i:s', $search)->format('Y-m-d H:i:s') : $search).'%')   
                 ->orWhere('order_date', 'like', '%'. ($this->validateDate($search) ? Carbon::createFromFormat('d-m-Y', $search)->format('Y-m-d') : $search).'%')   
                 ->orWhere('receive_total', 'like', '%'.$search.'%') 
@@ -306,12 +309,13 @@ class DuePosSalesController extends BaseController
         $search = trim($request->search); // getting the search key        
        // search criteria.      
         $order = Dueordersale::orWhere('order_number', 'like', '%'.$search.'%')
-                ->orWhere('order_tableNo', 'like', '%'.$search.'%')->first();
+                ->orWhereHas('client', function ($query) use($search) {
+                $query->where('mobile', '=', $search);})->first();
         if($order){
             return redirect()->route('admin.due.sales.paymentindex', $order->id); 
         }
         else{
-            return $this->responseRedirectBack(' Sorry, the order table no is not found!' ,'error', false, false); 
+            return $this->responseRedirectBack(' Sorry, the due order no is not found!' ,'error', false, false); 
         }
     }
 
@@ -374,5 +378,296 @@ class DuePosSalesController extends BaseController
         return response()->json(['cardDiscount' => $card_discount, 'upperLimit' => $discount_upper_limit]);
     }
 
+    public function orderupdate(Request $request){ 
+        //dd($request->all());
+        $this->validate($request,[  
+            // 'order_tableNo'    => 'nullable|string|max:10',
+            'customer_name'     => 'nullable|string|max:40',             
+            'customer_mobile'   => 'nullable|regex:/(01)[3-9]{1}(\d){8}/|max:11',
+            'customer_address'  => 'nullable|string|max:191',       
+            'customer_notes'    => 'nullable|string|max:191',             
+        ]);
+        
+        /*
+        * storing all the payment details to db table ordersalepayments and calculating cash_pay, card_pay or mobile_pay.
+        */
+        $order_payments = '';
+        // As each order might have single card discount or mobile discount, so we store it directly.        
+        $card_discount = 0;
+        $fraction_discount = 0; 
+        //calculating cash_pay, card_pay & mobile_banking_pay for the current order.       
+        $cash_pay = 0; $card_pay = 0; $mobile_banking_pay = 0; $customer_due =0.0;
+        //Convert JSON String to PHP Array     
+        $order_payments = json_decode($request->payment_details, true);        
+        if(empty($order_payments) || empty($order_payments[0]['customerPaid'])) {
+            // setting flash message using trait
+            $this->setFlashMessage("Order payments can't be null", 'error');    
+            $this->showFlashMessages();
+            return redirect()->back(); 
+        }
+
+        foreach($order_payments as $single_payment_details){
+            //creating a new instance of ordersalepayments table          
+            $ordersalepayment = new Ordersalepayment();            
+            $ordersalepayment->dueordersale_id = $single_payment_details['saleOrderId'];
+            $ordersalepayment->payment_method = $single_payment_details['paymentMethod'];
+            $ordersalepayment->bank_name = $single_payment_details['bankName'];
+            $ordersalepayment->card_discount = $single_payment_details['cardDiscount'];
+            $ordersalepayment->customer_paid_amount = $single_payment_details['customerPaid'];
+            $ordersalepayment->cash_exchange = $single_payment_details['due'] < 0 ? $single_payment_details['due'] : 0;
+            $ordersalepayment->customer_due = $single_payment_details['due'] > 0 ? $single_payment_details['due'] : 0;
+            //store_paidamount = Customer paid + due; as due can be negative value that means 500 + due(-50) = 450 taka will be stored.
+            $ordersalepayment->store_paidamount = $single_payment_details['customerPaid'] + ($single_payment_details['due'] < 0 ? $single_payment_details['due'] : 0);            
+            $ordersalepayment->save();
+
+            //storing card discount
+            if(!$card_discount){
+                $card_discount = $single_payment_details['cardDiscount'];
+            }
+
+            //storing fraction discount
+            if(!$fraction_discount){
+                $fraction_discount = $single_payment_details['fractionDiscount'];
+            }           
+           
+            //calculating cash_pay, card_pay & mobile_banking_pay for the current order. 
+            //C-1: when due >= 0 with multimode payments.
+            if($single_payment_details['due'] >= 0) {
+                if($single_payment_details['paymentMethod'] == 'cash'){
+                    $cash_pay += $single_payment_details['customerPaid'];
+                }elseif($single_payment_details['paymentMethod'] == 'card'){
+                    $card_pay += $single_payment_details['customerPaid'];
+                }elseif($single_payment_details['paymentMethod'] == 'mobile'){
+                    $mobile_banking_pay += $single_payment_details['customerPaid'];
+                }
+            }
+            //C-2: when due is less than 0 (due < 0): customer has received cash exchanged.
+            if($single_payment_details['due'] < 0) {
+                // Calculating actual paid amount paid by the customer. 500 -50
+                $actual_paid_amount = $single_payment_details['customerPaid'] + $single_payment_details['due'];
+
+                if($single_payment_details['paymentMethod'] == 'cash'){
+                    $cash_pay += $actual_paid_amount;
+                }elseif($single_payment_details['paymentMethod'] == 'card'){
+                    $card_pay += $actual_paid_amount;
+                }elseif($single_payment_details['paymentMethod'] == 'mobile'){
+                    $mobile_banking_pay += $actual_paid_amount;
+                }
+            }   
+            $customer_due =  $single_payment_details['due'];     
+            
+        }//end of foreach loop.
+
+        //Order Update: Discount, reward points discount, Payment Details, Customer Points
+        $order = Dueordersale::where('id', $request->order_id)->first();
+        $order->admin_id = auth()->user()->id;     
+        //$order->order_number = $ord_id; 
+        $order->discount = $order->discount ? $order->discount : $request->order_discount; //referene discount.
+        $order->reward_discount = $order->reward_discount ? $order->reward_discount : $request->reward_discount;
+        $order->director_id = $order->director_id ? $order->director_id : $request->order_discount_reference;        
+        $order->payment_date = \Carbon\Carbon::now()->toDateTimeString(); 
+        $order->payment_method = implode(',', $request->payment_method); // making array to string before saving to database.
+        $order->cash_pay = $order->cash_pay ?  $order->cash_pay + $cash_pay : $cash_pay;
+        $order->card_pay = $order->card_pay ? $order->card_pay + $card_pay : $card_pay;
+        $order->mobile_banking_pay = $order->mobile_banking_pay ? $order->mobile_banking_pay + $mobile_banking_pay : $mobile_banking_pay; 
+        $order->card_discount = $order->card_discount ? $order->card_discount : $card_discount; //either card or mobile bank discount will store.
+        $order->order_tableNo = $request->customer_due ? $order->order_tableNo : NULL;//$request->order_tableNo; as that table no should be free to feed another customer.   
+        $order->status = $customer_due > 0 ? 'receive' : 'delivered';
+        $order->fraction_discount = $fraction_discount;
+        $order->gpstarmobile_no = $request->gpstarmobile;
+        $order->gpstar_discount = $order->gpstar_discount ? $order->gpstar_discount : $request->gpstar_discount;
+
+        $order->order_total = $order->order_total ?? $request->subtotal + ($request->subtotal * (config('settings.tax_percentage')/100));
+
+        //calculating order grand total + tax, if exists        
+        $order_total = $order->order_total ? $order->order_total - $order->receive_total : ($request->subtotal + ($request->subtotal * (config('settings.tax_percentage')/100)) - $order->receive_total);
+        //substracting director reference discount        
+        $order_discount_total = $order->discount ? $order_total : ($request->order_discount ?  $order_total - $request->order_discount : $order_total);
+        //substracting reward point discount
+        $order_grand_total = $order->reward_discount ? $order_discount_total :($request->reward_discount ? $order_discount_total - $request->reward_discount : $order_discount_total);  
+        //substracting card discount
+        $order_grand_total = $order->card_discount ? $order_grand_total :($card_discount ? $order_grand_total - $card_discount : $order_grand_total);  
+        //substracting fraction discount
+        $order_grand_total = $order->fraction_discount ? $order_grand_total :($fraction_discount ? $order_grand_total - $fraction_discount : $order_grand_total); 
+        //substracting gpstar discount
+        $order_grand_total = $order->gpstar_discount ? $order_grand_total :($request->gpstar_discount ? $order_grand_total - $request->gpstar_discount : $order_grand_total);
+
+        //updating receive total
+        $order->receive_total += ($order_grand_total - ($customer_due > 0 ? $customer_due : 0 ));
+        $order->due_payable = $customer_due > 0 ? $customer_due : 0;
+
+        //grand total after substracting all the discount options      
+        $order->grand_total = $order->receive_total;
+        //$order->due_status =  (float)$order->grand_total - (float)$order->receive_total ?? 1;
+
+        // if customer data is not available we will not create the customer details.
+        if($request->customer_mobile){    
+            //checking if client not exists, we create client here to store client information. 
+            $client =  Client::where('mobile', $request->customer_mobile)->first();
+            // customer points calculation.        
+            $client->total_points += $order->grand_total / (config('settings.money_to_point'));
+            //if reward discount is used, we will set client total_points to zero.
+            $client->total_points = $request->reward_discount ? 0 : $client->total_points;
+            $client->save();            
+        }
+        //updating the order
+        $order->save();
+
+        if(!$order->due_payable){
+            //Inventory Management: We will deduct product quantity and product total cost using product id from ingredient stock. 
+
+            //finding the cart using order id... it may return many sale carts for pos system
+            foreach($order->duesales as $cart){
+                //getting product quantity that user has purchased.
+                $cart_product_quantity = $cart->product_quantity;
+                //using product id finding the recipe and then finding the ingredients of the recipe
+                foreach(Recipe::where('product_id', $cart->product_id)->first()->recipeingredients as $recipeingredient){
+                    //getting the ingredient.
+                    $ingredient = $recipeingredient->ingredient;                   
+                    //Subtracting ingredient total cost from ingredient stock consumed in recipe ingredients. 
+                    $ingredient->total_price -= ($recipeingredient->ingredient_total_cost * $cart_product_quantity);
+                    // if ingredient stock unit is equal to recipe ingredients... then we just deduct qty from ingredient stock.
+                    if($ingredient->measurement_unit == $recipeingredient->measure_unit){
+                        $ingredient->total_quantity -= ($recipeingredient->quantity * $cart_product_quantity); 
+                    }else{
+                        // getting unit conversion value from Unit 
+                        $unit = Unit::where('smallest_measurement_unit', $recipeingredient->measure_unit)->first();            
+                        $unit_conversion = $unit->unit_conversion; 
+                        $ingredient->total_quantity -= ($recipeingredient->quantity * $cart_product_quantity/$unit_conversion);
+                    }
+                    $ingredient->save();
+
+                }
+
+            }
+
+            //creating kot/pos ordersales new record as no dues for that order and we just copy dueordersales to ordersales.
+            // finding last order id ordersales.            
+            if(!Ordersale::orderBy('id', 'desc')->first()){
+                $ord_id = 0;
+            }
+            else{
+                $ord_id = Ordersale::orderBy('id', 'desc')->first()->id; 
+            }   
+            $ord_id = '#'.(10000 + ($ord_id + 1));
+
+            $orderSale = new Ordersale(); // we use order_id as online transaction id.
+            $orderSale->admin_id = auth()->user()->id;  
+            $orderSale->client_id = $order->client_id; 
+            $orderSale->director_id = $order->director_id;  
+            $orderSale->order_number = $ord_id; 
+            $orderSale->grand_total = $order->grand_total;
+            $orderSale->order_date = \Carbon\Carbon::now()->toDateTimeString();
+            $orderSale->status = 'delivered';
+            $orderSale->discount = $order->discount;  // getting data from dueordersale.
+            $orderSale->reward_discount = $order->reward_discount;            
+            $orderSale->payment_method = $order->payment_method;
+            $orderSale->cash_pay = $order->cash_pay;
+            $orderSale->card_pay = $order->card_pay;
+            $orderSale->mobile_banking_pay = $order->mobile_banking_pay;
+            $orderSale->card_discount = $order->card_discount;    //either card or mobile bank discount will store.         
+            $orderSale->fraction_discount = $order->fraction_discount;
+            $orderSale->gpstarmobile_no = $order->gpstarmobile_no;
+            $orderSale->gpstar_discount = $order->gpstar_discount;            
+            $orderSale->save();
+
+            //BACKUP of POS sales: Making pos sale backup to Salebackup table 
+            $saleCartBackup = [];        
+            foreach(Duesale::where('dueordersale_id',
+            $order->id)->get() as $saleCart){
+                $cart_backup = [
+                    'product_id' => $saleCart->product_id,
+                    'admin_id' => $saleCart->admin_id,
+                    'ordersale_id' =>$orderSale->id, // inserting newly created Ordersales record id for all duesale purchased foods.
+                    'dueordersale_id' => $saleCart->dueordersale_id,
+                    'product_name' => $saleCart->product_name,
+                    'product_quantity' => $saleCart->product_quantity,
+                    'unit_price' => $saleCart->unit_price,
+                    'production_food_cost' => $saleCart->production_food_cost == NULL ? Recipe::where('product_id',$saleCart->product_id)->first()->production_food_cost : 0,
+                    'order_cancel' => $saleCart->order_cancel,
+                    'order_tbl_no' => $saleCart->order_tbl_no,
+                    'created_at' => $saleCart->created_at,
+                    'updated_at' => $saleCart->updated_at,
+                ];            
+                $saleCartBackup[] = $cart_backup;
+            } 
+            \DB::table('salebackups')->insert($saleCartBackup);
+            //Now updating ordersalepayments and set ordersale_id for dueordersales when has no dues
+            foreach(Ordersalepayment::where('dueordersale_id', $order->dueordersale_id)->get() as $single_payment){
+                $single_payment->ordersale_id = $orderSale->id;
+                $single_payment->save();
+            }
+            //Now Deleting record from pos sale table in order to free up space to pos sale table
+            foreach(Duesale::where('dueordersale_id',
+                $order->id)->get() as $saleCart){
+                    $saleCart->delete();
+                }
+
+        }
+                
+
+        
+        //sending email discount notification to the authority [Director, Asst. Director, etc].
+        // if($order->director_id){
+        //     $referee = Director::where('id', $order->director_id)->first();
+            
+        //     //creating reference array.
+        //     $ref_data = array( 
+        //         'date' => $order->order_date, 
+        //         'order_no' => $order->order_number, 
+        //         'name' => $referee->name, 
+        //         'type' => $referee->ref_type, 
+        //         'discount' => $order->discount,
+        //         'discount_limit' => $referee->discount_upper_limit,
+        //     );
+            
+        //     //getting backend email recipients
+        //     $email_recipients = explode(',', str_replace(' ', '', config('settings.ref_email_recipient'))); 
+        //     $cc=[];
+        //     for($i=0; $i< count($email_recipients); $i++){
+        //         //elementing the empty array data fields
+        //         if($email_recipients[$i]){
+        //             $cc[] = $email_recipients[$i]; 
+        //         }
+        //     }
+
+        //     //sending mail to mailable class ReferenceAuthority to update about reference details.
+        //     \Mail::to(config('settings.default_email_address'))->cc($cc)->send(new ReferenceAuthority($ref_data));
+            
+        //     //sending sms
+        //     //SendCode::sendDiscountAmount($reference_mobile, $order_no, $reference_discount_limit, $reference_discount);
+        // }
+        /**
+         * Avoided due to slow the payment process.
+         */
+        // //sending sms payment notification to the customer.
+        // if($request->customer_mobile){
+        //     $client = Client::where('id', $order->client_id)->first();
+        //     $client_mobile = $client->mobile; 
+        //     $client_points = $client->total_points;
+        //     if($order->cash_pay && !$order->card_pay && !$order->mobile_banking_pay){
+        //         SendCode::paymentNotify($client_mobile, $order->cash_pay, $client_points, 'cash');
+        //     }elseif(!$order->cash_pay && $order->card_pay && !$order->mobile_banking_pay){
+        //         SendCode::paymentNotify($client_mobile, $order->card_pay, $client_points, 'card');
+        //     }elseif(!$order->cash_pay && !$order->card_pay && $order->mobile_banking_pay){
+        //         SendCode::paymentNotify($client_mobile, $order->mobile_banking_pay, $client_points, 'mobile banking');
+        //     }elseif($order->cash_pay && $order->card_pay && !$order->mobile_banking_pay){
+        //         SendCode::twoPaymentNotify($client_mobile, $order->cash_pay, $order->card_pay, $client_points, 'cash','card'); 
+        //     }elseif($order->cash_pay && !$order->card_pay && $order->mobile_banking_pay){
+        //         SendCode::twoPaymentNotify($client_mobile, $order->cash_pay, $order->mobile_banking_pay, $client_points, 'cash','mobile banking'); 
+        //     }elseif(!$order->cash_pay && $order->card_pay && $order->mobile_banking_pay){
+        //         SendCode::twoPaymentNotify($client_mobile, $order->card_pay, $order->mobile_banking_pay, $client_points, 'card','mobile banking'); 
+        //     }elseif($order->cash_pay && $order->card_pay && $order->mobile_banking_pay){
+        //         SendCode::allPaymentNotify($client_mobile, $order->cash_pay, $order->card_pay, $order->mobile_banking_pay, $client_points, 'cash','card','mobile banking'); 
+        //     }
+        // }
+        
+
+        // setting flash message using trait
+        $this->setFlashMessage(' Order is updated successfully', 'success');    
+        $this->showFlashMessages();
+        return redirect()->route('admin.due.sales.paymentindex', $order->id);   
+       
+    }
 
 }

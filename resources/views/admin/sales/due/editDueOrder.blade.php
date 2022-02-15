@@ -119,7 +119,7 @@
                                 Status:</label>                            
                             <div class="col-12 font-weight-bold text-center text-uppercase">
                                 <input type="checkbox" data-toggle="toggle" data-on="Order Receive"
-                                    data-off="Order Cancel" {{ $order->order_tableNo ? 'checked' : 'disabled'}}
+                                    data-off="Order Cancel" {{ $order->status == 'receive' ? 'checked' : 'disabled'}}
                                     data-onstyle="primary" data-offstyle="danger" data-id={{ $order->id }}
                                     class="orderStatus" data-height="100%" data-width="100%">
                             </div>

@@ -36,15 +36,15 @@
                                 {{-- <div class="form-group my-2">
                                     <input type="text" class="form-control datetimepicker" name="payment_date" placeholder="Choose Payment Date(d-m-Y)" required>
                                 </div> --}}
-                                <div class="form-group my-2">
+                                {{-- <div class="form-group my-2">
                                     <select name="order_tableNo" id="order_tableNo" class="form-control text-secondary"required>
                                         <option value="" selected disabled>Please Select Order Table No.</option>
                                         @for($i=1; $i<= config('settings.total_tbls'); $i++) <option value="T-{{ $i }}" class="py-3">
                                             Table
                                             No: {{ $i }}</option>
-                                            @endfor
+                                        @endfor
                                     </select>
-                                </div>
+                                </div> --}}
                                 <div class="form-group my-2">
                                     <input type="text" class="form-control @error('customer_name') is-invalid @enderror"
                                         id="customer_name" placeholder="Customer Name" name="customer_name" required>
@@ -94,7 +94,9 @@
 </div>
 @endsection
 @push('scripts')
-<script>
+<script>   
+    // getting CSRF Token from meta tag
+    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     $(document).ready(function () {
       $('.datetimepicker').datetimepicker({
         timepicker:false,
@@ -103,6 +105,50 @@
       });
       $(".datetimepicker").attr("autocomplete", "off");
     });
+
+    $("#customer_mobile").autocomplete({
+        //Using source option to send AJAX post request to route('employees.getEmployees') to fetch data
+        source: function( request, response ) {
+          // Fetch data
+          $.ajax({
+            url:"{{ route('admin.sales.customermobile') }}",
+            type: 'post',
+            dataType: "json",
+            // passing CSRF_TOKEN along with search value in the data
+            data: {
+               _token: CSRF_TOKEN,
+               search: request.term
+            },
+            //On successful callback pass response in response() function.
+            success: function( data ) {
+               response( data );               
+            }
+          });
+        },
+        // Using select option to display selected option label in the #product_search
+        select: function (event, ui) {
+           // Set selection           
+           $('#customer_mobile').val(ui.item.label); // display the selected text           
+           fillCustomerData(ui.item.label);
+           return false;
+        }
+      });
+
+      function fillCustomerData(customerMobile){
+        $.post("{{ route('admin.sales.customerInfo') }}", {        
+            _token: CSRF_TOKEN,
+            mobile: customerMobile            
+        }).done(function(data) { 
+            //console.log(data)
+            $('#customer_name').val(data[0].name);
+            $('#customer_address').val(data[0].address);        
+            $('#customer_notes').val(data[0].notes);            
+        });
+        }
+
+
 </script>
+
+
 
 @endpush

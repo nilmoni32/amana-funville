@@ -11,7 +11,9 @@
                 <p class="text-center h6 mt-2">[ Order Number:&nbsp;
                     {{ $order->order_number }} ]</p>
                 <p class="text-center h6 py-2">[ Payment Details:&nbsp;
-                    @if((float)$order->cash_pay)<span>Cash:
+                    @if((float)$order->booked_money)<span>Booking Amount:
+                        {{ round($order->booked_money,2)  }} {{ config('settings.currency_symbol') }}</span>@endif
+                    @if((float)$order->cash_pay)<span>,Cash:
                         {{ round($order->cash_pay,2)  }} {{ config('settings.currency_symbol') }}</span>@endif
                     @if((float)$order->card_pay)<span>, Card:
                         {{ round($order->card_pay,2)  }} {{ config('settings.currency_symbol') }}</span>@endif
@@ -102,7 +104,7 @@
                                 <p class="text-right my-2 ">Card Discount:
                                     {{ round($order->card_discount,2) }} {{ config('settings.currency_symbol') }}
                                 </p>
-                                @endif                              
+                                @endif                                                           
                                 <p class="text-right mb-0 h6 mt-2">
                                     @if($order->status == 'delivered')
                                     {{ __('Paid Amount:') }} {{ round($order->grand_total,2) }}

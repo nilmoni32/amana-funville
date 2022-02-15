@@ -46,7 +46,7 @@
                             <th class="text-center"> Order No </th>    
                             <th class="text-center"> Customer Phone No </th>                       
                             <th class="text-center"> Order Date </th>
-                            <th class="text-center"> Order Table No</th>
+                            <th class="text-center"> Last Payment Date</th>
                             <th class="text-center"> Paid Amount </th>
                             <th class="text-center"> Due Amount </th>                            
                             <th class="text-center"> Order Status</th>
@@ -67,13 +67,18 @@
                                 {{ \Carbon\Carbon::parse($order->order_date)->format('d-m-Y H:i:s') }}
                             </td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
-                                {{ $order->order_tableNo }}
+                                {{ \Carbon\Carbon::parse($order->payment_date)->format('d-m-Y H:i:s') }}
                             </td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                 {{ round($order->receive_total,2) }}
                             </td>
+                            @php $total_taka = 0.0; @endphp
+                            @foreach( App\Models\Duesale::where('dueordersale_id',
+                                        $order->id)->get() as $sale)
+                                        @php $total_taka += $sale->product_quantity * $sale->unit_price @endphp
+                            @endforeach
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
-                                {{ round($order->due_payable,2) }}
+                                {{ $total_taka ? round(($total_taka + ($total_taka * (config('settings.tax_percentage')/100))) - $order->receive_total,2) : 0 }}
                             </td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                 {{ $order->status }}

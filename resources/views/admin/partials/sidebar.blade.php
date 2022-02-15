@@ -89,7 +89,8 @@
             Route::currentRouteName() == 'admin.reports.ingredientPurchase' ||
             Route::currentRouteName() == 'admin.reports.getingredientPurchase' ||
             Route::currentRouteName() == 'admin.reports.refDiscount' ||
-            Route::currentRouteName() == 'admin.reports.getrefDiscount'){
+            Route::currentRouteName() == 'admin.reports.getrefDiscount' ||
+            Route::currentRouteName() == 'admin.reports.due.salesTotal'){
     $flag = 1;
     }else{
     $flag = 0;
@@ -131,6 +132,12 @@
             href="{{ route('admin.reports.ingredientPurchase') }}">
             <i class="icon fa fa-dot-circle-o"></i>Ingredient Purchase Details</a>
         </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.reports.due.salesTotal' || 
+            Route::currentRouteName() == 'admin.reports.due.getsalesTotal' ? 'active' : '' }}" 
+            href="{{ route('admin.reports.due.salesTotal') }}">
+            <i class="icon fa fa-dot-circle-o"></i>Due Cash Register Sales</a>
+        </li>       
         <li>
           <a class="treeview-item {{ Route::currentRouteName() == 'admin.reports.refDiscount' || 
             Route::currentRouteName() == 'admin.reports.getrefDiscount' ? 'active' : '' }}" 

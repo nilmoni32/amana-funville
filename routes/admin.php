@@ -201,6 +201,8 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             Route::post('/reports/ingredient/purchase', 'MISReportController@getingredientPurchase')->name('reports.getingredientPurchase');
             Route::get('/reports/kot/ref-discount', 'MISReportController@refDiscount')->name('reports.refDiscount'); 
             Route::post('/reports/kot/ref-discount', 'MISReportController@getrefDiscount')->name('reports.getrefDiscount');
+            Route::get('/reports/kot/due/total-sales', 'MISReportController@dueSalesTotal')->name('reports.due.salesTotal'); 
+            Route::post('/reports/kot/due/total-sales', 'MISReportController@getDueSalesTotal')->name('reports.due.getsalesTotal');            
 
             //ajax call to search customer via select2.
             Route::post('/reports/getclients/', 'MISReportController@getClients')->name('reports.getClients');
@@ -215,6 +217,7 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             Route::get('/reports/pdf/digital-payments/{date1}/{date2}/{op}', 'MISReportController@pdfgetDigitalPayment')->name('reports.pdfgetDigitalPayment');
             Route::get('/reports/pdf/ingredient/purchase/{date1}/{date2}', 'MISReportController@pdfgetingredient')->name('reports.pdfgetingredient');
             Route::get('/reports/pdf/kot/ref-discount/{date1}/{date2}', 'MISReportController@pdfrefDiscount')->name('reports.pdfrefDiscount');
+            Route::get('/reports/pdf/kot/due-sales/{date1}/{date2}', 'MISReportController@pdfDueSalesTotal')->name('reports.pdfDueSalesTotal');
         });
 
         //admin role
@@ -400,7 +403,7 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::post('/card/discount','DuePosSalesController@cardDiscount')->name('due.sales.card.discount'); 
                 Route::post('/gpstar/discount','DuePosSalesController@gpStarDiscount')->name('due.sales.gpStarDiscount'); 
                 
-                //Route::post('/orderupdate', 'DuePosSalesController@orderupdate')->name('due.sales.orderupdate'); 
+                Route::post('/orderupdate', 'DuePosSalesController@orderupdate')->name('due.sales.orderupdate'); 
             
             });
 

@@ -27,14 +27,13 @@
                             @csrf
                             <div class="row mt-2">
                                 <div class="col-md-4 text-right">
-                                    <label class="col-form-label font-weight-bold text-uppercase">Order Table
-                                        No:</label>
+                                    <label class="col-form-label font-weight-bold text-uppercase">Order No:</label>
                                 </div>
                                 <div class="col-md-5 ml-0">
                                     <div class="input-group mb-3">
-                                        <input type="text" class="form-control" placeholder="Search by Table No"
+                                        <input type="text" class="form-control" placeholder="Search by Order No"
                                             name="search"
-                                            value="{{ $order_id ? App\Models\Dueordersale::where('id', $order_id)->first()->order_tableNo : '' }}">
+                                            value="{{ $order_id ? App\Models\Dueordersale::where('id', $order_id)->first()->order_number : '' }}">
                                         <div class="input-group-append">
                                             <button class="btn btn-primary" type="submit"><i class="fa fa-search"
                                                     aria-hidden="true"></i></button>
@@ -61,9 +60,8 @@
                                             <th class="text-center"> Subtotal </th>
                                         </tr>
                                     </thead>
-                                    @php $i=1; $total_taka = 0; @endphp
-
-                                    @if($order_id && App\Models\Dueordersale::where('id',
+                                    @php $i=1; $total_taka = 0; @endphp                                    
+                                    @if($order_id && App\Models\Duesale::where('dueordersale_id', $order_id)->first() && App\Models\Dueordersale::where('id',
                                     $order_id)->first()->status == 'receive')
                                     <tbody>
                                         @foreach( App\Models\Duesale::where('dueordersale_id',
@@ -90,37 +88,62 @@
                                     @endif
                                 </table>
                                 <div class="row">
-                                    <div class="col-sm-12" style="visibility:{{ $order_id && App\Models\Dueordersale::where('id',
+                                    <div class="col-sm-12" style="visibility:{{ $order_id && App\Models\Duesale::where('dueordersale_id', $order_id)->first() && App\Models\Dueordersale::where('id',
                                     $order_id)->first()->status == 'receive' ? 'visible': 'hidden' }};" id="total">
                                         <h5 class="text-right pb-3 border-bottom">Subtotal :
                                             <span id="sub-total-tk">{{ $total_taka }}</span><span
                                                 class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
                                         </h5>
                                         @if(config('settings.tax_percentage'))
-                                        <h5 class="text-right pb-3 pt-1 border-bottom">Vat
-                                            ({{ config('settings.tax_percentage')}}%):
-                                            <span
-                                                id="vat-percent">{{ $total_taka * (config('settings.tax_percentage')/100) }}</span><span
-                                                class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
+                                        <h5 class="text-right pb-3 pt-1 border-bottom">
+                                            <div class="row mr-1">
+                                                <div class="col-8 pr-0 text-right">Vat
+                                                    ({{ config('settings.tax_percentage')}}%):
+                                                    <span
+                                                        id="vat-percent">{{ $total_taka * (config('settings.tax_percentage')/100) }}</span><span
+                                                        class="pr-2 pl-1">{{ config('settings.currency_symbol') }}, </span>
+                                                </div>
+                                                <div class="col-4 pr-0 text-right">Subtotal with Vat:
+                                                    <span
+                                                        id="vat-subtotal">{{ $total_taka + $total_taka * (config('settings.tax_percentage')/100) }}</span><span
+                                                        class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
+                                                </div>
+                                            </div>
+                                            
                                         </h5>
                                         @endif
                                         <h5 class="text-right pb-3 pt-1 border-bottom">
                                             @php $number = floatval($total_taka + $total_taka * (config('settings.tax_percentage')/100)) @endphp
                                             @if(!(floor($number) == $number))
                                             <div class="row mr-1">
-                                                <div class="col-8 pr-0 text-right">
-                                                    Fraction Discount: <span id="fraction-due" class="py-2 mt-1">{{ round(($number - floor($number)),2) }}</span>
+                                                <div class="col-5 pr-0 text-right">
+                                                    Received Amount: <span id="amount-receive" class="py-2 mt-1">{{  $order_id ? round(App\Models\Dueordersale::where('id',
+                                                        $order_id)->first()->receive_total,2) : 0 }} ,</span>
+                                                </div>
+                                                <div class="col-3 pr-0 text-right">
+                                                    Fraction Discount: <span id="fraction-due" class="py-2 mt-1">{{ round(($number - floor($number)),2) }} ,</span>
                                                 </div>
                                                 <div class="col-4 pr-0 pl-0">
-                                                    Order Total: <span id="total-tk">
-                                                        {{ floor($number)  }}</span><span
+                                                    Total Amount Payable: <span id="total-tk">
+                                                        {{ floor($number) - ($order_id ? round(App\Models\Dueordersale::where('id',
+                                                        $order_id)->first()->receive_total,2) : 0)  }}</span><span
                                                         class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span></span>
                                                 </div>
                                             </div>
                                             @else 
-                                            Order Total :<span
-                                                id="total-tk">{{ $total_taka + ($total_taka * (config('settings.tax_percentage')/100))}}</span><span
+                                            <div class="row mr-1">
+                                                <div class="col-8 pr-0 text-right">
+                                                    Received Amount: <span id="amount-receive" class="py-2 mt-1">{{  $order_id ? round(App\Models\Dueordersale::where('id',
+                                                        $order_id)->first()->receive_total,2) : 0 }}</span>
+                                                </div>
+                                                
+                                                <div class="col-4 pr-0 pl-0">
+                                                    Total Amount Payable : <span
+                                                id="total-tk">{{ $total_taka + ($total_taka * (config('settings.tax_percentage')/100)) - ($order_id ? round(App\Models\Dueordersale::where('id',
+                                                $order_id)->first()->receive_total,2) : 0) }}</span><span
                                                 class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
+                                                </div>                                                
+                                            </div>                                            
                                             @endif
                                         </h5>
                                         <h5 class="text-right pb-2 pt-1 border-bottom" id="discount-blk">
@@ -196,8 +219,9 @@
                                                 {{ config('settings.currency_symbol') }}
                                             </label>
                                         </h5>
-                                        <h5 class="text-right pb-3 pt-1 border-bottom">Due Amount: <span id="due-tk">
-                                            {{ floor($total_taka + $total_taka * (config('settings.tax_percentage')/100))  }}</span><span
+                                        <h5 class="text-right pb-3 pt-1 border-bottom">Net Amount Payable: <span id="due-tk">
+                                            {{ floor($total_taka + $total_taka * (config('settings.tax_percentage')/100) - ($order_id ? round(App\Models\Dueordersale::where('id',
+                                            $order_id)->first()->receive_total,2) : 0))  }}</span><span
                                             class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
                                         </h5>
                                         <h5 class="text-right pb-2 pt-1 border-bottom" id="cash_blk">
@@ -265,7 +289,7 @@
                                                 <div class="col-1 pl-0 text-left"><div id="pay-totals" class="py-2 mt-1"></div></div>                                                
                                             </div>                                            
                                         </h5>
-                                        <h4 class="text-right py-4 d-none text-danger" id="pay-more-block">Customer need to pay more
+                                        <h4 class="text-right py-4 d-none text-danger" id="pay-more-block">Customer Due Amount
                                             <span id="pay-more"></span><span
                                                 class="pr-5 pl-1">{{ config('settings.currency_symbol') }}</span>
                                         </h4>
@@ -305,7 +329,7 @@
                         </div>
 
                         <!--end of pos print using javascript-->
-                        <form method="POST" action="{{ route('admin.sales.orderupdate') }}">
+                        <form method="POST" action="{{ route('admin.due.sales.orderupdate') }}">
                             @csrf
                             <input type="hidden" id="order_id" name="order_id" value="{{ $order_id ? $order_id : '' }}">
                             <input type="hidden" id="sub-total" name="subtotal"
@@ -317,6 +341,7 @@
                             <input type="hidden" id="payment_details" name="payment_details" value="">
                             <input type="hidden" id="gpstarmobile" name="gpstarmobile" value="">
                             <input type="hidden" id="gpstar_discount" name="gpstar_discount" value="">
+                            {{-- <input type="hidden" id="customer_payable_due" name="customer_due" value=""> --}}
                             
                             <div class="border px-4 rounded" style="border-color:rgb(182, 182, 182);">
                                 <h4 class="text-center mt-3 mb-4">Customer Details</h4>
@@ -994,6 +1019,8 @@
 
             totalPaid = calculateTotalPaidByCustomer();
             $('#pay-totals').html( '=' + totalPaid);
+            
+
         }
 
         function exchangeDisplay(customerPaid, due, paymentMethod, bankName){
@@ -1161,9 +1188,9 @@
             }
 
             //if the payment due is exists or due is greater than zero, we will prevent submit data.
-            if(allPayments.length && allPayments[allPayments.length - 1].due > 0){
-                isValid = false;
-            }
+            // if(allPayments.length && allPayments[allPayments.length - 1].due > 0){
+            //     isValid = false;
+            // }
             
 
             if (isValid == false)
@@ -1488,15 +1515,20 @@
             var esc = '\x1B'; //ESC byte in hex notation
             var newLine = '\x0A'; //LF byte in hex notation            
             var cmds = esc + "@"; //Initializes the printer (ESC @)
-            cmds += esc + '!' + '\x30'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
-            cmds += "   {{ config('settings.site_name') }}"; //text to print site name
+            var center = '\x1B' + '\x61' + '\x31'; //center align
+            var left = '\x1B' + '\x61' + '\x30'; // left align
+            var right = '\x1B' + '\x61' + '\x32'; // right align
+            cmds += esc + '!' + '\x22'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
+            cmds += center;
+            cmds += "{{ strtoupper(config('settings.site_name')) }}"; //text to print site name
             cmds += newLine;
             cmds += esc + '!' + '\x08'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex            
             cmds += newLine;
             cmds += "{{ __('The Best Restaurant, Party center and Kids zone in Rajshahi.') }}"; //text to print site title
             cmds += newLine;
             cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
-            cmds += "---------------------------------------";
+            cmds += "------------------------------------------";
+            cmds += left;
             cmds += newLine;            
             cmds += "Location: {{ config('settings.contact_address') }}"; //text to print site address
             cmds += newLine;
@@ -1509,7 +1541,7 @@
             cmds += "---------------------------------------";
             cmds += newLine;
             cmds += esc + '!' + '\x08'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
-            cmds += "Customer Order Table No: {{ $order_id && App\Models\Dueordersale::where('id', $order_id)->first()->status == 'delivered' ? App\Models\Duesalebackup::where('dueordersale_id', $order_id)->first()->order_tbl_no : ''}}"
+            cmds += "Customer Order No: {{ $order_id && App\Models\Dueordersale::where('id', $order_id)->first()->status == 'delivered' ? App\Models\Dueordersale::where('id', $order_id)->first()->order_number : ''}}"
             cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
             cmds += newLine;
             cmds += "---------------------------------------";
@@ -1530,7 +1562,7 @@
             $discount = App\Models\Dueordersale::find($order_id)->discount + App\Models\Dueordersale::find($order_id)->reward_discount +
             App\Models\Dueordersale::find($order_id)->card_discount + App\Models\Dueordersale::find($order_id)->gpstar_discount;            
             @endphp
-            @foreach(App\Models\Duesalebackup::where('dueordersale_id', $order_id)->get() as $saleCart)        
+            @foreach(App\Models\Salebackup::where('dueordersale_id', $order_id)->get() as $saleCart)        
                 cmds += "{{ $saleCart->product_name }}" ;
                 cmds += newLine;
                 cmds += "           {{$saleCart->product_quantity}}" + '   X   ' + "{{ round($saleCart->unit_price,2) }}" + "      {{ round($saleCart->product_quantity *  $saleCart->unit_price,2) }} "
@@ -1548,22 +1580,27 @@
             cmds += newLine;
             @endif            
             cmds += "                          -------------";
-            cmds += '           Total Amount:          {{ $sub_tot_without_vat + $food_vat }}';
+            cmds += newLine;
+            cmds += 'Total Amount:                  {{ $sub_tot_without_vat + $food_vat }}';
             cmds += newLine;
             @if($order_id && (float)$discount)
-            cmds += '           -Discount:          {{ $order_id ? round($discount,2) : '' }}';
+            cmds += '-Discount:                     {{ $order_id ? round($discount,2) : '' }}';
             @endif
             cmds += newLine;            
             cmds += "                          -------------";
-            cmds += '             Amount Due:          {{ $order_id ? round(App\Models\Dueordersale::find($order_id)->grand_total,2) : '' }}'; 
-            cmds += newLine;           
-            cmds += "                Paid:          {{ $order_id && App\Models\Dueordersale::where('id', $order_id)->first()->status == 'delivered' ? $paid_amount : '' }}";
+            cmds += newLine;
+            cmds += 'Amount Payable:                {{ $order_id ? round(App\Models\Dueordersale::find($order_id)->grand_total - $discount,2) : '' }}'; 
+            cmds += newLine;                    
+            cmds += "Paid Amount:                   {{ $order_id && App\Models\Dueordersale::where('id', $order_id)->first()->status == 'delivered' ? round((App\Models\Dueordersale::find($order_id)->receive_total - $discount - App\Models\Dueordersale::find($order_id)->fraction_discount),2) : '' }}";
             cmds += newLine; 
-            cmds += 'Payment Mode:          ';
+            cmds += newLine; 
+            cmds += 'Payment Mode Details:          ';
             cmds += newLine; 
             cmds += "---------------------------------------";
             cmds += newLine;
             @if($order_id)
+            cmds += 'Booking Amount:                {{ round(App\Models\Dueordersale::where('id', $order_id)->first()->booked_money,2) }}';
+            cmds += newLine;
             @if((float)App\Models\Dueordersale::find($order_id)->cash_pay)
             cmds += 'CASH:                          {{ $order_id ? round(App\Models\Dueordersale::find($order_id)->cash_pay,2) : '' }}';
             cmds += newLine;
@@ -1574,24 +1611,20 @@
             @endif
             @if((float)App\Models\Dueordersale::find($order_id)->mobile_banking_pay)
             cmds += 'Mobile Banking:                {{ $order_id ? round(App\Models\Dueordersale::find($order_id)->mobile_banking_pay,2) : '' }}';
-            cmds += newLine;
+            cmds += newLine;            
             @endif
-            @endif
-            cmds += "---------------------------------------";
-            cmds += newLine;
-            @if($order_id)
             @if($discount)
             cmds += 'Total Discount:                {{ $order_id ? round($discount,2) : '' }}';
             cmds += newLine;
-            cmds += "---------------------------------------";
             @endif
-            cmds += newLine;
             @if((float)App\Models\Dueordersale::find($order_id)->fraction_discount)
             cmds += 'Other Discount:                {{ $order_id ? round(App\Models\Dueordersale::find($order_id)->fraction_discount,2) : '' }}';
             cmds += newLine;
+            @endif            
+            @endif
             cmds += "---------------------------------------";
             cmds += newLine;
-            @endif
+            @if($order_id &&($discount || App\Models\Dueordersale::find($order_id)->fraction_discount))
             cmds += 'You Have Saved:                {{ $order_id ? round(($discount + App\Models\Dueordersale::find($order_id)->fraction_discount),2)  : '' }}';            
             @endif
             cmds += newLine + newLine;
