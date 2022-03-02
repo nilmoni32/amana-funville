@@ -8,7 +8,7 @@ class Ingredient extends Model
 {
     protected $fillable = [
         'typeingredient_id','name', 'description', 'total_quantity', 'total_price', 'alert_quantity',
-        'measurement_unit', 'smallest_unit', 'smallest_unit_price', 'status', 'pic', 
+        'measurement_unit', 'smallest_unit', 'smallest_unit_price', 'status', 'pic', 'supplier_id',
     ];
 
     protected $casts = [
@@ -45,6 +45,14 @@ class Ingredient extends Model
     */
     public function recipeingredients(){
         return $this->hasMany(RecipeIngredient::class);
+    }
+
+    /**
+     * Defining inverse relationship  
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function supplier(){
+        return $this->belongsToMany(Supplier::class);        
     }
 
 

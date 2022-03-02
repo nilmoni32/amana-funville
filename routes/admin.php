@@ -161,6 +161,17 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::get('/{id}/delete', 'IngredientDamageController@delete')->name('ingredient.damage.delete');
             });
 
+            // suuplier and its all transactions/dealings
+            Route::group(['prefix' => 'supplier'], function(){
+                Route::get('/', 'SupplierController@index')->name('supplier.index');
+                Route::get('/create', 'SupplierController@create')->name('supplier.create');
+                Route::post('/store', 'SupplierController@store')->name('supplier.store');
+                Route::get('/edit/{id}', 'SupplierController@edit')->name('supplier.edit');
+                Route::post('/update', 'SupplierController@update')->name('supplier.update');
+                Route::get('/delete/{id}', 'SupplierController@delete')->name('supplier.delete');
+            });
+
+
         });
 
         Route::group(['middleware' => ['can:manage-reports']], function () { 
@@ -374,7 +385,7 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
             Route::group(['prefix' => 'kot'], function(){
                 Route::get('/due/sells', 'DuePosSalesController@index')->name('due.sales.index'); 
                 //pos due order place
-                Route::post('/order-place', 'DuePosSalesController@orderplace')->name('due.sales.orderplace'); 
+                Route::post('/orderPlace', 'DuePosSalesController@orderplace')->name('due.sales.orderplace'); 
             });
 
             //POS/KOT Due Orders Management [list of all due kot/pos orders]

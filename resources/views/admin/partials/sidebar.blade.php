@@ -189,21 +189,21 @@
         <li>
           <a class="treeview-item {{ Route::currentRouteName() == 'admin.restaurant.sales.index' ? 'active' : '' }}"
             href="{{ route('admin.restaurant.sales.index', 0) }}">
-            <i class="app-menu__icon fa fa-calculator"></i>
+            <i class="app-menu__icon fa fa-dot-circle-o"></i>
             <span class="app-menu__label">KOT Food Management</span>
           </a>
         </li>
         <li>
           <a class="treeview-item {{ Route::currentRouteName() == 'admin.pos.orders.index' ? 'active' : '' }}"
             href="{{ route('admin.pos.orders.index') }}">
-            <i class="app-menu__icon fa fa-database"></i>
+            <i class="app-menu__icon fa fa-dot-circle-o"></i>
             <span class="app-menu__label">KOT Order Lists</span>
           </a>
         </li>
         <li>
           <a class="treeview-item {{ Route::currentRouteName() == 'admin.sales.index' ? 'active' : '' }}"
             href="{{ route('admin.sales.index', 0) }}">
-            <i class="app-menu__icon fa fa-calculator"></i>
+            <i class="app-menu__icon fa fa-dot-circle-o"></i>
             <span class="app-menu__label">KOT Checkout & Payment </span>
           </a>
         </li>
@@ -226,21 +226,21 @@
         <li>
           <a class="treeview-item {{ Route::currentRouteName() == 'admin.due.sales.index' ? 'active' : '' }}"
             href="{{ route('admin.due.sales.index') }}">
-            <i class="app-menu__icon fa fa-star-half-o"></i>
+            <i class="app-menu__icon fa fa-dot-circle-o"></i>
             <span class="app-menu__label">Due Order Placement</span>
           </a>
         </li> 
         <li>
           <a class="treeview-item {{ Route::currentRouteName() == 'admin.due.orders.lists' ? 'active' : '' }}"
             href="{{ route('admin.due.orders.lists') }}">
-            <i class="app-menu__icon fa fa-bars" aria-hidden="true"></i>
+            <i class="app-menu__icon fa fa-dot-circle-o" aria-hidden="true"></i>
             <span class="app-menu__label">Due Order Lists</span>
           </a>
         </li>
         <li>
           <a class="treeview-item {{ Route::currentRouteName() == 'admin.due.sales.paymentindex' ? 'active' : '' }}"
             href="{{ route('admin.due.sales.paymentindex', 0) }}">
-            <i class="app-menu__icon fa fa-calculator"></i>
+            <i class="app-menu__icon fa fa-dot-circle-o"></i>
             <span class="app-menu__label">Due KOT Checkout</span>
           </a>
         </li>       
@@ -257,6 +257,55 @@
     @endcan
 
     @can('manage-stock')
+    @php if(Route::currentRouteName() == 'admin.supplier.index'){
+    $temp_supplier = 1;
+    }else{
+    $temp_supplier = 0;
+    }
+    @endphp
+    <li class="{{ $temp_supplier ? 'treeview is-expanded' : 'treeview' }}">
+      <a class="app-menu__item" href="#" data-toggle="treeview">
+        <i class="app-menu__icon fa fa-cube"></i><span class="app-menu__label">Supplier and Dealings</span>
+        <i class="treeview-indicator fa fa-angle-right"></i>
+      </a>
+      <ul class="treeview-menu">
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.supplier.index' ? 'active' : '' }}"
+            href="{{ route('admin.supplier.index') }}">
+            <i class="app-menu__icon fa fa-dot-circle-o"></i>
+            <span class="app-menu__label">Manage Supplier</span>
+          </a>
+        </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.restaurant.sales.index' ? 'active' : '' }}"
+            href="{{ route('admin.restaurant.sales.index', 0) }}">
+            <i class="app-menu__icon fa fa-dot-circle-o"></i>
+            <span class="app-menu__label">Requision to Supplier</span>
+          </a>
+        </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.pos.orders.index' ? 'active' : '' }}"
+            href="{{ route('admin.pos.orders.index') }}">
+            <i class="app-menu__icon fa fa-dot-circle-o"></i>
+            <span class="app-menu__label">Receive from Supplier</span>
+          </a>
+        </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.sales.index' ? 'active' : '' }}"
+            href="{{ route('admin.sales.index', 0) }}">
+            <i class="app-menu__icon fa fa-dot-circle-o"></i>
+            <span class="app-menu__label">Return to Supplier</span>
+          </a>
+        </li>
+        <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.sales.index' ? 'active' : '' }}"
+            href="{{ route('admin.sales.index', 0) }}">
+            <i class="app-menu__icon fa fa-dot-circle-o"></i>
+            <span class="app-menu__label">Manage Disposal</span>
+          </a>
+        </li>
+      </ul>
+    </li>
     <li>
       {{-- if current route name is admin.settings we will set active class here --}}
       <a class="app-menu__item {{ Route::currentRouteName() == 'admin.ingredient.index' ? 'active' : '' }}"
