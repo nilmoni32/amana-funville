@@ -4,16 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateIngredientSuppliersTable extends Migration
+class CreateSupplierStocksTable extends Migration
 {
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up() //supplier stock table
+    public function up()
     {
-        Schema::create('ingredient_suppliers', function (Blueprint $table) {
+        Schema::create('supplier_stocks', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('ingredient_id')->index(); 
             $table->unsignedBigInteger('supplier_id')->index();
@@ -36,6 +36,6 @@ class CreateIngredientSuppliersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ingredient_suppliers');
+        Schema::dropIfExists('supplier_stocks');
     }
 }

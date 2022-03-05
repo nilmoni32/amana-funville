@@ -12,7 +12,7 @@ class ReceiveIngredientList extends Model
      * @var array
      */
     protected $fillable = [
-        'receive_from_supplier_id', 'ingredient_id', 'ingredient_supplier_id', 'name', 'unit', 'unit_cost', 'quantity',
+        'receive_from_supplier_id', 'ingredient_id', 'supplier_stock_id', 'name', 'unit', 'unit_cost', 'quantity',
         'stock', 'total',
     ];
 
@@ -20,8 +20,17 @@ class ReceiveIngredientList extends Model
      * Defining inverse relationship  
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function supplier(){
+    public function chalanSupplier(){
         return $this->belongsTo(ReceiveFromSupplier::class);        
+    }
+
+    
+     /**
+     * Defining inverse relationship  
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function supplierProduct(){
+        return $this->belongsTo(SupplierStock::class);        
     }
 
 

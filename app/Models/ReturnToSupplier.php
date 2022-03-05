@@ -32,5 +32,12 @@ class ReturnToSupplier extends Model
         return $this->belongsTo(ReceiveFromSupplier::class);        
     }
 
+    /**
+    * Defining One to Many Relations 
+    * @return \Illuminate\Database\Eloquent\Relations\HasMany      
+    */
+    public function returnIngredients(){
+        return $this->hasMany(ReturnIngredientList::class);
+    }
 
 }

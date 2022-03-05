@@ -17,7 +17,7 @@ class CreateDisposalIngredientListsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('ingredient_disposal_id')->nullable();
             $table->unsignedBigInteger('ingredient_id')->index(); // recipe stock
-            $table->unsignedBigInteger('ingredient_supplier_id')->nullable(); //supplier stock
+            $table->unsignedBigInteger('supplier_stock_id')->nullable(); //supplier stock id
             $table->string('name');
             $table->string('unit');
             $table->decimal('unit_cost', 8, 2);
@@ -26,7 +26,7 @@ class CreateDisposalIngredientListsTable extends Migration
             $table->decimal('total', 8, 2); // unit_cost * quantity
             $table->foreign('ingredient_disposal_id')->references('id')->on('ingredient_disposals')->onDelete('cascade');
             $table->foreign('ingredient_id')->references('id')->on('ingredients');
-            $table->foreign('ingredient_supplier_id')->references('id')->on('ingredient_suppliers');
+            $table->foreign('supplier_stock_id')->references('id')->on('supplier_stocks');
             $table->timestamps();
         });
     }

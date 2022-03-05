@@ -17,7 +17,7 @@ class CreateReceiveIngredientListsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('receive_from_supplier_id')->nullable();
             $table->unsignedBigInteger('ingredient_id')->index(); // recipe stock
-            $table->unsignedBigInteger('ingredient_supplier_id')->nullable();  //supplier ingredient stock
+            $table->unsignedBigInteger('supplier_stock_id')->nullable(); //supplier stock id
             $table->string('name');
             $table->string('unit');
             $table->decimal('unit_cost', 8, 2);
@@ -27,7 +27,7 @@ class CreateReceiveIngredientListsTable extends Migration
             
             $table->foreign('receive_from_supplier_id')->references('id')->on('receive_from_suppliers')->onDelete('cascade');
             $table->foreign('ingredient_id')->references('id')->on('ingredients');
-            $table->foreign('ingredient_supplier_id')->references('id')->on('ingredient_suppliers');
+            $table->foreign('supplier_stock_id')->references('id')->on('supplier_stocks');
             $table->timestamps();
         });
     }

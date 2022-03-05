@@ -32,20 +32,20 @@ class Supplier extends Model
         return $this->hasMany(ReceiveFromSupplier::class);
     }
 
-     /**
+    /**
     * Defining One to Many Relations 
     * @return \Illuminate\Database\Eloquent\Relations\HasMany      
     */
-    public function return_ingredients(){
+    public function returnSupplierIngredients(){
         return $this->hasMany(ReturnToSupplier::class);
     }
 
-      /**
+    /**
     * Defining One to Many Relations 
     * @return \Illuminate\Database\Eloquent\Relations\HasMany      
     */
-    public function ingredients(){
-        return $this->belongsToMany(Ingredient::class);
+    public function supplierProducts(){
+        return $this->hasMany(SupplierStock::class);
     }
 
     

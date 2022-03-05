@@ -15,7 +15,6 @@ class Ingredient extends Model
        // 'typeingredient_id' =>  'integer',     
     ];
 
-
     /**
      * Defining inverse relationship  
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -48,11 +47,10 @@ class Ingredient extends Model
     }
 
     /**
-     * Defining inverse relationship  
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function supplier(){
-        return $this->belongsToMany(Supplier::class);        
+    * Get the ingredient lists with suplier info.
+    */
+    public function ingredientSuppliers(){
+        return $this->hasMany(SupplierStock::class);
     }
 
 

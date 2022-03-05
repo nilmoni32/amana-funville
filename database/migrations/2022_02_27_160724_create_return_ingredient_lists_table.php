@@ -16,7 +16,7 @@ class CreateReturnIngredientListsTable extends Migration
         Schema::create('return_ingredient_lists', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('return_to_supplier_id')->nullable();            
-            $table->unsignedBigInteger('ingredient_supplier_id')->nullable(); //supplier ingredient id
+            $table->unsignedBigInteger('supplier_stock_id')->nullable(); //supplier stock id
             $table->string('name');
             $table->string('unit');
             $table->decimal('unit_cost', 8, 2);
@@ -24,7 +24,7 @@ class CreateReturnIngredientListsTable extends Migration
             $table->decimal('stock',8,2);  // supplier stock
             $table->decimal('total', 8, 2); // unit_cost * quantity
             $table->foreign('return_to_supplier_id')->references('id')->on('return_to_suppliers')->onDelete('cascade');            
-            $table->foreign('ingredient_supplier_id')->references('id')->on('ingredient_suppliers');
+            $table->foreign('supplier_stock_id')->references('id')->on('supplier_stocks');
             $table->timestamps();
         });
     }

@@ -13,7 +13,7 @@ class ReceiveFromSupplier extends Model
      */
     protected $fillable = [
         'supplier_id', 'admin_id', 'requisition_to_supplier_id','chalan_no', 'chalan_date', 'payment_date', 'requisition_date', 
-        'expected_delivery', 'purpose', 'remarks',  'applyDiscount', 'totalFreeQuantity', 'total_quantity',
+        'expected_delivery', 'purpose', 'remarks', 'applyDiscount', 'totalFreeQuantity', 'total_quantity',
         'total_amount',
     ];
 
@@ -39,6 +39,14 @@ class ReceiveFromSupplier extends Model
     */
     public function chalan_ingredients(){
         return $this->hasMany(ReceiveIngredientList::class);
+    }
+
+    /**
+    * Defining One to Many Relations 
+    * @return \Illuminate\Database\Eloquent\Relations\HasMany      
+    */
+    public function returnIngredients(){
+        return $this->hasMany(ReturnToSupplier::class);
     }
 
 

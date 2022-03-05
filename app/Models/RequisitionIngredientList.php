@@ -12,7 +12,7 @@ class RequisitionIngredientList extends Model
      * @var array
      */
     protected $fillable = [
-        'requisition_to_supplier_id', 'ingredient_supplier_id', 'name', 'unit', 'unit_cost', 'quantity', 
+        'requisition_to_supplier_id', 'supplier_stock_id', 'name', 'unit', 'unit_cost', 'quantity', 
         'stock', 'total', 
     ];
 
@@ -20,8 +20,16 @@ class RequisitionIngredientList extends Model
      * Defining inverse relationship  
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function Supplier_requisition(){
+    public function supplierRequisition(){
         return $this->belongsTo(RequisitionToSupplier::class);        
+    }
+
+     /**
+     * Defining inverse relationship  
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function supplierProduct(){
+        return $this->belongsTo(SupplierStock::class);        
     }
 
 
