@@ -12,7 +12,7 @@ class SupplierStock extends Model
      * @var array
      */
     protected $fillable = [
-        'ingredient_id', 'supplier_id', 'supplier_product_name', 'measurement_unit', 'unit_cost', 'total_qty', 'total_cost',
+        'ingredient_id', 'supplier_id', 'typeingredient_id', 'supplier_product_name', 'measurement_unit', 'unit_cost', 'total_qty', 'total_cost',
     ];
 
      /**
@@ -27,7 +27,7 @@ class SupplierStock extends Model
     /**
      * Get the supplier Name associated with the supplier products table.
     */
-    public function ingredientStock()
+    public function ingredient()
     {
         return $this->belongsTo(Ingredient::class);  
     }

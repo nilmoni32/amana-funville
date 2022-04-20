@@ -16,14 +16,17 @@ class CreateReceiveIngredientListsTable extends Migration
         Schema::create('receive_ingredient_lists', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('receive_from_supplier_id')->nullable();
-            $table->unsignedBigInteger('ingredient_id')->index(); // recipe stock
+            $table->unsignedBigInteger('ingredient_id')->index(); // recipe stock item
             $table->unsignedBigInteger('supplier_stock_id')->nullable(); //supplier stock id
             $table->string('name');
-            $table->string('unit');
+            $table->string('unit'); //stock unit
             $table->decimal('unit_cost', 8, 2);
             $table->decimal('quantity',8,2);
-            $table->decimal('stock',8,2);  // supplier stock
             $table->decimal('total', 8, 2); // unit_cost * quantity
+            $table->string('recipe_ingredient_unit'); // recipe ingredient stock unit            
+            $table->decimal('recipe_ingredient_quantity',8,2); // equivalent supplier product qty to recipe ingredient stock quantity 
+            $table->decimal('stock',8,2);  // supplier stock
+            
             
             $table->foreign('receive_from_supplier_id')->references('id')->on('receive_from_suppliers')->onDelete('cascade');
             $table->foreign('ingredient_id')->references('id')->on('ingredients');

@@ -11,11 +11,11 @@
         <h1><i class="fa fa-modx"></i>&nbsp;{{ $pageTitle }}</h1>
         <p>{{ $subTitle }}</p>
     </div>
-    <a href="{{ route('admin.recipe.create') }}" class="btn btn-primary pull-right">Add Supplier</a>
+    <a href="{{ route('admin.supplier.create') }}" class="btn btn-primary pull-right">Add Supplier</a>
 </div>
 @include('admin.partials.flash')
 <div class="row">
-    <div class="col-md-9 mx-auto">
+    <div class="col-md-10 mx-auto">
         <div class="tile">
             <div class="tile-body">
                 <table class="table table-hover table-bordered" id="sampleTable">
@@ -24,7 +24,7 @@
                             <th class="text-center"> # </th>
                             <th class="text-center"> Supplier Name </th>
                             <th class="text-center"> Supplier Contact</th>
-                            <th class="text-center"> Product Types </th>
+                            <th class="text-center"> Supplier Address </th>
                             <th class="text-center"> Active Supplier </th>
                             <th style="min-width:100px;" class="text-center text-danger"><i class="fa fa-bolt"></i></th>
                         </tr>
@@ -39,17 +39,17 @@
                             <td style="padding: 0.5rem; vertical-align: 0 ;">                               
                                 {{ $supplier->phone }}</td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
-                                {{  }}</td>
+                                {{ $supplier->address }}</td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                 {{ $supplier->activeSupplier ? 'Yes': 'No'}}</td>
                             </td>
                             <td class="text-center" style="padding: 0.5rem; vertical-align: 0 ;">
                                 <div class="btn-group" role="group" aria-label="Second group">
-                                    <a href="{{ route('admin.recipe.edit', $recipe->id) }}"
+                                    <a href="{{ route('admin.supplier.edit', $supplier->id) }}"
                                         class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
-                                    <a href="{{ route('admin.recipe.delete', $recipe->id) }}"
+                                    <a href="{{ route('admin.supplier.delete', $supplier->id) }}"
                                         class="btn btn-sm btn-danger delete-confirm {{
-                                            App\Models\RecipeIngredient::where('recipe_id', $recipe->id)->count()
+                                            App\Models\SupplierStock::where('supplier_id', $supplier->id)->count()
                                             ? 'disabled' :'' }}"><i class="fa fa-trash"></i></a>
                                 </div>
                             </td>

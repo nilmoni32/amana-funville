@@ -161,7 +161,7 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::get('/{id}/delete', 'IngredientDamageController@delete')->name('ingredient.damage.delete');
             });
 
-            // suuplier and its all transactions/dealings
+            // supplier and its all transactions/dealings
             Route::group(['prefix' => 'supplier'], function(){
                 Route::get('/', 'SupplierController@index')->name('supplier.index');
                 Route::get('/create', 'SupplierController@create')->name('supplier.create');
@@ -170,8 +170,55 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::post('/update', 'SupplierController@update')->name('supplier.update');
                 Route::get('/delete/{id}', 'SupplierController@delete')->name('supplier.delete');
             });
+            
+            //supplier stock 
+            Route::group(['prefix' => 'supplier/stock'], function(){
+                Route::get('/', 'SupplierStockController@index')->name('supplier.stock.index');
+                Route::get('/create', 'SupplierStockController@create')->name('supplier.stock.create');
+                Route::post('/store', 'SupplierStockController@store')->name('supplier.stock.store');
+                Route::get('/edit/{id}', 'SupplierStockController@edit')->name('supplier.stock.edit');
+                Route::post('/update', 'SupplierStockController@update')->name('supplier.stock.update');
+                // Route::get('/delete/{id}', 'SupplierStockController@delete')->name('supplier.stock.delete');
+                // ajax route for getting stock items
+                Route::get('/getproducts','SupplierStockController@getSupplierProducts')->name('supplier.getproducts');
+                Route::get('/recipe/ingredient/{id}','SupplierStockController@getUnitfromIngredientId');
+                Route::get('/types/ingredient/{id}','SupplierStockController@getIngredientsByType');
+                
+            });
 
+            //Requisition to supplier
+            Route::group(['prefix' => 'supplier/requisition'], function(){
+                Route::get('/', 'SupplierRequisitionController@index')->name('supplier.requisition.index');
+                Route::get('/create', 'SupplierRequisitionController@create')->name('supplier.requisition.create');
+                Route::post('/store', 'SupplierRequisitionController@store')->name('supplier.requisition.store');
+                Route::get('/edit/{id}', 'SupplierRequisitionController@edit')->name('supplier.requisition.edit');
+                Route::post('/update', 'SupplierRequisitionController@update')->name('supplier.requisition.update');  
+                Route::get('/pdf/{id}', 'SupplierRequisitionController@generateRequisitionPdf')->name('supplier.requisition.pdf');              
+                // ajax route for getting stock items
+                Route::get('/getall','SupplierRequisitionController@getSupplierRequisition')->name('supplier.requisitions');
+                Route::get('/allproducts/{id}','SupplierRequisitionController@getAllSupplierProducts');
+                Route::get('/product/details/{id}','SupplierRequisitionController@getProductUnit');
+                Route::get('/recipe/ingredient/{id}','SupplierRequisitionController@getRecipeUnit');
+                
+            });
 
+            //Delivery challan received from supplier
+            Route::group(['prefix' => 'supplier/challan'], function(){
+                Route::get('/', 'DeliveryChallanController@index')->name('supplier.challan.index');
+                Route::get('/create', 'DeliveryChallanController@create')->name('supplier.challan.create');
+                Route::post('/store', 'DeliveryChallanController@store')->name('supplier.challan.store');             
+                Route::get('/pdf/{id}', 'DeliveryChallanController@generateChallanPdf')->name('supplier.challan.pdf');              
+                // ajax route for getting stock items
+                Route::get('/requisitions/{id}','DeliveryChallanController@getRequisitions');
+                Route::get('/{dt1}/{dt2}/{supplier}','DeliveryChallanController@getRequisitionsFromDateWithSupplier');
+                Route::get('/getRequisition/{id}/','DeliveryChallanController@getOnlyRequisition');  
+                            
+                // Route::get('/allproducts/{id}','DeliveryChallanController@getAllChallanProducts');
+                // Route::get('/product/details/{id}','DeliveryChallanController@getChallanProductUnit');
+                
+            });
+
+            
         });
 
         Route::group(['middleware' => ['can:manage-reports']], function () { 

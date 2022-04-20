@@ -257,7 +257,10 @@
     @endcan
 
     @can('manage-stock')
-    @php if(Route::currentRouteName() == 'admin.supplier.index'){
+    @php if(Route::currentRouteName() == 'admin.supplier.index' || 
+    Route::currentRouteName() == 'admin.supplier.stock.index' ||
+    Route::currentRouteName() == 'admin.supplier.requisition.index' ||
+    Route::currentRouteName() == 'admin.supplier.challan.create'){
     $temp_supplier = 1;
     }else{
     $temp_supplier = 0;
@@ -270,6 +273,13 @@
       </a>
       <ul class="treeview-menu">
         <li>
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.supplier.stock.index' ? 'active' : '' }}"
+            href="{{ route('admin.supplier.stock.index') }}">
+            <i class="app-menu__icon fa fa-dot-circle-o"></i>
+            <span class="app-menu__label">Manage Supplier Stock</span>
+          </a>
+        </li>
+        <li>
           <a class="treeview-item {{ Route::currentRouteName() == 'admin.supplier.index' ? 'active' : '' }}"
             href="{{ route('admin.supplier.index') }}">
             <i class="app-menu__icon fa fa-dot-circle-o"></i>
@@ -277,15 +287,15 @@
           </a>
         </li>
         <li>
-          <a class="treeview-item {{ Route::currentRouteName() == 'admin.restaurant.sales.index' ? 'active' : '' }}"
-            href="{{ route('admin.restaurant.sales.index', 0) }}">
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.supplier.requisition.index' ? 'active' : '' }}"
+            href="{{ route('admin.supplier.requisition.index', 0) }}">
             <i class="app-menu__icon fa fa-dot-circle-o"></i>
-            <span class="app-menu__label">Requision to Supplier</span>
+            <span class="app-menu__label">Requisition to Supplier</span>
           </a>
         </li>
         <li>
-          <a class="treeview-item {{ Route::currentRouteName() == 'admin.pos.orders.index' ? 'active' : '' }}"
-            href="{{ route('admin.pos.orders.index') }}">
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.supplier.challan.create' ? 'active' : '' }}"
+            href="{{ route('admin.supplier.challan.create') }}">
             <i class="app-menu__icon fa fa-dot-circle-o"></i>
             <span class="app-menu__label">Receive from Supplier</span>
           </a>
@@ -311,7 +321,7 @@
       <a class="app-menu__item {{ Route::currentRouteName() == 'admin.ingredient.index' ? 'active' : '' }}"
         href="{{ route('admin.ingredient.index')}}">
         <i class="app-menu__icon fa fa-th"></i>
-        <span class="app-menu__label">Stock Ingredients</span></a>
+        <span class="app-menu__label">Recipe Stock Ingredients</span></a>
     </li>
     @endcan
 

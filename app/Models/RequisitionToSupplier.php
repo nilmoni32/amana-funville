@@ -40,6 +40,10 @@ class RequisitionToSupplier extends Model
         return $this->hasMany(RequisitionIngredientList::class);
     }
 
+    public function admin(){
+        return $this->belongsTo(Admin::class);
+    }
+
 
 
 }

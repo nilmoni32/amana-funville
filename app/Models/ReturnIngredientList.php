@@ -27,7 +27,7 @@ class ReturnIngredientList extends Model
      * Defining inverse relationship  
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function supplierProduct(){
+    public function supplier_stock(){
         return $this->belongsTo(SupplierStock::class);        
     }
 

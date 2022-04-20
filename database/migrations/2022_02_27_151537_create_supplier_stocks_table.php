@@ -17,6 +17,7 @@ class CreateSupplierStocksTable extends Migration
             $table->id();
             $table->unsignedBigInteger('ingredient_id')->index(); 
             $table->unsignedBigInteger('supplier_id')->index();
+            $table->unsignedBigInteger('typeingredient_id')->index(); 
             $table->string('supplier_product_name');
             $table->string('measurement_unit');
             $table->decimal('unit_cost', 8, 2)->default(0.0);
@@ -25,6 +26,8 @@ class CreateSupplierStocksTable extends Migration
 
             $table->foreign('supplier_id')->references('id')->on('suppliers');            
             $table->foreign('ingredient_id')->references('id')->on('ingredients');
+            $table->foreign('typeingredient_id')->references('id')->on('typeingredients');
+            
             $table->timestamps();
         });
     }
