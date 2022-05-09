@@ -12,7 +12,8 @@ class SupplierStock extends Model
      * @var array
      */
     protected $fillable = [
-        'ingredient_id', 'supplier_id', 'typeingredient_id', 'supplier_product_name', 'measurement_unit', 'unit_cost', 'total_qty', 'total_cost',
+        'ingredient_id', 'supplier_id', 'typeingredient_id', 'supplier_product_name', 'measurement_unit', 'has_differ_product_unit', 
+        'product_unit','product_qty','unit_cost', 'total_qty', 'total_cost',
     ];
 
      /**

@@ -130,6 +130,60 @@
                             </div>
                         </div> 
                     </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group mb-5">
+                                <label class="control-label" for="has_differ_product_unit">Is <strong>product unit</strong> differ from stock measurement unit?</label>
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="has_differ_product_unit" id="differ_product_unit_yes" value="yes"
+                                            {{ (isset($supplier_stock->has_differ_product_unit) && ($supplier_stock->has_differ_product_unit == 1 ) ? 'checked' : '' )}}>
+                                            <label class="form-check-label" for="differ_product_unit_yes">Yes</label>
+                                        </div> 
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="has_differ_product_unit" id="differ_product_unit_no" value="no"
+                                            {{ (isset($supplier_stock->has_differ_product_unit) && ($supplier_stock->has_differ_product_unit == 0 ) ? 'checked' : '' )}}>
+                                            <label class="form-check-label" for="differ_product_unit_no">No</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group stock-product {{$supplier_stock->has_differ_product_unit == 1 ? '': 'd-none'}}">
+                                <label class="control-label" for="product_unit">Product Unit</label>
+                                {{-- <input class="form-control @error('product_unit') is-invalid @enderror" type="text"
+                                    placeholder="Product Unit" id="product_unit" name="product_unit" value="{{ old('product_unit', $supplier_stock->product_unit) }}" /> --}}
+                                <select name="product_unit" id="product_unit" class="form-control" @error('product_unit') is-invalid @enderror">                                                                       
+                                    @foreach(App\Models\Unit::all() as $unit)
+                                    @php 
+                                        $check = $supplier_stock->product_unit ==  $unit->measurement_unit ? 'selected' : '';
+                                    @endphp
+                                    <option></option>
+                                    <option value="{{ $unit->measurement_unit }}" {{ $check }}>{{ $unit->measurement_unit }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="invalid-feedback active">
+                                    <i class="fa fa-exclamation-circle fa-fw"></i> @error('product_unit')
+                                    <span>{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="col-md-4">
+                            <div class="form-group stock-product {{$supplier_stock->has_differ_product_unit == 1 ? '': 'd-none'}}">
+                                <label class="control-label" for="product_qty">Product Quantity</label>
+                                <input class="form-control @error('product_qty') is-invalid @enderror" type="text"
+                                    placeholder="Product Quantity" id="product_qty" name="product_qty" value="{{ old('product_qty', $supplier_stock->product_qty) }}" />
+                                <div class="invalid-feedback active">
+                                    <i class="fa fa-exclamation-circle fa-fw"></i> @error('product_qty')
+                                    <span>{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                        </div>     
+                    </div>
                 </div>
                 <div class="tile-footer pb-5">
                     <div class="pull-right">
@@ -156,6 +210,12 @@
                 width: '100%',                        
              });   
              $('#measurement_unit').select2({
+                placeholder: "Select a Measurement Unit",
+               // allowClear: true,
+                multiple: false,  
+                width: '100%',  
+             });
+             $('#product_unit').select2({
                 placeholder: "Select a Measurement Unit",
                // allowClear: true,
                 multiple: false,  
@@ -219,6 +279,18 @@
                         }
                     }
                 });
+            });
+
+            $('#differ_product_unit_yes').click(function(){                          
+                if($(this).attr("value") == 'yes'){
+                    $('.stock-product').removeClass('d-none');
+                } 
+            });
+
+            $('#differ_product_unit_no').click(function(){                          
+                if($(this).attr("value") == 'no'){
+                    $('.stock-product').addClass('d-none');
+                }                 
             });
             
             

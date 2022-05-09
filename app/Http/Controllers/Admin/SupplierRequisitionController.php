@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Carbon\Carbon;
 use App\Models\Ingredient;
 use App\Models\Supplier;
+use App\Models\ReceiveFromSupplier;
 use App\Models\Unit; 
 use App\Models\SupplierStock;
 use App\Models\RequisitionToSupplier;
@@ -63,7 +64,7 @@ class SupplierRequisitionController extends Controller
         $data_arr = array();
         //$sno = $start+1; 
         foreach($records as $record){ 
-
+            $disabled = RequisitionToSupplier::find($record->id)->remarks !== NULL ? 'disabled' :'';
             $data_arr[] = array( 
                 "id"                    => $record->id,
                 "requisition_date"      => explode(' ', $record->requisition_date)[0],       // converting date string to array and get the date         
@@ -73,7 +74,8 @@ class SupplierRequisitionController extends Controller
                 "remarks"               => $record->remarks,
                 "action"                => '<div class="btn-group" role="group" aria-label="Second group">
                                                 <a href="'. url("admin/supplier/requisition/edit/{$record->id}"). '"
-                                                class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
+                                                class="btn btn-sm btn-primary '. $disabled .'">
+                                                <i class="fa fa-edit"></i></a>
                                                 <a href="'. url("admin/supplier/requisition/pdf/{$record->id}"). '"
                                                 class="btn btn-sm btn-dark" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
                                             </div>',
@@ -119,12 +121,12 @@ class SupplierRequisitionController extends Controller
     public function store(Request $request){
         
         $this->validate($request,[
-            'requisition_date'     => 'required | date_format:"d-m-Y"',             
-            'expected_delivery'    => 'required | date_format:"d-m-Y"',
-            'purpose'              => 'nullable | string|max:191',       
-            'customer_notes'       => 'nullable | string|max:191',    
-            'total_quantity'       => 'required | numeric | gt:0',
-            'total_amount'         => 'required | numeric | gt:0',
+            'requisition_date'     => 'required|date_format:"d-m-Y"',             
+            'expected_delivery'    => 'required|date_format:"d-m-Y"',
+            'purpose'              => 'nullable|string|max:191',       
+            'customer_notes'       => 'nullable|string|max:191',    
+            'total_quantity'       => 'required|numeric|gt:0',
+            'total_amount'         => 'required|numeric|gt:0',
         ]);
         //dd($request->all());
         /*
@@ -192,12 +194,12 @@ class SupplierRequisitionController extends Controller
     public function update(Request $request){
         
         $this->validate($request,[
-            'requisition_date'     => 'required | date_format:"d-m-Y"',             
-            'expected_delivery'    => 'required | date_format:"d-m-Y"',
-            'purpose'              => 'nullable | string|max:191',       
-            'customer_notes'       => 'nullable | string|max:191',    
-            'total_quantity'       => 'required | numeric | gt:0',
-            'total_amount'         => 'required | numeric | gt:0',
+            'requisition_date'     => 'required|date_format:"d-m-Y"',             
+            'expected_delivery'    => 'required|date_format:"d-m-Y"',
+            'purpose'              => 'nullable|string|max:191',       
+            'customer_notes'       => 'nullable|string|max:191',    
+            'total_quantity'       => 'required|numeric|gt:0',
+            'total_amount'         => 'required|numeric|gt:0',
         ]);
 
         $product_lists = '';

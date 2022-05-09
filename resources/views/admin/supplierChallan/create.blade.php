@@ -150,14 +150,15 @@
                                             <tr>
                                                 <th class="text-center"> # </th>
                                                 <th class="text-center"> Name </th>                                                
-                                                <th class="text-center"> Stock Unit</th>                                                
-                                                <th class="text-center"> Stock Qty</th>
-                                                <th class="text-center" style="min-width:100px;"> Req Qty</th> 
-                                                <th class="text-center"> Req Price</th>
-                                                <th class="text-center"> Total </th>
-                                                <th class="text-center"> Recipe Stock Unit</th>
-                                                <th class="text-center"> Recipe Stock Qty</th>                                                
-                                                <th style="max-width:100px;" class="text-center text-danger"><i class="fa fa-bolt"></i></th>
+                                                <th class="text-center"> Stk Unit</th>         
+                                                <th class="text-center"> Stk Qty</th>
+                                                <th class="text-center" style="min-width:90px;">Req Qty</th> 
+                                                <th class="text-center"> Req Price</th> 
+                                                <th class="text-center"> Total </th>                                                
+                                                <th class="text-center"> Product Wgt </th>                                                
+                                                <th class="text-center"> Recipe Stk Unit</th>
+                                                <th class="text-center"> Recipe Stk Qty</th>  
+                                                <th style="max-width:50px;" class="text-center text-danger"><i class="fa fa-bolt"></i></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -208,7 +209,7 @@
 @push('scripts')
 <script>
     $(document).ready(function() {            
-        var productId, productMeasurementUnit, unitCost, productName, productStock;
+        var productId, productMeasurementUnit, unitCost, productName, productStock, hasDifferProductUnit, productUnit, productQty, smallMeasurementUnit, conversionUnit;
         var requisitionProducts=[];
         $('.datetimepicker').datetimepicker({
         timepicker:false,
@@ -280,18 +281,25 @@
 
             if(productId != null){
                 $.ajax({
-                    url: '/admin/supplier/requisition/product/details/' + productId,
+                    url: '/admin/supplier/challan/get/product-details/' + productId,
                     type: 'get',
                     dataType: 'JSON',
                     data: {},
                     success: function(data) {
+                        //console.log(data);
                         $('#unit').val(data.item.measurement_unit);
                         $('#total_qty').val(data.item.total_qty);
                         $('#unit_cost').val(data.item.unit_cost);
-                        productMeasurementUnit = data.item.measurement_unit;
+                        //note:  supplier stock product purchase unit can be differ with product actual unit such as 1 packet termeric powder purchase unit pcs 
+                        productMeasurementUnit = data.item.measurement_unit; // supplier stock product purchase unit such as pcs, kg, gm
                         unitCost = data.item.unit_cost;
                         productName = data.item.supplier_product_name;
-                        productStock = data.item.total_qty;                           
+                        productStock = data.item.total_qty;  
+                        hasDifferProductUnit = data.item.has_differ_product_unit ;
+                        productUnit = data.item.has_differ_product_unit ? data.item.product_unit : data.item.measurement_unit; // productUnit: supplier stock product actual unit such as gm
+                        productQty = data.item.has_differ_product_unit ? data.item.product_qty : '1';  // productQty: supplier stock product actual qty   such as 150gm  
+                        smallMeasurementUnit = data.small_measurement_unit; // product smallest measurement unit
+                        conversionUnit = data.conversion_unit;              
                     }
                 });
             }
@@ -315,21 +323,34 @@
                         }
 
                         $.ajax({
-                            url: '/admin/supplier/requisition/recipe/ingredient/' + productId,
+                            url: '/admin/supplier/challan/get/ingredient_units/' + productId,
                             type: 'get',
                             dataType: 'JSON',
                             data: {},
-                            success: function(data) {                                    
+                            success: function(data) { 
                                 if(data){
+                                    //calculating recipeStockQty : 
+                                    const recipeStockUnit = (data.recipeIngredientUnit).toLowerCase();
+                                    const recipeStockSmallUnit = (data.recipeIngredientSmallUnit).toLowerCase(); 
+                                    const recipeStockUnitConversion = (data.uc_recipe_ingredient_smallUnit).toLowerCase();                                  
+                                    let recipeStkQty = hasDifferProductUnit && productUnit === recipeStockUnit  ? parseFloat(productQty * ($.trim($('#quantity').val()))).toFixed(2) 
+                                                       : hasDifferProductUnit && productUnit !== recipeStockUnit && recipeStockUnit == smallMeasurementUnit ? (parseFloat(productQty) * (parseFloat($.trim($('#quantity').val()))* parseFloat(conversionUnit))).toFixed(2) 
+                                                       : hasDifferProductUnit && productUnit !== recipeStockUnit && recipeStockSmallUnit == productUnit ?  (parseFloat(productQty) * parseFloat($.trim($('#quantity').val()))/parseFloat(recipeStockUnitConversion)).toFixed(2) 
+                                                       : !hasDifferProductUnit && productUnit === recipeStockUnit ? parseFloat($.trim($('#quantity').val())).toFixed(2)
+                                                       : !hasDifferProductUnit && productUnit !== recipeStockUnit && recipeStockUnit == smallMeasurementUnit ? (parseFloat($.trim($('#quantity').val())) * parseFloat(conversionUnit)).toFixed(2) 
+                                                       : !hasDifferProductUnit && productUnit !== recipeStockUnit && recipeStockSmallUnit == productUnit ? (parseFloat($.trim($('#quantity').val())) / parseFloat(recipeStockUnitConversion)).toFixed(2): ''; 
+
+                                    let productWeight = productQty + "" + productUnit;                                                                                                       
                                     productDetails = {                            
                                         'supplier_stock_id' : productId, 
                                         'name' : productName,                          
-                                        'unit': productMeasurementUnit,
+                                        'unit': productMeasurementUnit,                                        
                                         'unit_cost': unitCost,
                                         'quantity': parseFloat($.trim($('#quantity').val())),
                                         'stock': productStock,
                                         'total': (parseFloat(unitCost) * parseFloat($.trim($('#quantity').val()))), 
-                                        'recipe_unit': data.recipeIngredientUnit,                           
+                                        'recipe_unit': recipeStockUnit,
+                                        'recipe_stk_qty': recipeStkQty                         
                                     };                                   
                                     
                                     // array of objects holds all products details                
@@ -350,18 +371,20 @@
                                     // adding products info to product Details table
                                     let i = document.getElementById("productTable").rows.length;                        
                                     tableBody = $("#productTable tbody"); 
+
                                     markup = "<tr id='row"+i+"'><td class='text-center index'><span>"  + i + "</span></td>" + 
                                                     "<td class='text-center'>"  + productDetails.name + "</td>" +                   
-                                                    "<td class='text-center'>"  + productDetails.unit + "</td>" +  
+                                                    "<td class='text-center'>"  + productDetails.unit + "</td>" +
                                                     "<td class='text-center'>"  + productDetails.stock + "</td>" +                                             
                                                     "<td class='text-center tdQty'>"  + 
                                                         "<input type='text' id='product-qty"+i+"' value="+ productDetails.quantity +" size= '1' class='form-control qty' style='line-height: 10px;' />"                                            
                                                     +"</td>" + 
                                                     "<td class='text-center unitCost' id='unitPrice"+i+"'>"  + productDetails.unit_cost + "</td>" +  
                                                     "<td class='text-center totPrice' id='price"+i+"'>"  + productDetails.total + "</td>" +  
+                                                    "<td class='text-center'>"  + productWeight +"</td>" +  
                                                     "<td class='text-center'>"  + productDetails.recipe_unit + "</td>" + 
                                                     "<td class='text-center ingredientQty'>"  + 
-                                                    "<input type='text' id='ingredient_qty"+i+"' size= '1' value= '' class='form-control inQty' style='line-height: 10px;' />"                                            
+                                                    "<input type='text' id='ingredient_qty"+i+"' size= '1' value= '"+ productDetails.recipe_stk_qty +"' class='form-control inQty' style='line-height: 10px;' />"                                            
                                                     +"</td>" +                   
                                                     "<td class='text-center tdClsBtn' style='width:100px;'>"+ 
                                                         "<button class='btn btn-sm btn-danger clsBtn' id='close" +i+"'><i class='fa fa-trash'></i></button></td>"+ 
@@ -381,7 +404,7 @@
                                     //converting array of objects to json string to pass data to controller.
                                     jsonStringRequisitionProducts = JSON.stringify(requisitionProducts);
                                     //setting product lists to form hidden input field           
-                                    $('#product_lists').val(jsonStringRequisitionProducts); 
+                                    $('#product_lists').val(jsonStringRequisitionProducts);                                    
                                     
                                 }                           
                             }
@@ -417,27 +440,53 @@
             }
 
         });
+        //update recipe stock qty when req qty has change made
+        $(document).on('input', '.inQty',function(){
+            let recipeStkQty = parseFloat($.trim($(this).val())); 
+            let recipeStkQtyId = $(this).attr("id");
+            // finding the rowno from the id.
+            let row = parseInt(recipeStkQtyId.match(/(\d+)/)[0]); 
+
+            requisitionProducts.forEach((product, index) => {
+                if(row == index+1){
+                    product.recipe_stk_qty = recipeStkQty;
+                }
+            });
+            //converting array of objects to json string to pass data to controller.
+            jsonStringRequisitionProducts = JSON.stringify(requisitionProducts);
+            //setting product lists to form hidden input field           
+            $('#product_lists').val(jsonStringRequisitionProducts);             
+            
+        });
 
         $(document).on('input', '.qty',function(){
             let product_qty = parseFloat($.trim($(this).val()));                
             let product_id = $(this).attr("id"); // getting the id of input product_qty
             // finding the rowno from the id.
-            let row = product_id.substring(product_id.length - 1); 
+            let row = parseInt(product_id.match(/(\d+)/)[0]);
             let unitCost = parseFloat($('#unitPrice'+ row).text());
+            
             let totQty = 0.0,totAmount=0.0;
             //console.log(unitCost);
             if(product_qty){   
-                //resetting the total price after getting the new quantity of the product.               
+                let UnitOfRecipeStkQty = 0.0;
+                //resetting the total price after getting the new quantity of the product on requisition product table              
                 $("#price" + row).html(unitCost * product_qty); 
                 // updating qty of the selected product in requisitionProducts array.
                 requisitionProducts.forEach((product, index) => {
                         if(row == index+1){
+                            //get the unit qunatity of RecipeStkQty from old recipe stock qty & stock quantity of the requisition product that have req qty has modified.                            
+                            UnitOfRecipeStkQty = parseFloat(product.recipe_stk_qty)/parseFloat(product.quantity);
+                            //updating the recipe stock quantity, req quantity and total price
+                            product.recipe_stk_qty = UnitOfRecipeStkQty * product_qty;
                             product.quantity = product_qty;
                             product.total = (unitCost * product_qty);
                         }
                         totQty += product.quantity;
                         totAmount += product.total;
                     }); 
+                //resetting the recipe stock quantity of the product on requisition product table              
+                $("#ingredient_qty" + row).val((UnitOfRecipeStkQty * product_qty).toFixed(2)); 
             }                            
             //setting the value
             $('#total_quantity').prop('readonly',false).val(totQty).prop('readonly',true);
@@ -447,6 +496,8 @@
             jsonStringRequisitionProducts = JSON.stringify(requisitionProducts);
             //setting product lists to form hidden input field           
             $('#product_lists').val(jsonStringRequisitionProducts);  
+
+            console.log(requisitionProducts);
 
         });
 
@@ -461,7 +512,8 @@
         $(document).on('click','.clsBtn',function(e){
             e.preventDefault();   
             //get the row no from the id
-            let rowId = $(this).attr('id')[$(this).attr('id').length -1];
+            let clsBtnId = $(this).attr('id');
+            let rowId = parseInt(clsBtnId.match(/(\d+)/)[0]);
             // Getting all the rows next to the row containing the clicked close button
             var child = $(this).closest('tr').nextAll();
             // Iterating across all the rows obtained to change the index
@@ -471,7 +523,7 @@
                 // Getting the <td> with .index class
                 var idx = $(this).children('.index').children('span');                  
                 // Gets the row number from <tr> id.
-                var dig = delBtnId[delBtnId.length -1];                
+                var dig = parseInt(delBtnId.match(/(\d+)/)[0]);               
                 // Modifying row-index.
                 idx.html(`${dig - 1}`);
                 // Modifying row id.
@@ -605,7 +657,7 @@
             let requisitionNo = $(this).attr('id').replace( /^\D+/g, ''); //replace all leading non-digits with nothing     
             requisitionProducts=[];           
             $.ajax({
-                    url: '/admin/supplier/challan/getRequisition/' + requisitionNo + '/',
+                    url: '/admin/supplier/challan/get-Requisition/' + requisitionNo + '/',
                     type: 'get',
                     dataType: 'JSON',
                     data: {},
@@ -634,23 +686,26 @@
                             });  
 
                             // populating requisition all products to productTable
-                            // resetting requisition product table before populate with data.
+                            // resetting the requisition product table before populate with data.
                             $("#productTable tbody").empty();  
                             let tableBody = $("#productTable tbody"); 
                             let markup = [];
                             data.requisitionItems.forEach((product, index) => {
+                               //let recipeStockQty = product.has_differ_unit ? parseFloat(product.product_actual_qty * product.quantity).toFixed(2): "";
+                               let productWeight =  product.has_differ_unit ? (product.product_actual_qty + "" + product.product_actual_unit) : (1 + product.unit);
                                 markup.push("<tr id='row"+ (index +1)+"'><td class='text-center index'><span>"  + (index +1) + "</span></td>" + 
                                             "<td class='text-center'>"  + product.name + "</td>" +                   
                                             "<td class='text-center'>"  + product.unit + "</td>" +  
                                             "<td class='text-center'>"  + product.stock + "</td>" +
                                             "<td class='text-center tdQty'>"  + 
                                                 "<input type='text' id='product-qty"+(index +1)+"' value="+ product.quantity +" size= '1' class='form-control qty' style='line-height: 10px;' />"                                            
-                                            +"</td>" + 
+                                            +"</td>" +
                                             "<td class='text-center unitCost' id='unitPrice"+(index +1)+"'>"  + product.unit_cost + "</td>" +                                                 
-                                            "<td class='text-center totPrice' id='price"+(index +1)+"'>"  + product.total + "</td>" +                     
+                                            "<td class='text-center totPrice' id='price"+(index +1)+"'>"  + product.total + "</td>" + 
+                                            "<td class='text-center'>" + productWeight + "</td>" + 
                                             "<td class='text-center'>" + product.ingredient_unit + "</td>" + 
                                             "<td class='text-center ingredientQty'>"  + 
-                                                "<input type='text' id='ingredient_qty"+(index +1)+"' size= '1' value= '' class='form-control inQty' style='line-height: 10px;' />"                                            
+                                                "<input type='text' id='ingredient_qty"+(index +1)+"' size= '1' value= '"+ product.recipe_stock_qty +"' class='form-control inQty' style='line-height: 10px;' />"                                            
                                             +"</td>" +
                                             "<td class='text-center tdClsBtn' style='width:100px;'>"+ 
                                                 "<button class='btn btn-sm btn-danger clsBtn' id='close" +(index +1)+ "'>" +
@@ -665,7 +720,8 @@
                                         'quantity': parseFloat(product.quantity),
                                         'stock': product.stock,
                                         'total': (parseFloat(product.unit_cost) * parseFloat(product.quantity)), 
-                                        'recipe_unit': product.ingredient_unit,                           
+                                        'recipe_unit': product.ingredient_unit,  
+                                        'recipe_stk_qty': product.recipe_stock_qty                          
                                     };                                   
                                     
                                     // array of objects holds all products details                

@@ -124,8 +124,7 @@ class SupplierStockController extends Controller
      * @param Request $request  
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request){
-
+    public function store(Request $request){        
         $validated = $request->validate([                        
             'ingredient_id'         => 'required|numeric',
             'typeingredient_id'     => 'required|numeric',
@@ -133,6 +132,8 @@ class SupplierStockController extends Controller
             'measurement_unit'      => 'required|string', 
             'unit_cost'             => 'required|numeric',
             'supplier_id'           => 'required|numeric',
+            'product_unit'          => 'nullable|regex:/^[a-zA-Z]+$/u|max:191',
+            'product_qty'           => 'nullable|numeric',
             // 'supplier_id'           => ['required', Rule::unique('supplier_stocks')->where(function ($query) use($request) {
             //                                     return $query->where('supplier_id', $request->supplier_id)
             //                                                  ->where('ingredient_id', $request->ingredient_id);
@@ -155,12 +156,15 @@ class SupplierStockController extends Controller
         }
                 
         $supplier_stock = SupplierStock::create([
-            'supplier_id'           => $request->supplier_id,
-            'typeingredient_id'     => $request->typeingredient_id,
-            'ingredient_id'         => $request->ingredient_id,
-            'supplier_product_name' => $request->supplier_product_name,
-            'measurement_unit'      => $request->measurement_unit, 
-            'unit_cost'             => $request->unit_cost,
+            'supplier_id'               => $request->supplier_id,
+            'typeingredient_id'         => $request->typeingredient_id,
+            'ingredient_id'             => $request->ingredient_id,
+            'supplier_product_name'     => $request->supplier_product_name,
+            'measurement_unit'          => $request->measurement_unit, 
+            'unit_cost'                 => $request->unit_cost,
+            'has_differ_product_unit'   => $request->product_unit ? 1 : 0,
+            'product_unit'              => $request->product_unit,
+            'product_qty'               => $request->product_qty,
         ]);
         
         
@@ -202,6 +206,8 @@ class SupplierStockController extends Controller
             'measurement_unit'      => 'required|string', 
             'unit_cost'             => 'required|numeric', 
             'supplier_id'           => 'required|numeric',
+            'product_unit'          => 'nullable|string',
+            'product_qty'           => 'nullable|numeric',
             // 'supplier_id'           => ['required', Rule::unique('supplier_stocks')->where(function ($query) use($request) {
             //                             return $query->where('supplier_id', $request->supplier_id)
             //                             ->where('ingredient_id', $request->ingredient_id);
@@ -213,15 +219,7 @@ class SupplierStockController extends Controller
             'supplier_id.required' => 'Supplier is required',
             // 'supplier_id.unique'   => 'This Supplier has already chosen for this ingredient',
         ]); 
-
-        $unique_stock_product = SupplierStock::where('supplier_product_name', 'LIKE', '%'. $request->supplier_product_name .'%')->first();
-        //dd($unique_stock_product);
-
-        if($unique_stock_product){
-            $this->setFlashMessage(' Error the same supplier product is already added', 'error');    
-            $this->showFlashMessages();
-            return redirect()->back();
-        }
+        
         
         $supplierStock= SupplierStock::find($request->id);
         // updating the supplier stock data.
@@ -231,6 +229,10 @@ class SupplierStockController extends Controller
         $supplierStock->supplier_product_name =  $request->supplier_product_name; 
         $supplierStock->measurement_unit =  $request->measurement_unit;
         $supplierStock->unit_cost = $request->unit_cost;
+        $supplierStock->has_differ_product_unit = $request->product_unit ? 1 : 0;
+        $supplierStock->product_unit = $request->product_unit;
+        $supplierStock->product_qty = $request->product_qty;
+
         // if(Ingredient::where('id', $request->ingredient_id)->first()->measurement_unit == $request->measurement_unit ||
         //     Ingredient::where('id', $request->ingredient_id)->first()->smallest_unit == $request->measurement_unit){
         //         $supplierStock->measurement_unit =  $request->measurement_unit;

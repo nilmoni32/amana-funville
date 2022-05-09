@@ -331,7 +331,7 @@
                                                 "<input type='text' id='product-qty"+i+"' value="+ productDetails.quantity +" size= '1' class='form-control qty' style='line-height: 10px;' />"                                            
                                             +"</td>" + 
                                             "<td class='text-center'>"  + productDetails.stock + "</td>" + 
-                                            "<td class='text-center totPrice' id='price"+i+"'>"  + productDetails.total + "</td>" +                     
+                                            "<td class='text-center totPrice' id='price"+i+"'>"  + (productDetails.total).toFixed(2) + "</td>" +                     
                                             "<td class='text-center tdClsBtn' style='width:100px;'>"+ 
                                                 "<button class='btn btn-sm btn-danger clsBtn' id='close" +i+"'><i class='fa fa-trash'></i></button></td>"+ 
                                      "</tr>";
@@ -388,7 +388,7 @@
                 let product_qty = parseFloat($.trim($(this).val()));                
                 let product_id = $(this).attr("id"); // getting the id of input product_qty
                 // finding the rowno from the id.
-                let row = product_id.substring(product_id.length - 1); 
+                let row = parseInt(product_id.match(/(\d+)/)[0]);
                 let unitCost = parseFloat($('#unitPrice'+ row).text());
                 let totQty = 0.0,totAmount=0.0;
                 //console.log(unitCost);
@@ -428,7 +428,8 @@
             $(document).on('click','.clsBtn',function(e){
                 e.preventDefault();   
                 //get the row no from the id
-                let rowId = $(this).attr('id')[$(this).attr('id').length -1];
+                let clsBtnId = $(this).attr('id');
+                let rowId = parseInt(clsBtnId.match(/(\d+)/)[0]);
                 // Getting all the rows next to the row containing the clicked close button
                 var child = $(this).closest('tr').nextAll();
                 // Iterating across all the rows obtained to change the index
@@ -438,7 +439,7 @@
                     // Getting the <td> with .index class
                     var idx = $(this).children('.index').children('span');                  
                     // Gets the row number from <tr> id.
-                    var dig = delBtnId[delBtnId.length -1];                
+                    var dig = parseInt(delBtnId.match(/(\d+)/)[0]);                
                     // Modifying row-index.
                     idx.html(`${dig - 1}`);
                     // Modifying row id.

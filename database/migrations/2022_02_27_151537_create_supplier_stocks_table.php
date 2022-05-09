@@ -19,7 +19,10 @@ class CreateSupplierStocksTable extends Migration
             $table->unsignedBigInteger('supplier_id')->index();
             $table->unsignedBigInteger('typeingredient_id')->index(); 
             $table->string('supplier_product_name');
-            $table->string('measurement_unit');
+            $table->string('measurement_unit'); //stock measurement unit
+            $table->integer('has_differ_product_unit')->default(0);
+            $table->string('product_unit')->nullable();
+            $table->string('product_qty')->nullable();
             $table->decimal('unit_cost', 8, 2)->default(0.0);
             $table->decimal('total_qty',8,2)->default(0.0);
             $table->decimal('total_cost', 8, 2)->default(0.0);

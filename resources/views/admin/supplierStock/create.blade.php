@@ -9,7 +9,7 @@
 @include('admin.partials.flash')
 <div class="row user">
     <div class="col-md-10 mx-auto">
-        <div class="tile">
+        <div class="tile px-5">
             <form action="{{ route('admin.supplier.stock.store') }}" method="POST" role="form"
                 enctype="multipart/form-data">
                 @csrf
@@ -66,7 +66,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>                    
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
@@ -107,8 +107,58 @@
                         </div>                
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group mb-5">
+                            <label class="control-label" for="has_differ_product_unit">Is <strong>product unit</strong> differ from stock measurement unit?</label>
+                            <div class="row">
+                                <div class="col-auto">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="has_differ_product_unit" id="differ_product_unit_yes" value="yes">
+                                        <label class="form-check-label" for="differ_product_unit_yes">Yes</label>
+                                    </div> 
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="has_differ_product_unit" id="differ_product_unit_no" value="no" checked>
+                                        <label class="form-check-label" for="differ_product_unit_no">No</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group stock-product d-none">
+                            <label class="control-label" for="product_unit">Product Unit</label>
+                            {{-- <input class="form-control @error('product_unit') is-invalid @enderror" type="text"
+                                placeholder="Product Unit" id="product_unit" name="product_unit" value="{{ old('product_unit') }}" /> --}}
+                            <select name="product_unit" id="product_unit" class="form-control" @error('product_unit') is-invalid @enderror">
+                                <option></option>                                    
+                                @foreach(App\Models\Unit::all() as $unit)
+                                <option></option>
+                                <option value="{{ $unit->measurement_unit }}">{{ $unit->measurement_unit }}</option>
+                                @endforeach
+                            </select>
+                            <div class="invalid-feedback active">
+                                <i class="fa fa-exclamation-circle fa-fw"></i> @error('product_unit')
+                                <span>{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+                    </div> 
+                    <div class="col-md-4">
+                        <div class="form-group stock-product d-none">
+                            <label class="control-label" for="product_qty">Product Quantity</label>
+                            <input class="form-control @error('product_qty') is-invalid @enderror" type="text"
+                                placeholder="Product Quantity" id="product_qty" name="product_qty" value="{{ old('product_qty') }}" />
+                            <div class="invalid-feedback active">
+                                <i class="fa fa-exclamation-circle fa-fw"></i> @error('product_qty')
+                                <span>{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+                    </div>     
+                </div>
                 <div class="tile-footer">
-                    <div class="row d-print-none mt-2">
+                    <div class="row d-print-none">
                         <div class="col-12 text-right">
                             <button class="btn btn-success" type="submit"><i
                                     class="fa fa-fw fa-lg fa-check-circle"></i>Save Product</button>
@@ -132,6 +182,12 @@
                 width: '100%',                        
              }); 
              $('#measurement_unit').select2({
+                placeholder: "Select a Measurement Unit",
+               // allowClear: true,
+                multiple: false,  
+                width: '100%',  
+             });
+             $('#product_unit').select2({
                 placeholder: "Select a Measurement Unit",
                // allowClear: true,
                 multiple: false,  
@@ -192,6 +248,20 @@
                     }
                 });
             });
+
+            $('#differ_product_unit_yes').click(function(){                          
+                if($(this).attr("value") == 'yes'){
+                    $('.stock-product').removeClass('d-none');
+                } 
+            });
+
+            $('#differ_product_unit_no').click(function(){                          
+                if($(this).attr("value") == 'no'){
+                    $('.stock-product').addClass('d-none');
+                }                 
+            });
+
+
 
         });
       

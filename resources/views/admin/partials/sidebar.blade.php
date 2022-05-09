@@ -258,9 +258,16 @@
 
     @can('manage-stock')
     @php if(Route::currentRouteName() == 'admin.supplier.index' || 
+    Route::currentRouteName() == 'admin.supplier.create' ||
+    Route::currentRouteName() == 'admin.supplier.edit' ||
     Route::currentRouteName() == 'admin.supplier.stock.index' ||
+    Route::currentRouteName() == 'admin.supplier.stock.create' ||
+    Route::currentRouteName() == 'admin.supplier.stock.edit' ||
     Route::currentRouteName() == 'admin.supplier.requisition.index' ||
-    Route::currentRouteName() == 'admin.supplier.challan.create'){
+    Route::currentRouteName() == 'admin.supplier.requisition.create' ||
+    Route::currentRouteName() == 'admin.supplier.requisition.edit' ||
+    Route::currentRouteName() == 'admin.supplier.challan.create'||
+    Route::currentRouteName() == 'admin.supplier.challan.index'){
     $temp_supplier = 1;
     }else{
     $temp_supplier = 0;
@@ -273,28 +280,32 @@
       </a>
       <ul class="treeview-menu">
         <li>
-          <a class="treeview-item {{ Route::currentRouteName() == 'admin.supplier.stock.index' ? 'active' : '' }}"
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.supplier.stock.index'||
+           Route::currentRouteName() == 'admin.supplier.stock.create'|| Route::currentRouteName() == 'admin.supplier.stock.edit' ? 'active' : '' }}"
             href="{{ route('admin.supplier.stock.index') }}">
             <i class="app-menu__icon fa fa-dot-circle-o"></i>
             <span class="app-menu__label">Manage Supplier Stock</span>
           </a>
         </li>
         <li>
-          <a class="treeview-item {{ Route::currentRouteName() == 'admin.supplier.index' ? 'active' : '' }}"
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.supplier.index' || 
+          Route::currentRouteName() == 'admin.supplier.create' || Route::currentRouteName() == 'admin.supplier.edit' ? 'active' : '' }}"
             href="{{ route('admin.supplier.index') }}">
             <i class="app-menu__icon fa fa-dot-circle-o"></i>
             <span class="app-menu__label">Manage Supplier</span>
           </a>
         </li>
         <li>
-          <a class="treeview-item {{ Route::currentRouteName() == 'admin.supplier.requisition.index' ? 'active' : '' }}"
-            href="{{ route('admin.supplier.requisition.index', 0) }}">
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.supplier.requisition.index' || 
+          Route::currentRouteName() == 'admin.supplier.requisition.create' || Route::currentRouteName() == 'admin.supplier.requisition.edit'? 'active' : '' }}"
+            href="{{ route('admin.supplier.requisition.index') }}">
             <i class="app-menu__icon fa fa-dot-circle-o"></i>
             <span class="app-menu__label">Requisition to Supplier</span>
           </a>
         </li>
         <li>
-          <a class="treeview-item {{ Route::currentRouteName() == 'admin.supplier.challan.create' ? 'active' : '' }}"
+          <a class="treeview-item {{ Route::currentRouteName() == 'admin.supplier.challan.create' || 
+          Route::currentRouteName() == 'admin.supplier.challan.index' ? 'active' : '' }}"
             href="{{ route('admin.supplier.challan.create') }}">
             <i class="app-menu__icon fa fa-dot-circle-o"></i>
             <span class="app-menu__label">Receive from Supplier</span>

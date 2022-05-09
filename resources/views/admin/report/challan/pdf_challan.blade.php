@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Requisition Report - {{ config('app.name', 'Funville') }}</title>
+    <title>Delivery Challan Report - {{ config('app.name', 'Funville') }}</title>
     <style>
         body{
             font-family: sans-serif,Tahoma,Verdana; 
@@ -209,7 +209,7 @@
         </div>
         <div class="invoice-description">
             <div class=" float-left" style="width:100%;">
-                <h5 style="margin-top: 0px; padding-bottom:10px; text-align:left; border-bottom: .8pt solid #5e5e5e;">Product Request Invoice</h5>
+                <h5 style="margin-top: 0px; padding-bottom:10px; text-align:left; border-bottom: .8pt solid #5e5e5e;">Product Receiving Invoice</h5>
             </div>           
             <div class="clearfix"></div>
         </div>
@@ -217,18 +217,22 @@
             <div class="float-left" style="width:100%;">
                 <h6 style="margin:0; text-align:left;">Invoice Details:</h6>
             </div>            
-            <p style="width:50%; padding-top:25px; float:left;"><span style="font-weight:bold;">Request No : </span>#{{ $requisition->id}} </p>            
-            <p style="width:50%; padding-top:25px; float:right; direction: rtl;"><span style="font-weight:bold;">Purpose: </span>{{ $requisition->purpose}}</p> 
+            <p style="width:50%; padding-top:25px; float:left;"><span style="font-weight:bold;">Receiving No : </span>#{{ $receiving_challan->id}} </p>            
+            <p style="width:50%; padding-top:25px; float:right; direction: rtl;"><span style="font-weight:bold;">Challan No: </span>#{{ $receiving_challan->chalan_no }}</p> 
             <div class="clearfix"></div>
         </div>
         <div class="invoice-description" style="margin-top:-25px;">
-            <p style="width:50%;  float:left;"><span style="font-weight:bold;">Expected Receiving Date :</span> {{  date('d-m-Y', strtotime($requisition->expected_delivery)) }}</p>            
-            <p style="width:50%;  float:right; direction: rtl;"><span style="font-weight:bold;">Request Date: </span> {{  date('d-m-Y', strtotime($requisition->requisition_date)) }}</p>
+            <p style="width:50%;  float:left;"><span style="font-weight:bold;">Challan Date :</span> {{  date('d-m-Y', strtotime($receiving_challan->chalan_date)) }}</p>            
+            <p style="width:50%;  float:right; direction: rtl;"><span style="font-weight:bold;">Payment Date: </span> {{  date('d-m-Y', strtotime($receiving_challan->payment_date)) }}</p>
             <div class="clearfix"></div>
         </div>
         <div class="invoice-description" style="margin-top:-25px;">
-            <p style="width:50%;  float:left;"><span style="font-weight:bold;">Request To :</span> {{ $requisition->supplier->name }}</p>            
-            <p style="width:50%;  float:right; direction: rtl;"><span style="font-weight:bold;">Address: </span>{{ $requisition->supplier->address }}</p>
+            <p style="width:50%;  float:left;"><span style="font-weight:bold;">Receiving From :</span> {{ $receiving_challan->supplier->name }}</p>            
+            <p style="width:50%;  float:right; direction: rtl;"><span style="font-weight:bold;">Purpose: </span>{{ $receiving_challan->purpose }}</p>
+            <div class="clearfix"></div>
+        </div>
+        <div class="invoice-description" style="margin-top:-25px;">
+            <p style="width:50%;  float:left;"><span style="font-weight:bold;">Address :</span> {{  $receiving_challan->supplier->address }}</p> 
             <div class="clearfix"></div>
         </div>
         <div class="invoice-description" style="margin-top:2px;  border-top: .8pt solid #5e5e5e;">
@@ -248,7 +252,7 @@
                 </thead>
                 <tbody>
                     @php $qty = 0; $total=0.0;@endphp
-                    @foreach($requisition_items as $item)
+                    @foreach($receiving_items as $item)
                     @php 
                     $qty += $item->quantity; 
                     $total += $item->total;
@@ -276,7 +280,7 @@
         <div class="product-description" style="margin-top:25px;">
             <p style="width:100%;">
                 <span style="border-bottom:0.8pt solid #000; width:25%;text-align:center;float:left; padding-bottom:3px;">
-                    {{ $requisition->admin->name}}</span>
+                    {{ $receiving_challan->admin->name}}</span>
                 <span style="border-bottom:0.8pt solid #000; width:25%; direction:rtl; padding-bottom:3px;float:right;">&nbsp;</span>
             </p>      
             <div class="clearfix"></div>

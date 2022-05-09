@@ -49,5 +49,9 @@ class ReceiveFromSupplier extends Model
         return $this->hasMany(ReturnToSupplier::class);
     }
 
+    public function admin(){
+        return $this->belongsTo(Admin::class);
+    }
+
 
 }

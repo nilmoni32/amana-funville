@@ -207,15 +207,14 @@ Route::group(['namespace' => 'Admin','prefix' => 'admin', 'as' => 'admin.'], fun
                 Route::get('/', 'DeliveryChallanController@index')->name('supplier.challan.index');
                 Route::get('/create', 'DeliveryChallanController@create')->name('supplier.challan.create');
                 Route::post('/store', 'DeliveryChallanController@store')->name('supplier.challan.store');             
-                Route::get('/pdf/{id}', 'DeliveryChallanController@generateChallanPdf')->name('supplier.challan.pdf');              
+                Route::get('/pdf/{id}', 'DeliveryChallanController@generateChallanPdf')->name('supplier.challan.pdf');               
                 // ajax route for getting stock items
+                Route::get('/get/product-details/{id}','DeliveryChallanController@getProductDetail');
+                Route::get('/get/ingredient_units/{id}','DeliveryChallanController@getRecipeIngredientUnits'); 
                 Route::get('/requisitions/{id}','DeliveryChallanController@getRequisitions');
                 Route::get('/{dt1}/{dt2}/{supplier}','DeliveryChallanController@getRequisitionsFromDateWithSupplier');
-                Route::get('/getRequisition/{id}/','DeliveryChallanController@getOnlyRequisition');  
-                            
-                // Route::get('/allproducts/{id}','DeliveryChallanController@getAllChallanProducts');
-                // Route::get('/product/details/{id}','DeliveryChallanController@getChallanProductUnit');
-                
+                Route::get('/get-Requisition/{id}/','DeliveryChallanController@getOnlyRequisition'); 
+                Route::get('/getall','DeliveryChallanController@getSupplierChallan')->name('supplier.challans');
             });
 
             
